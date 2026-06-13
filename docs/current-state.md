@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-13
+Date : 2026-06-14
 
 ## Statut court
 
@@ -96,9 +96,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Index SVG Open Peeps centralisé dans `apps/web/src/assets/open-peeps-atoms.ts`.
 - Modèle partagé `OpenPeepCustomization` pour sauvegarder corps/tenue, tête/cheveux, visage, pilosité, accessoires, posture et couleurs.
 - L'onboarding contient une étape personnage après le prénom, avec un créateur complet plutôt qu'une simple galerie.
-- Le créateur affiche un aperçu SVG, des onglets avec icônes, des grilles d'options, des swatches et des inputs couleur.
-- Couleurs configurables : peau, cheveux, tenue, accessoire et trait/contour.
+- Le créateur affiche un aperçu SVG, des onglets avec icônes, des grilles d'options, des pastilles contextuelles et des inputs couleur.
+- Couleurs configurables : peau, cheveux, tenue et accessoire. Le trait/contour reste noir.
 - `OpenPeepComposer` compose les SVG pour le buste, les postures debout/assis et le cadrage tête.
+- La recolorisation Open Peeps est contextuelle : chapeaux/foulards en neutres sombres, cheveux/barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
+- Le créateur est organisé dans l'ordre : cheveux, visage, barbe, accessoires, tenues, poses.
+- Les pastilles de couleur rondes sont placées sous le personnage et changent selon la catégorie active.
 - Le personnage personnalisé est sauvegardé dans le profil invité via `characterCustomization`.
 - Les anciens profils sans personnalisation complète gardent le fallback PNG `characterId`.
 - Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
@@ -165,6 +168,20 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Serveur local après Etape 5 : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Build Vite Etape 5 : OK avec avertissement de bundle JS volumineux, attendu car les SVG bruts Open Peeps sont embarqués pour le créateur complet.
 - Navigateur intégré retenté après Etape 5 : indisponible (`agent.browsers.list()` retourne `[]`).
+
+## Verification du 2026-06-14
+
+- Correction feedback couleurs Open Peeps : chapeaux/foulards neutralisés en gris/noir, cheveux et pilosité mieux recolorisés, accent de contraste ajouté, ombre de peau utilisée sur le visage.
+- Correction interface createur : categorie `Tête` renommee `Cheveux`, ordre `Cheveux`, `Visage`, `Barbe`, `Accessoires`, `Tenues`, `Poses`.
+- Section `Couleurs` retiree : les pastilles rondes sont maintenant sous le personnage et changent selon la categorie active.
+- Le trait/contour n'est plus configurable et reste noir.
+- Aperçu visage/accessoires : fonds de preview adaptes pour garder du contraste en theme sombre.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle JS volumineux.
+- `git diff --check` : OK.
+- Serveur local : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Navigateur integre retente : indisponible (`agent.browsers.list()` retourne `[]`).
 
 ## Reprise
 

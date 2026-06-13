@@ -15,17 +15,18 @@ Statut : terminee.
 Derniere etape appliquee :
 
 - La galerie simple Open Peeps de l'onboarding est remplacee par un createur complet.
-- Le modele partage ajoute `OpenPeepCustomization` avec corps/tenue, tete/cheveux, visage, pilosite, accessoires, posture et couleurs.
+- Le modele partage ajoute `OpenPeepCustomization` avec corps/tenue, cheveux, visage, pilosite, accessoires, posture et couleurs principales.
 - `characterId` reste conserve pour compatibilite avec les profils existants.
 - `apps/web/src/assets/open-peeps-atoms.ts` centralise l'index SVG Open Peeps via `import.meta.glob`.
 - Les fichiers `__MACOSX` et metadata restent ignores.
 - `OpenPeepComposer` compose les SVG Open Peeps pour buste, debout, assis et cadrage tete.
-- `CharacterCreator` fournit l'interface de creation : apercu, onglets avec icones, grilles d'options, swatches et inputs couleur.
-- Les couleurs configurables sont : peau, cheveux, tenue, accessoire et trait/contour.
+- La recolorisation est contextuelle : chapeaux/foulards en neutres sombres, cheveux et barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
+- `CharacterCreator` fournit l'interface de creation : apercu, onglets dans l'ordre cheveux/visage/barbe/accessoires/tenues/poses, grilles d'options, pastilles rondes contextuelles sous le personnage et inputs couleur.
+- Les couleurs configurables sont : peau, cheveux, tenue et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.
-- `npm run lint`, `npm run typecheck` et `npm run build` passent.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent apres la correction feedback du 2026-06-14.
 - Serveur local verifie sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre indisponible dans cette session (`agent.browsers.list()` retourne `[]`).
 - Note build : Vite signale un bundle JS volumineux car les SVG bruts sont inclus pour le createur complet.

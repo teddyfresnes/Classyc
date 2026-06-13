@@ -387,8 +387,10 @@ L'Etape 5 doit viser un vrai createur de personnage, inspire des principes d'edi
 
 Regles retenues :
 
-- proposer des categories de personnalisation claires : base/personnage, tete/cheveux, visage, pilosite, accessoires, corps/tenue, posture selon assets disponibles.
+- proposer des categories de personnalisation claires dans l'ordre cheveux, visage, barbe, accessoires, tenues, poses.
 - permettre les couleurs principales quand les SVG le permettent : peau, cheveux, vetements, accents/accessoires.
+- placer les pastilles rondes de couleur sous l'apercu du personnage et les rendre contextuelles a la categorie active.
+- garder le trait/contour noir fixe ; il ne doit plus etre expose comme couleur configurable.
 - garder une interface responsive avec apercu, onglets ou segments, swatches de couleur et grilles d'options.
 - centraliser l'index des atomes Open Peeps et la composition du personnage dans des modules dedies.
 - sauvegarder tous les choix utiles dans le profil invite.
@@ -402,13 +404,18 @@ Preparation technique du 2026-06-13 :
 - le buste est la premiere cible de composition, car il correspond au besoin d'onboarding et de photo de profil.
 - les offsets de `Flat Assets/Flat Assets/Separate Atoms/a person/bust.svg` servent de reference : body `(147, 639)`, head `(372, 180)`, face `(531, 366)`, facial-hair `(495, 518)`, accessories `(419, 421)`.
 - pour sitting/standing, les offsets de tete internes restent equivalents : face `(159, 186)`, facial-hair `(123, 338)`, accessories `(47, 241)`.
-- les couleurs peuvent etre exposees par remplacement controle des fills SVG : `#FFFFFF`/`white` pour les zones pleines et `#000000`/`#231F20`/`#221E1F` pour les traits, cheveux ou accessoires selon la categorie.
+- les couleurs peuvent etre exposees par remplacement controle des fills SVG : `#FFFFFF`/`white` pour les zones pleines, `#000000`/`#231F20`/`#221E1F` pour les traits ou masses selon la categorie, et `#4F66AF` pour les accents historiques de certains cheveux.
+- les chapeaux, foulards et couvre-chefs restent dans des neutres sombres/gris, meme quand la couleur de cheveux change.
+- les cheveux et barbes utilisent une couleur principale plus un accent de contraste pour eviter les points de detail ton sur peau.
+- les visages utilisent une ombre derivee de la peau quand un fill d'accent est present.
+- les apercus visage/accessoires doivent garder un fond lisible en theme sombre.
 - le modele doit rester extensible : garder le `characterId` historique pour compatibilite, puis ajouter une personnalisation complete sauvegardee dans le profil invite.
 
 Implementation Etape 5 :
 
-- `OpenPeepCustomization` est ajoute au package partage et sauvegarde le corps, la tete, le visage, la pilosite, les accessoires, la posture et les couleurs.
+- `OpenPeepCustomization` est ajoute au package partage et sauvegarde le corps, les cheveux, le visage, la pilosite, les accessoires, la posture et les couleurs principales.
 - `apps/web/src/assets/open-peeps-atoms.ts` centralise l'index SVG via `import.meta.glob` et filtre les fichiers metadata.
 - `OpenPeepComposer` compose les atomes en SVG pour le buste, les postures debout/assis et le cadrage tete de l'avatar.
-- `CharacterCreator` remplace la galerie PNG dans l'onboarding avec onglets, grilles d'options, swatches et inputs couleur.
+- `CharacterCreator` remplace la galerie PNG dans l'onboarding avec onglets, grilles d'options, pastilles contextuelles sous le personnage et inputs couleur.
+- Correction feedback du 2026-06-14 : suppression de la section `Couleurs`, categorie `Tête` renommee `Cheveux`, ordre des categories ajuste, trait noir fixe, recolorisation corrigee pour les couvre-chefs, cheveux, barbes, visages et accessoires.
 - Le build Vite signale un bundle JS volumineux car les SVG bruts sont embarques pour rendre le createur complet disponible immediatement. A optimiser plus tard si le poids devient prioritaire.

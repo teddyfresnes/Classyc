@@ -1,9 +1,22 @@
 import type { OpenPeepCustomization, OpenPeepPostureMode } from '@classyc/shared';
 import { getOpenPeepAtom, resolveOpenPeepCustomization } from '@/assets/open-peeps-atoms';
 import type { OpenPeepAtomAsset, OpenPeepAtomCategory } from '@/assets/open-peeps-atoms';
+import {
+	createHairAccentColor,
+	createSkinShadowColor,
+	fixedInkColor,
+	neutralHeadwearAccentColor,
+	neutralHeadwearColor
+} from '@/features/character/open-peep-colors';
 
 type OpenPeepRenderCategory = OpenPeepAtomCategory | 'pose';
 type OpenPeepFraming = 'full' | 'head';
+
+interface SvgColorSemantics {
+	accent: string;
+	dark: string;
+	light: string;
+}
 
 interface OpenPeepComposerProps {
 	className?: string;
@@ -200,7 +213,7 @@ export function OpenPeepAtomPreview({ asset, className, customization }: OpenPee
 		>
 			<g
 				dangerouslySetInnerHTML={{
-					__html: createOpenPeepSvgMarkup(asset.raw, getPreviewCategory(asset.category), customization)
+					__html: createOpenPeepSvgMarkup(asset, getPreviewCategory(asset.category), customization)
 				}}
 			/>
 		</svg>
@@ -221,25 +234,23 @@ function OpenPeepSvgGroup({
 	return (
 		<g
 			dangerouslySetInnerHTML={{
-				__html: createOpenPeepSvgMarkup(asset.raw, category, customization)
+				__html: createOpenPeepSvgMarkup(asset, category, customization)
 			}}
 			transform={transform}
 		/>
 	);
 }
 
-function createOpenPeepSvgMarkup(rawSvg: string, category: OpenPeepRenderCategory, customization: OpenPeepCustomization) {
-	const colors = customization.colors;
-	const whiteFill = getWhiteFill(category, customization);
-	const darkFill = getDarkFill(category, customization);
+function createOpenPeepSvgMarkup(asset: OpenPeepAtomAsset, category: OpenPeepRenderCategory, customization: OpenPeepCustomization) {
+	const colors = getSvgColorSemantics(asset, category, customization);
 
-	return getSvgContent(rawSvg)
-		.replace(/fill="#FFFFFF"/gi, `fill="${whiteFill}"`)
-		.replace(/fill="white"/gi, `fill="${whiteFill}"`)
-		.replace(/fill="#000000"/gi, `fill="${darkFill}"`)
-		.replace(/fill="#231F20"/gi, `fill="${darkFill}"`)
-		.replace(/fill="#221E1F"/gi, `fill="${darkFill}"`)
-		.replace(/fill="#4F66AF"/gi, `fill="${colors.accessory}"`);
+	return getSvgContent(asset.raw)
+		.replace(/fill="#FFFFFF"/gi, `fill="${colors.light}"`)
+		.replace(/fill="white"/gi, `fill="${colors.light}"`)
+		.replace(/fill="#000000"/gi, `fill="${colors.dark}"`)
+		.replace(/fill="#231F20"/gi, `fill="${colors.dark}"`)
+		.replace(/fill="#221E1F"/gi, `fill="${colors.dark}"`)
+		.replace(/fill="#4F66AF"/gi, `fill="${colors.accent}"`);
 }
 
 function getSvgContent(rawSvg: string) {
@@ -252,24 +263,64 @@ function getSvgContent(rawSvg: string) {
 		.trim();
 }
 
-function getWhiteFill(category: OpenPeepRenderCategory, customization: OpenPeepCustomization) {
-	if (category === 'head' || category === 'facialHair') {
-		return customization.colors.skin;
+function getSvgColorSemantics(asset: OpenPeepAtomAsset, category: OpenPeepRenderCategory, customization: OpenPeepCustomization): SvgColorSemantics {
+	const colors = customization.colors;
+	const skinShadow = createSkinShadowColor(colors.skin);
+	const hairAccent = createHairAccentColor(colors.hair);
+
+	if (category === 'head') {
+		if (isHeadwearAsset(asset.id)) {
+			return {
+				accent: neutralHeadwearAccentColor,
+				dark: neutralHeadwearColor,
+				light: colors.skin
+			};
+		}
+
+		if (isNoHairAsset(asset.id)) {
+			return {
+				accent: skinShadow,
+				dark: skinShadow,
+				light: colors.skin
+			};
+		}
+
+		return {
+			accent: skinShadow,
+			dark: colors.hair,
+			light: colors.skin
+		};
 	}
 
-	return customization.colors.outfit;
-}
-
-function getDarkFill(category: OpenPeepRenderCategory, customization: OpenPeepCustomization) {
-	if (category === 'head' || category === 'facialHair') {
-		return customization.colors.hair;
+	if (category === 'facialHair') {
+		return {
+			accent: hairAccent,
+			dark: hairAccent,
+			light: colors.hair
+		};
 	}
 
 	if (category === 'accessories') {
-		return customization.colors.accessory;
+		return {
+			accent: colors.accessory,
+			dark: colors.accessory,
+			light: '#F8FAFC'
+		};
 	}
 
-	return customization.colors.ink;
+	if (category === 'face') {
+		return {
+			accent: skinShadow,
+			dark: fixedInkColor,
+			light: colors.skin
+		};
+	}
+
+	return {
+		accent: fixedInkColor,
+		dark: fixedInkColor,
+		light: colors.outfit
+	};
 }
 
 function getPreviewCategory(category: OpenPeepAtomCategory): OpenPeepRenderCategory {
@@ -278,4 +329,12 @@ function getPreviewCategory(category: OpenPeepAtomCategory): OpenPeepRenderCateg
 	}
 
 	return category;
+}
+
+function isHeadwearAsset(assetId: string) {
+	return ['Bear', 'Hijab', 'Turban', 'hat-beanie', 'hat-hip'].includes(assetId);
+}
+
+function isNoHairAsset(assetId: string) {
+	return assetId.startsWith('No Hair');
 }

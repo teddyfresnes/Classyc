@@ -38,6 +38,12 @@ Resolution : verifier le build, le typecheck, le lint, le serveur Vite, la repon
 
 Mise a jour : retente apres la correction UX du shell. `agent.browsers.list()` retourne encore `[]`. Les checks automatiques et HTTP restent la verification disponible.
 
+## 2026-06-14 - Recolorisation Open Peeps trop globale
+
+Probleme : certains atomes Open Peeps reutilisent les memes fills SVG pour des roles differents. Des cheveux comme `Short 4`, `No Hair 3`, `Mohawk`, `Mohawk 2` ou `Medium Bangs 2` perdaient leur couleur ou affichaient des points de detail trop proches de la peau. Des barbes comme `Full 4` et `Moustache 9` utilisaient aussi `#FFFFFF` comme masse principale. Les couvre-chefs pouvaient etre recolories comme des cheveux, et les visages/accessoires manquaient de contraste en theme sombre.
+
+Resolution : centraliser des helpers de couleur dans `apps/web/src/features/character/open-peep-colors.ts` et appliquer une recolorisation semantique dans `OpenPeepComposer`. Les couvre-chefs restent gris/noir, les cheveux et barbes recoivent un accent de contraste, les visages utilisent une ombre derivee de la peau, les apercus visage/accessoires gardent un fond lisible, et le trait/contour reste noir fixe.
+
 ## 2026-06-13 - Libelle chinois degrade dans TypeScript
 
 Probleme : le libelle natif chinois etait degrade dans la sortie terminal et dans le fichier partage.

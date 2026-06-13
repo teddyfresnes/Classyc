@@ -652,14 +652,16 @@ button {
 	}
 
 	.character-preview-panel {
-		display: grid;
+		display: flex;
 		min-height: 25rem;
+		flex-direction: column;
 		overflow: hidden;
 	}
 
 	.character-preview-stage {
 		display: grid;
-		min-height: 100%;
+		min-height: 0;
+		flex: 1;
 		place-items: end center;
 		background: color-mix(in srgb, var(--accent-soft) 34%, var(--surface-1));
 		padding: 1rem 0.75rem 0;
@@ -683,7 +685,7 @@ button {
 
 	.character-category-tabs {
 		display: grid;
-		grid-template-columns: repeat(7, minmax(0, 1fr));
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 		gap: 0.35rem;
 		border-radius: 8px;
 		background: var(--surface-2);
@@ -772,7 +774,7 @@ button {
 		height: 4.75rem;
 		place-items: center;
 		border-radius: 8px;
-		background: color-mix(in srgb, var(--surface-1) 82%, var(--accent-soft));
+		background: var(--character-option-preview-bg, color-mix(in srgb, var(--surface-1) 82%, var(--accent-soft)));
 		overflow: hidden;
 	}
 
@@ -797,27 +799,31 @@ button {
 		overflow-wrap: anywhere;
 	}
 
-	.character-color-panel,
 	.character-posture-panel {
 		display: grid;
 		gap: 0.65rem;
 	}
 
-	.character-color-row {
+	.character-color-dock {
 		display: grid;
-		grid-template-columns: 5.8rem minmax(0, 1fr) 2.45rem;
+		gap: 0.55rem;
+		border-top: 1px solid color-mix(in srgb, var(--border-soft) 58%, transparent);
+		background: color-mix(in srgb, var(--surface-2) 76%, var(--surface-1));
+		padding: 0.7rem;
+	}
+
+	.character-color-group {
+		display: flex;
+		min-width: 0;
 		align-items: center;
-		gap: 0.65rem;
-		border-radius: 8px;
-		background: var(--surface-2);
-		padding: 0.65rem;
-		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 58%, transparent);
+		justify-content: center;
+		gap: 0.55rem;
 	}
 
 	.character-color-label {
 		min-width: 0;
-		color: var(--text-primary);
-		font-size: 0.82rem;
+		color: var(--text-muted);
+		font-size: 0.74rem;
 		font-weight: 900;
 		line-height: 1.1;
 	}
@@ -830,8 +836,8 @@ button {
 	}
 
 	.character-swatch {
-		width: 1.55rem;
-		height: 1.55rem;
+		width: 1.65rem;
+		height: 1.65rem;
 		border: 2px solid var(--surface-2);
 		border-radius: 999px;
 		box-shadow: 0 0 0 1px color-mix(in srgb, var(--border-soft) 74%, transparent);
@@ -842,12 +848,12 @@ button {
 	}
 
 	.character-color-input {
-		width: 2.45rem;
-		height: 2.45rem;
+		width: 1.9rem;
+		height: 1.9rem;
 		border: 0;
-		border-radius: 8px;
+		border-radius: 999px;
 		background: var(--surface-3);
-		padding: 0.2rem;
+		padding: 0.16rem;
 	}
 
 	.character-posture-modes {
@@ -1297,12 +1303,12 @@ button {
 	}
 
 	.character-preview-panel {
-		min-height: 12.5rem;
+		min-height: 15rem;
 	}
 
 	.character-preview-stage {
-		min-height: 12.5rem;
-		height: 12.5rem;
+		min-height: 11.5rem;
+		height: 11.5rem;
 		padding-top: 0.55rem;
 	}
 
@@ -1316,7 +1322,7 @@ button {
 	}
 
 	.character-category-tabs {
-		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-template-columns: repeat(3, minmax(0, 1fr));
 	}
 
 	.character-category-tab {
@@ -1342,10 +1348,19 @@ button {
 		height: 4rem;
 	}
 
-	.character-color-row {
-		grid-template-columns: minmax(4.8rem, 0.7fr) minmax(0, 1fr) 2.25rem;
-		gap: 0.5rem;
+	.character-color-dock {
+		gap: 0.45rem;
 		padding: 0.55rem;
+	}
+
+	.character-color-group {
+		flex-wrap: wrap;
+		gap: 0.42rem;
+	}
+
+	.character-color-label {
+		width: 100%;
+		text-align: center;
 	}
 
 	.character-swatch {

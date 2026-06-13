@@ -12,7 +12,6 @@ export interface CharacterCreatorCopy {
 	categories: {
 		accessories: string;
 		body: string;
-		colors: string;
 		face: string;
 		facialHair: string;
 		head: string;
@@ -21,7 +20,6 @@ export interface CharacterCreatorCopy {
 	colors: {
 		accessory: string;
 		hair: string;
-		ink: string;
 		outfit: string;
 		skin: string;
 	};
@@ -82,17 +80,15 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		characterCreator: {
 			categories: {
 				accessories: 'Accessoires',
-				body: 'Tenue',
-				colors: 'Couleurs',
+				body: 'Tenues',
 				face: 'Visage',
 				facialHair: 'Barbe',
-				head: 'Tête',
-				posture: 'Pose'
+				head: 'Cheveux',
+				posture: 'Poses'
 			},
 			colors: {
 				accessory: 'Accessoire',
 				hair: 'Cheveux',
-				ink: 'Trait',
 				outfit: 'Tenue',
 				skin: 'Peau'
 			},
@@ -186,16 +182,14 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 			categories: {
 				accessories: 'Accessories',
 				body: 'Outfit',
-				colors: 'Colors',
 				face: 'Face',
 				facialHair: 'Beard',
-				head: 'Head',
-				posture: 'Pose'
+				head: 'Hair',
+				posture: 'Poses'
 			},
 			colors: {
 				accessory: 'Accessory',
 				hair: 'Hair',
-				ink: 'Line',
 				outfit: 'Outfit',
 				skin: 'Skin'
 			},
@@ -289,16 +283,14 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 			categories: {
 				accessories: '配件',
 				body: '服装',
-				colors: '颜色',
 				face: '表情',
 				facialHair: '胡子',
-				head: '头部',
+				head: '头发',
 				posture: '姿势'
 			},
 			colors: {
 				accessory: '配件',
 				hair: '头发',
-				ink: '线条',
 				outfit: '服装',
 				skin: '肤色'
 			},
