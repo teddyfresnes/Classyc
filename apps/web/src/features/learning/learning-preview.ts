@@ -17,19 +17,19 @@ export const learningPreviewCards: readonly LearningPreviewCard[] = [
 	{
 		id: 'diagnostic',
 		title: 'Diagnostic',
-		description: 'Placement initial prepare pour choisir le bon depart.',
-		meta: 'Etape 3'
+		description: 'Quelques questions courtes pour placer le depart.',
+		meta: 'Pret'
 	},
 	{
 		id: 'campaign',
 		title: 'Campagne',
-		description: 'Carte de niveaux et bonus XP prevus pour la progression.',
-		meta: 'Etape 7'
+		description: 'Un chemin de niveaux lisible pour avancer sans surcharge.',
+		meta: 'Plan'
 	},
 	{
 		id: 'daily',
 		title: 'Journalier',
-		description: 'Niveaux courts a difficulte variable pour garder le rythme.',
-		meta: 'Etape 8'
+		description: 'Une session rapide avec une difficulte ajustee.',
+		meta: 'Plan'
 	}
 ];

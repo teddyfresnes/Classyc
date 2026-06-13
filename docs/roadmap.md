@@ -50,7 +50,7 @@ Hors scope :
 
 ### Etape 2 - UI shell moderne
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : poser l'interface principale responsive avec navigation minimale.
 
@@ -63,6 +63,8 @@ Livrables prevus :
 - animations de base sobres
 
 ### Etape 3 - Onboarding initial
+
+Statut : prochaine.
 
 Objectif : construire le premier parcours utilisateur sans complexite inutile.
 

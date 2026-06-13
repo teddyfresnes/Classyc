@@ -29,3 +29,9 @@ Resolution : remplacer la dependance par `file:../../packages/shared` dans `apps
 Probleme : apres l'installation initiale, `npm audit --omit=dev` signalait deux vulnerabilites hautes via Vite/esbuild et proposait Vite 8.
 
 Resolution : mettre a jour Vite et `@vitejs/plugin-react` vers les versions actuelles. `npm install` indique ensuite `found 0 vulnerabilities`.
+
+## 2026-06-13 - Navigateur integre indisponible
+
+Probleme : le plugin Browser ne liste aucune cible disponible dans cette session, donc la verification visuelle via navigateur integre n'a pas pu etre faite.
+
+Resolution : verifier le build, le typecheck, le lint, le serveur Vite, la reponse HTTP 200 et les logs d'erreur. Retenter le navigateur integre aux prochaines etapes.

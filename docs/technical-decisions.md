@@ -137,3 +137,25 @@ Statut : retenue pour compatibilite locale.
 Le package web depend de `@classyc/shared` via `file:../../packages/shared` au lieu de `workspace:*`.
 
 Raison : `npm install` a refuse le protocole `workspace:*` dans cet environnement avec `EUNSUPPORTEDPROTOCOL`. Le lien `file:` conserve une dependance locale simple tout en laissant la workspace npm gerer les scripts.
+
+## D012 - Shell UI par sections legeres
+
+Statut : retenue et implementee pour l'Etape 2.
+
+Le shell utilise React Router pour afficher des sections legeres :
+
+- `/` : dashboard d'accueil.
+- `/learn` : espace parcours.
+- `/friends` : espace amis.
+- `/messages` : espace messagerie.
+- `/profile` : espace profil.
+
+Le contenu statique de preparation est centralise dans `apps/web/src/features/shell/shell-content.ts`.
+
+Raison : donner une navigation coherente et tester la structure UX sans implementer les vraies fonctionnalites sociales, serveur ou pedagogiques trop tot.
+
+## D013 - Palette UI de l'Etape 2
+
+Statut : retenue et implementee.
+
+La palette clair/sombre utilise des neutres, du vert, du bleu et de l'ambre pour eviter une interface dominee par une seule famille de couleur. Les surfaces restent sobres et les rayons sont limites a 8px.

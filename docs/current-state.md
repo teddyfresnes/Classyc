@@ -4,11 +4,11 @@ Date : 2026-06-13
 
 ## Statut court
 
-Etape courante : Etape 1 - Setup technique et squelette projet.
+Etape courante : Etape 2 - UI shell moderne.
 
 Etat : terminee.
 
-Le projet contient maintenant une workspace npm avec une application web React/Vite dans `apps/web`, un package partage dans `packages/shared`, un emplacement reserve pour le futur serveur dans `apps/api` et la documentation de pilotage.
+Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partage dans `packages/shared`, un emplacement reserve pour le futur serveur dans `apps/api` et un shell UI moderne pret pour accueillir l'onboarding.
 
 ## Structure observee
 
@@ -55,6 +55,9 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Tailwind CSS via plugin Vite.
 - Theme clair/sombre via variables CSS.
 - Navigation shell responsive desktop/mobile.
+- Dashboard applicatif avec zones apprentissage, progression, langues et social.
+- Routes shell legeres pour accueil, parcours, amis, messages et profil.
+- Palette clair/sombre renforcee et moins mono-teinte.
 - Package partage `@classyc/shared` avec premiers types de domaine.
 - Dossier `apps/api` reserve sans implementation serveur.
 
@@ -75,8 +78,9 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `npm run build` : OK.
 - Serveur local : OK sur `http://127.0.0.1:5173/`.
 - Verification HTTP : OK, status 200.
-- Verification navigateur integre : non disponible dans cette session, aucun navigateur `iab` liste par le plugin Browser.
+- Scan couleurs CSS : OK, palette claire/sombre variee avec neutres, vert, bleu et ambre.
+- Verification navigateur integre : non disponible dans cette session, aucun navigateur liste par le plugin Browser.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 2 de [docs/next-steps.md](next-steps.md) : UI shell moderne.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 3 de [docs/next-steps.md](next-steps.md) : onboarding initial.

@@ -8,52 +8,56 @@
 
 ## Etape actuelle
 
-Etape 1 - Setup technique et squelette projet.
+Etape 2 - UI shell moderne.
 
 Statut : terminee.
 
 ## Prochaine
 
-### Etape 2 - UI shell moderne
+### Etape 3 - Onboarding initial
 
 Statut : prochaine.
 
-Objectif : enrichir le shell avec une interface plus aboutie, responsive et preparee pour les futurs parcours sans encore implementer l'onboarding complet.
+Objectif : commencer le parcours utilisateur sans encore integrer Open Peeps ni les exercices.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Ameliorer le layout desktop/mobile du shell existant.
-- Stabiliser les zones principales : navigation, contenu apprentissage, progression, acces profil/social.
-- Renforcer les tokens visuels clair/sombre.
-- Ajouter des micro-interactions sobres.
-- Preparer les emplacements propres pour onboarding, niveaux, profil, amis et messages.
-- Verifier que le texte ne deborde pas en desktop/mobile.
-- Lancer lint/build.
+- Creer une feature `onboarding` separee du shell.
+- Ajouter un etat local minimal pour le profil invite.
+- Premier ecran : choisir la langue de l'utilisateur entre francais, anglais et chinois.
+- Ajouter l'action `J'ai deja un compte` comme entree preparee, sans authentification serveur.
+- Ajouter une etape prenom.
+- Ajouter une etape langue a apprendre : francais, anglais ou chinois.
+- Enregistrer les choix localement.
+- Brancher le shell pour afficher l'etat invite si l'onboarding est termine.
+- Garder l'UI simple, mobile-first et theme clair/sombre.
+- Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- Le shell est plus mature et coherent sur mobile/desktop.
-- Le theme clair/sombre reste fonctionnel.
+- Un nouvel utilisateur voit un onboarding simple.
+- Les choix de base sont sauvegardes localement.
+- Le shell reste accessible apres completion de l'onboarding.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Onboarding complet.
 - Personnage Open Peeps.
 - Index OpenMoji.
 - Exercices.
+- Diagnostic complet.
 - Serveur.
 - XP, streak, social, messagerie et mini-jeux.
 
 ## Ensuite
 
-### Etape 3 - Onboarding initial
+### Etape 4 - Integration Open Peeps
 
 Statut : en attente.
 
-Objectif : commencer le parcours utilisateur : langue de l'utilisateur, compte existant, prenom, langue a apprendre.
+Objectif : afficher des personnages Open Peeps dans l'onboarding.
