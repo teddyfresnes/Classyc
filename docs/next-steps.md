@@ -64,9 +64,15 @@ Taches prevues :
 - Lire les docs de reprise.
 - Inspecter les assets Open Peeps utiles dans `Flat Assets/Flat Assets/Separate Atoms/` et les templates deja indexes.
 - Ignorer `__MACOSX` et les fichiers `._*`.
-- Creer un vrai modele de personnalisation : base/personnage, tete/cheveux, visage, pilosite, accessoires, corps/tenue, posture si les assets le permettent.
+- S'appuyer sur les resultats de preparation du 2026-06-13 dans [asset-inventory.md](asset-inventory.md) avant de coder.
+- Creer un vrai modele de personnalisation : base, tete/cheveux, visage/expression, pilosite, accessoires, corps/tenue et posture.
 - Permettre le choix des couleurs utiles : peau, cheveux, haut/vetement, accent/accessoire, et autres zones seulement si elles sont realistes avec les SVG disponibles.
 - Reutiliser `apps/web/src/assets/open-peeps.ts` ou l'etendre sans disperser les chemins d'assets.
+- Ajouter un index dedie des atomes Open Peeps, par exemple `apps/web/src/assets/open-peeps-atoms.ts`.
+- Ajouter un modele de personnalisation dedie, par exemple `OpenPeepCustomization`, en gardant `characterId` compatible avec les profils existants.
+- Ajouter un compositeur SVG dedie, par exemple `OpenPeepComposer`, base sur le template `a person/bust.svg`.
+- Composer au minimum le buste avec les offsets verifies : body `(147, 639)`, head `(372, 180)`, face `(531, 366)`, facial-hair `(495, 518)`, accessories `(419, 421)`.
+- Ajouter ensuite les poses sitting/standing si le compositeur buste est stable et si l'ergonomie reste simple.
 - Centraliser l'index des atomes Open Peeps et la composition du personnage dans des modules dedies, pas dans un gros composant.
 - Ajouter les champs necessaires au profil invite pour sauvegarder tous les choix de personnalisation.
 - Ajouter une interface de creation claire : apercu du personnage, categories sous forme d'onglets/segments avec icones, grille d'options, swatches de couleur.
@@ -85,7 +91,7 @@ Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- L'utilisateur peut personnaliser un personnage de facon complete avec les categories disponibles.
+- L'utilisateur peut personnaliser un personnage de facon complete avec les categories disponibles : corps/tenue, tete/cheveux, visage, pilosite, accessoires, couleurs et posture si activee.
 - Les couleurs principales du personnage sont configurables.
 - Le choix complet est sauvegarde localement dans le profil invite.
 - L'avatar de profil dans la sidebar cadre la tete, pas le corps entier.

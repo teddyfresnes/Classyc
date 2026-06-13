@@ -152,6 +152,9 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Préparation créateur complet + correction avatar : `npm run lint`, `npm run typecheck`, `npm run build` OK.
 - Serveur local après correction avatar : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur intégré retenté après correction avatar : indisponible (`agent.browsers.list()` retourne `[]`).
+- `nextstepprep` Etape 5 : inspection des SVG Open Peeps terminee et plan d'implementation documente.
+- Preparation Etape 5 : 169 SVG utiles reperes dans `Separate Atoms/`, dimensions par categorie confirmees, offsets de composition du buste notes dans `asset-inventory.md`.
+- Verification `nextstepprep` : `git diff --check` OK ; pas de lint/typecheck/build relances car aucun code applicatif n'a ete modifie.
 
 ## Reprise
 

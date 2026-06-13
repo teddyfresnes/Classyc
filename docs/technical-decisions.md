@@ -394,3 +394,13 @@ Regles retenues :
 - sauvegarder tous les choix utiles dans le profil invite.
 - cadrer l'avatar de profil sur la tete, car le corps entier devient illisible en petit format.
 - ne pas disperser les chemins d'assets dans les composants.
+
+Preparation technique du 2026-06-13 :
+
+- les atomes Open Peeps sont des SVG locaux stables, avec des dimensions constantes par categorie.
+- le createur doit utiliser un compositeur SVG centralise plutot qu'une collection d'images PNG.
+- le buste est la premiere cible de composition, car il correspond au besoin d'onboarding et de photo de profil.
+- les offsets de `Flat Assets/Flat Assets/Separate Atoms/a person/bust.svg` servent de reference : body `(147, 639)`, head `(372, 180)`, face `(531, 366)`, facial-hair `(495, 518)`, accessories `(419, 421)`.
+- pour sitting/standing, les offsets de tete internes restent equivalents : face `(159, 186)`, facial-hair `(123, 338)`, accessories `(47, 241)`.
+- les couleurs peuvent etre exposees par remplacement controle des fills SVG : `#FFFFFF`/`white` pour les zones pleines et `#000000`/`#231F20`/`#221E1F` pour les traits, cheveux ou accessoires selon la categorie.
+- le modele doit rester extensible : garder le `characterId` historique pour compatibilite, puis ajouter une personnalisation complete sauvegardee dans le profil invite.
