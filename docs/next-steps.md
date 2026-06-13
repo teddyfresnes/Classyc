@@ -8,31 +8,46 @@
 
 ## Etape actuelle
 
-Etape 2 - UI shell moderne.
+Etape 3 - Onboarding initial.
 
 Statut : terminee.
 
+Dernier feedback applique :
+
+- Interface principale moins chargée : suppression du titre/description de page dans le header.
+- `Paramètres` est une entrée de navigation sous `Messages`.
+- Le thème clair/sombre est uniquement dans `Paramètres`.
+- La cloche est dans la zone profil en bas de sidebar.
+- Le header affiche seulement la progression compacte : drapeau de langue apprise + XP, puis série avec flamme custom orange à deux tons.
+- Logo Classyc amélioré avec police locale Fredoka.
+- Page `Apprendre` plus proche d'un chemin de progression clair, avec moins de texte.
+- Palette passée sur un bleu sobre, sans effets fluo ni dégradés décoratifs.
+- Sidebar desktop fixée à la hauteur écran ; overflow réservé au contenu central.
+
 ## Prochaine
 
-### Etape 3 - Onboarding initial
+### Etape 4 - Integration Open Peeps
 
 Statut : prochaine.
 
-Objectif : commencer le parcours utilisateur sans encore integrer Open Peeps ni les exercices.
+Objectif : afficher des personnages Open Peeps dans l'onboarding sans encore faire de personnalisation avancee.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Creer une feature `onboarding` separee du shell.
-- Ajouter un etat local minimal pour le profil invite.
-- Premier ecran : choisir la langue de l'utilisateur entre francais, anglais et chinois.
-- Ajouter l'action `J'ai deja un compte` comme entree preparee, sans authentification serveur.
-- Ajouter une etape prenom.
-- Ajouter une etape langue a apprendre : francais, anglais ou chinois.
-- Enregistrer les choix localement.
-- Brancher le shell pour afficher l'etat invite si l'onboarding est termine.
-- Garder l'UI simple, mobile-first et theme clair/sombre.
+- Inspecter les assets Open Peeps utiles dans `Flat Assets/Flat Assets/Templates/`.
+- Ignorer `__MACOSX` et les fichiers `._*`.
+- Creer un petit index statique ou helper d'assets pour une premiere galerie.
+- Ajouter une etape personnage dans l'onboarding existant.
+- Sauvegarder le choix de personnage dans le profil invite.
+- Afficher un rappel du personnage choisi dans le shell si pertinent.
+- Garder la galerie simple, responsive et sans personnalisation avancee.
+- Conserver la langue d'interface choisie dans le setup.
+- Garder les textes courts et utiles.
+- Ajouter le personnage après l'écran prénom, pas avant les langues.
+- Ne pas réintroduire de header avec titre/description de page.
+- Garder `Paramètres`, notifications et thème aux emplacements actuels.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
@@ -40,14 +55,14 @@ Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- Un nouvel utilisateur voit un onboarding simple.
-- Les choix de base sont sauvegardes localement.
-- Le shell reste accessible apres completion de l'onboarding.
+- L'onboarding propose quelques personnages Open Peeps.
+- Le choix du personnage est sauvegarde localement.
+- Les chemins d'assets sont centralises.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Personnage Open Peeps.
+- Personnalisation avancee du personnage.
 - Index OpenMoji.
 - Exercices.
 - Diagnostic complet.
@@ -56,8 +71,8 @@ Hors scope :
 
 ## Ensuite
 
-### Etape 4 - Integration Open Peeps
+### Etape 5 - Personnalisation simple du personnage
 
 Statut : en attente.
 
-Objectif : afficher des personnages Open Peeps dans l'onboarding.
+Objectif : ajouter quelques options simples autour du personnage choisi.

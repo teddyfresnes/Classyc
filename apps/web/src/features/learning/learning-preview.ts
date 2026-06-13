@@ -9,7 +9,6 @@ export interface LearningPreviewCard {
 
 export const progressPreview: PreviewProgress = {
 	xp: 0,
-	level: 1,
 	streakDays: 0
 };
 
@@ -17,8 +16,8 @@ export const learningPreviewCards: readonly LearningPreviewCard[] = [
 	{
 		id: 'diagnostic',
 		title: 'Diagnostic',
-		description: 'Quelques questions courtes pour placer le depart.',
-		meta: 'Pret'
+		description: 'Quelques questions courtes pour placer le départ.',
+		meta: 'Prêt'
 	},
 	{
 		id: 'campaign',
@@ -29,7 +28,7 @@ export const learningPreviewCards: readonly LearningPreviewCard[] = [
 	{
 		id: 'daily',
 		title: 'Journalier',
-		description: 'Une session rapide avec une difficulte ajustee.',
+		description: 'Une session rapide avec une difficulté ajustée.',
 		meta: 'Plan'
 	}
 ];

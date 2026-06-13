@@ -74,3 +74,21 @@ Index a creer plus tard :
 - normaliser les recherches en minuscules
 - chercher dans `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups`, `hexcode`
 - retourner un objet stable : `hexcode`, `label`, `tags`, `src`
+
+## Fonts
+
+Police locale ajoutée pour l'identité Classyc :
+
+```text
+apps/web/src/assets/fonts/Fredoka-VariableFont.ttf
+apps/web/src/assets/fonts/Fredoka-OFL.txt
+```
+
+Usage actuel :
+
+- logo `Classyc`
+- marque visuelle dans l'onboarding et la sidebar
+
+Source :
+
+- Google Fonts / Fredoka, licence OFL

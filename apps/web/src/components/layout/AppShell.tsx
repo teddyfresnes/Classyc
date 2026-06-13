@@ -2,51 +2,39 @@ import { motion } from 'framer-motion';
 import {
 	Bell,
 	BookOpenCheck,
-	CheckCircle2,
 	ChevronRight,
-	Flame,
-	Home,
 	Lock,
 	MessageCircle,
-	Play,
 	Settings,
-	Sparkles,
+	Star,
 	Trophy,
 	UserRound,
 	UsersRound
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
-import { supportedLanguages } from '@classyc/shared';
-import type { NavigationItem, NavigationItemId } from '@/domain/navigation';
+import { NavLink, Route, Routes } from 'react-router-dom';
+import type { GuestProfile } from '@classyc/shared';
+import type { ShellRouteId } from '@/domain/navigation';
 import { navigationItems } from '@/domain/navigation';
-import {
-	focusActions,
-	levelNodes,
-	metricPreviews,
-	shellSections,
-	socialPreviews
-} from '@/features/shell/shell-content';
-import type { LevelNodePreview, MetricPreview, ShellSectionPreview } from '@/features/shell/shell-content';
+import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
+import {
+	createDailyQuests,
+	createShellSections,
+	getLearningSummary,
+	levelNodes
+} from '@/features/shell/shell-content';
+import type { DailyQuestPreview, LevelNodePreview, ShellSectionPreview } from '@/features/shell/shell-content';
 
-const navigationIcons: Record<NavigationItemId, LucideIcon> = {
-	home: Home,
+const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	learn: BookOpenCheck,
+	stats: Trophy,
 	friends: UsersRound,
 	messages: MessageCircle,
+	settings: Settings,
 	profile: UserRound
 };
-
-const metricIcons: Record<MetricPreview['id'], LucideIcon> = {
-	xp: Trophy,
-	level: BookOpenCheck,
-	streak: Flame
-};
-
-function getActiveItem(pathname: string) {
-	return navigationItems.find((item) => item.to === pathname || (item.to !== '/' && pathname.startsWith(item.to))) ?? navigationItems[0];
-}
 
 function navigationClassName({ isActive }: { isActive: boolean }) {
 	return [
@@ -58,257 +46,205 @@ function navigationClassName({ isActive }: { isActive: boolean }) {
 	].join(' ');
 }
 
-export function AppShell() {
-	const activeItem = getActiveItem(useLocation().pathname);
+export function AppShell({ profile }: { profile: GuestProfile }) {
+	const copy = getUiCopy(profile.nativeLanguage);
+	const shellSections = createShellSections(profile.nativeLanguage);
 
 	return (
-		<div className="min-h-screen bg-[var(--surface-1)] text-[var(--text-primary)]">
-			<div className="mx-auto flex min-h-screen max-w-[1440px]">
-				<DesktopSidebar />
+		<div className="app-shell">
+			<div className="mx-auto flex h-full max-w-[1440px]">
+				<DesktopSidebar copy={copy} profile={profile} />
 
-				<div className="flex min-w-0 flex-1 flex-col pb-[5.25rem] lg:pb-0">
-					<ShellHeader activeItem={activeItem} />
+				<div className="flex min-h-0 min-w-0 flex-1 flex-col pb-[5.25rem] lg:pb-0">
+					<ShellHeader copy={copy} profile={profile} />
 
-					<main className="flex-1 px-4 py-4 sm:px-6 lg:px-8">
+					<main className="app-main">
 						<Routes>
-							<Route element={<DashboardHome />} path="/" />
-							<Route element={<ShellSection section={shellSections.learn} />} path="/learn" />
+							<Route element={<LearningHome profile={profile} />} path="/" />
+							<Route element={<ShellSection section={shellSections.stats} />} path="/stats" />
 							<Route element={<ShellSection section={shellSections.friends} />} path="/friends" />
 							<Route element={<ShellSection section={shellSections.messages} />} path="/messages" />
+							<Route element={<SettingsPage copy={copy} />} path="/settings" />
 							<Route element={<ShellSection section={shellSections.profile} />} path="/profile" />
-							<Route element={<DashboardHome />} path="*" />
+							<Route element={<LearningHome profile={profile} />} path="*" />
 						</Routes>
 					</main>
 				</div>
 			</div>
 
-			<MobileNavigation />
+			<MobileNavigation copy={copy} />
 		</div>
 	);
 }
 
-function DesktopSidebar() {
+function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
 	return (
-		<aside className="hidden w-72 shrink-0 border-r border-[var(--border-soft)] bg-[var(--surface-2)] px-4 py-5 lg:flex lg:flex-col">
-			<div className="mb-7 flex items-center gap-3 px-2">
-				<div className="grid size-11 place-items-center rounded-lg bg-[var(--accent)] text-white shadow-sm">
-					<Sparkles aria-hidden="true" size={22} strokeWidth={2.4} />
-				</div>
-				<div className="min-w-0">
-					<p className="truncate text-xl font-black leading-tight">Classyc</p>
-					<p className="truncate text-xs font-semibold text-[var(--text-muted)]">Apprendre avec rythme</p>
-				</div>
+		<aside className="desktop-sidebar">
+			<div className="mb-7 px-2">
+				<BrandLogo />
 			</div>
 
-			<nav aria-label="Navigation principale" className="space-y-1">
+			<nav aria-label="Navigation principale" className="sidebar-nav">
 				{navigationItems.map((item) => {
-					const Icon = navigationIcons[item.id];
+					const Icon = routeIcons[item.id];
+					const itemCopy = copy.navigation[item.id];
 
 					return (
 						<NavLink className={navigationClassName} end={item.to === '/'} key={item.id} to={item.to}>
 							<Icon aria-hidden="true" size={19} strokeWidth={2.35} />
-							<span className="min-w-0 truncate">{item.label}</span>
+							<span className="min-w-0 truncate">{itemCopy.label}</span>
 						</NavLink>
 					);
 				})}
 			</nav>
 
-			<div className="mt-auto rounded-lg border border-[var(--border-soft)] bg-[var(--surface-1)] p-3">
-				<div className="flex items-center gap-3">
-					<div className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--surface-3)] text-[var(--accent-strong)]">
-						<UserRound aria-hidden="true" size={19} strokeWidth={2.35} />
-					</div>
-					<div className="min-w-0">
-						<p className="truncate text-sm font-black">Invite</p>
-						<p className="truncate text-xs font-semibold text-[var(--text-muted)]">Progression locale</p>
-					</div>
+			<div className="sidebar-footer">
+				<div className="sidebar-profile-card">
+					<NavLink className="profile-link" to="/profile">
+						<div className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--surface-3)] text-[var(--accent-strong)]">
+							<UserRound aria-hidden="true" size={19} strokeWidth={2.35} />
+						</div>
+						<div className="min-w-0">
+							<p className="truncate text-sm font-black">{profile.firstName}</p>
+							<p className="truncate text-xs font-semibold text-[var(--text-muted)]">{copy.guestMode}</p>
+						</div>
+					</NavLink>
+					<IconButton icon={Bell} label={copy.notifications} variant="flat" />
 				</div>
 			</div>
 		</aside>
 	);
 }
 
-function ShellHeader({ activeItem }: { activeItem: NavigationItem }) {
+function ShellHeader({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
 	return (
-		<header className="sticky top-0 z-10 border-b border-[var(--border-soft)] bg-[color-mix(in_srgb,var(--surface-1)_92%,transparent)] px-4 py-3 backdrop-blur-xl sm:px-6 lg:px-8">
+		<header className="shell-header">
 			<div className="flex items-center justify-between gap-4">
-				<div className="min-w-0">
-					<div className="mb-1 flex items-center gap-2 lg:hidden">
-						<div className="grid size-8 place-items-center rounded-lg bg-[var(--accent)] text-white">
-							<Sparkles aria-hidden="true" size={17} strokeWidth={2.4} />
-						</div>
-						<p className="text-sm font-black">Classyc</p>
-					</div>
-					<h1 className="truncate text-xl font-black leading-tight sm:text-2xl">{activeItem.label}</h1>
-					<p className="hidden truncate text-sm font-semibold text-[var(--text-muted)] sm:block">{activeItem.description}</p>
+				<div className="lg:hidden">
+					<BrandLogo />
 				</div>
-
-				<div className="flex shrink-0 items-center gap-2">
-					<IconButton icon={Bell} label="Notifications" />
-					<ThemeToggle />
-					<IconButton icon={Settings} label="Parametres" />
-				</div>
+				<div className="hidden lg:block" />
+				<HeaderProgress copy={copy} profile={profile} />
 			</div>
 		</header>
 	);
 }
 
-function DashboardHome() {
+function HeaderProgress({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
+	const target = getLanguageOption(profile.targetLanguage, profile.nativeLanguage);
+
 	return (
-		<div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_22rem]">
-			<div className="space-y-4">
-				<motion.section
-					animate={{ opacity: 1, y: 0 }}
-					className="focus-panel"
-					initial={{ opacity: 0, y: 8 }}
-					transition={{ duration: 0.32, ease: 'easeOut' }}
-				>
-					<div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-						<div className="max-w-2xl">
-							<p className="mb-2 text-sm font-black text-[var(--accent-strong)]">Aujourd hui</p>
-							<h2 className="text-2xl font-black leading-tight sm:text-4xl">Un depart simple, puis une progression claire.</h2>
-							<p className="mt-3 max-w-xl text-sm leading-6 text-[var(--text-muted)] sm:text-base">
-								Le shell est pret pour accueillir langue, personnage, diagnostic et parcours sans surcharger le premier ecran.
-							</p>
-						</div>
-						<NavLink className="primary-action" to="/learn">
-							<Play aria-hidden="true" size={18} fill="currentColor" strokeWidth={2.2} />
-							<span>Continuer</span>
-						</NavLink>
-					</div>
-				</motion.section>
-
-				<section className="grid gap-3 md:grid-cols-3">
-					{focusActions.map((item) => (
-						<article className="app-panel p-4" key={item.id}>
-							<p className="text-xs font-black text-[var(--text-muted)]">{item.label}</p>
-							<p className="mt-2 text-lg font-black">{item.value}</p>
-							<p className="mt-1 text-sm font-semibold text-[var(--text-muted)]">{item.detail}</p>
-						</article>
-					))}
-				</section>
-
-				<LearningPathPreview />
+		<div className="top-progress" aria-label={copy.progress}>
+			<div className="top-progress__item" title={`${target.label} - ${profile.progress.xp} ${copy.xp}`}>
+				<span className="text-lg leading-none" aria-hidden="true">{target.flag}</span>
+				<span className="tabular-nums">{profile.progress.xp}</span>
+				<span className="text-xs font-black text-[var(--text-muted)]">{copy.xp}</span>
 			</div>
+			<div className="top-progress__item top-progress__item--streak" title={copy.streak}>
+				<StreakMark />
+				<span className="tabular-nums">{profile.progress.streakDays}</span>
+			</div>
+		</div>
+	);
+}
 
-			<aside className="space-y-4">
-				<ProgressPanel />
-				<LanguagePanel />
-				<SocialPanel />
+function StreakMark() {
+	return (
+		<span className="streak-mark" aria-hidden="true">
+			<svg viewBox="0 0 32 32" focusable="false">
+				<path
+					className="streak-mark__outer"
+					d="M17 29.5c6.1 0 10.2-4 10.2-9.6 0-3.9-1.9-7-5.6-9.5-.6-.4-1.3.1-1.2.8.2 1.8-.3 3.1-1.5 4.1-.9-4.2-3.5-7.8-7.2-10.5-.7-.5-1.6 0-1.6.9-.1 5-4.8 7-4.8 13.1 0 6.2 4.8 10.7 11.7 10.7Z"
+				/>
+				<path
+					className="streak-mark__inner"
+					d="M16.6 27.2c3.1 0 5.2-2 5.2-4.8 0-1.9-.9-3.5-2.8-4.7-.4-.3-.9 0-.9.5.1 1.1-.2 2-.9 2.6-.5-2.2-1.8-4.1-3.8-5.6-.4-.3-1 0-1 .5-.1 2.7-2.6 3.8-2.6 7 0 2.7 2.4 4.5 6.8 4.5Z"
+				/>
+				<path
+					className="streak-mark__shine"
+					d="M13 10.2c1.5 1.4 2.7 3.1 3.5 5.1.2.6 1.1.5 1.2-.1.1-.8 0-1.5-.1-2.1-.6-1.3-1.5-2.7-2.6-3.9-.7-.8-2.4.2-2 1Z"
+				/>
+			</svg>
+		</span>
+	);
+}
+
+function LearningHome({ profile }: { profile: GuestProfile }) {
+	const summary = getLearningSummary(profile);
+	const quests = createDailyQuests(profile.nativeLanguage);
+
+	return (
+		<div className="learn-grid">
+			<motion.section
+				animate={{ opacity: 1, y: 0 }}
+				className="learn-path"
+				initial={{ opacity: 0, y: 8 }}
+				transition={{ duration: 0.28, ease: 'easeOut' }}
+			>
+				<div className="unit-ribbon">
+					<div className="min-w-0">
+						<p className="text-xs font-black uppercase tracking-[0.12em] text-white/80">Section 1</p>
+						<h1 className="truncate text-2xl font-black text-white sm:text-3xl">{summary.mapTitle}</h1>
+					</div>
+					<button className="ribbon-action" type="button">
+						<span>{summary.next}</span>
+						<ChevronRight aria-hidden="true" size={18} strokeWidth={2.35} />
+					</button>
+				</div>
+
+				<div className="level-map" aria-label={summary.title}>
+					{levelNodes.map((node, index) => (
+						<LevelNodeCard index={index} key={node.id} node={node} />
+					))}
+				</div>
+			</motion.section>
+
+			<aside className="app-panel p-4 sm:p-5">
+				<h2 className="mb-4 text-lg font-black">{summary.dailyQuests}</h2>
+				<div className="space-y-3">
+					{quests.map((quest) => (
+						<DailyQuestCard key={quest.id} quest={quest} />
+					))}
+				</div>
 			</aside>
 		</div>
 	);
 }
 
-function LearningPathPreview() {
-	return (
-		<section className="app-panel p-4 sm:p-5">
-			<div className="mb-5 flex items-center justify-between gap-3">
-				<div className="min-w-0">
-					<h2 className="truncate text-lg font-black">Chemin d apprentissage</h2>
-					<p className="mt-1 text-sm font-semibold text-[var(--text-muted)]">Diagnostic, campagne et routine gardent chacun leur place.</p>
-				</div>
-				<NavLink aria-label="Ouvrir le parcours" className="icon-action" to="/learn">
-					<ChevronRight aria-hidden="true" size={19} strokeWidth={2.5} />
-				</NavLink>
-			</div>
+function LevelNodeCard({ index, node }: { index: number; node: LevelNodePreview }) {
+	const Icon = node.state === 'locked' ? Lock : Star;
 
-			<div className="grid gap-3 md:grid-cols-4">
-				{levelNodes.map((node) => (
-					<LevelNodeCard key={node.id} node={node} />
-				))}
-			</div>
-		</section>
+	return (
+		<div className="level-map-row" data-side={index % 2 === 0 ? 'left' : 'right'}>
+			<article className="map-node">
+				<div className={`map-node__icon map-node__icon--${node.state}`}>
+					<Icon aria-hidden="true" size={22} strokeWidth={2.5} />
+				</div>
+				<div className="min-w-0">
+					<h3 className="truncate text-sm font-black">{node.label}</h3>
+					<p className="mt-1 truncate text-xs font-bold text-[var(--text-muted)]">{node.detail}</p>
+				</div>
+			</article>
+		</div>
 	);
 }
 
-function LevelNodeCard({ node }: { node: LevelNodePreview }) {
-	const Icon = node.state === 'ready' ? CheckCircle2 : node.state === 'next' ? Sparkles : Lock;
-
+function DailyQuestCard({ quest }: { quest: DailyQuestPreview }) {
 	return (
-		<article className="level-node">
-			<div className={`level-node__icon level-node__icon--${node.state}`}>
-				<Icon aria-hidden="true" size={20} strokeWidth={2.5} />
-			</div>
+		<article className="daily-quest">
 			<div className="min-w-0">
-				<h3 className="truncate text-sm font-black">{node.label}</h3>
-				<p className="mt-1 truncate text-xs font-bold text-[var(--text-muted)]">{node.detail}</p>
+				<p className="truncate text-sm font-black">{quest.label}</p>
+				<div className="mt-2 h-2 rounded-full bg-[var(--surface-3)]">
+					<div className="h-full w-0 rounded-full bg-[var(--accent)]" />
+				</div>
 			</div>
+			<span className="rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">{quest.value}</span>
 		</article>
 	);
 }
 
-function ProgressPanel() {
-	return (
-		<section className="app-panel p-4">
-			<div className="mb-4 flex items-center justify-between gap-3">
-				<h2 className="text-base font-black">Progression</h2>
-				<span className="rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">Invite</span>
-			</div>
-			<div className="space-y-3">
-				{metricPreviews.map((metric) => {
-					const Icon = metricIcons[metric.id];
-
-					return (
-						<div className="metric-row" key={metric.id}>
-							<div className={`metric-row__icon metric-row__icon--${metric.tone}`}>
-								<Icon aria-hidden="true" size={18} strokeWidth={2.45} />
-							</div>
-							<div className="min-w-0 flex-1">
-								<div className="flex items-center justify-between gap-3">
-									<p className="truncate text-sm font-black">{metric.label}</p>
-									<p className="text-sm font-black">{metric.value}</p>
-								</div>
-								<p className="mt-1 truncate text-xs font-bold text-[var(--text-muted)]">{metric.detail}</p>
-							</div>
-						</div>
-					);
-				})}
-			</div>
-		</section>
-	);
-}
-
-function LanguagePanel() {
-	return (
-		<section className="app-panel p-4">
-			<h2 className="mb-3 text-base font-black">Langues</h2>
-			<div className="grid gap-2">
-				{supportedLanguages.map((language) => (
-					<div className="language-row" key={language.code}>
-						<span className="text-sm font-black">{language.label}</span>
-						<span className="truncate text-xs font-bold text-[var(--text-muted)]">{language.nativeLabel}</span>
-					</div>
-				))}
-			</div>
-		</section>
-	);
-}
-
-function SocialPanel() {
-	return (
-		<section className="app-panel p-4">
-			<div className="mb-3 flex items-center justify-between gap-3">
-				<h2 className="text-base font-black">Social</h2>
-				<MessageCircle aria-hidden="true" className="text-[var(--accent-strong)]" size={18} strokeWidth={2.4} />
-			</div>
-			<div className="space-y-2">
-				{socialPreviews.map((item) => (
-					<div className="social-row" key={item.id}>
-						<div className="min-w-0">
-							<p className="truncate text-sm font-black">{item.name}</p>
-							<p className="mt-1 truncate text-xs font-bold text-[var(--text-muted)]">{item.detail}</p>
-						</div>
-						<span className="rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">{item.meta}</span>
-					</div>
-				))}
-			</div>
-		</section>
-	);
-}
-
 function ShellSection({ section }: { section: ShellSectionPreview }) {
-	const Icon = navigationIcons[section.id];
+	const Icon = routeIcons[section.id];
 
 	return (
 		<div className="mx-auto max-w-5xl space-y-4">
@@ -338,17 +274,33 @@ function ShellSection({ section }: { section: ShellSectionPreview }) {
 	);
 }
 
-function MobileNavigation() {
+function SettingsPage({ copy }: { copy: ReturnType<typeof getUiCopy> }) {
+	return (
+		<div className="mx-auto max-w-3xl">
+			<section className="settings-panel">
+				<div className="settings-row">
+					<div className="min-w-0">
+						<h2 className="text-xl font-black">{copy.navigation.settings.label}</h2>
+					</div>
+					<ThemeToggle labelDark={copy.themeDark} labelLight={copy.themeLight} />
+				</div>
+			</section>
+		</div>
+	);
+}
+
+function MobileNavigation({ copy }: { copy: ReturnType<typeof getUiCopy> }) {
 	return (
 		<nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--border-soft)] bg-[var(--surface-2)] px-2 py-2 shadow-[0_-10px_28px_rgba(15,23,42,0.08)] lg:hidden">
-			<div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+			<div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
 				{navigationItems.map((item) => {
-					const Icon = navigationIcons[item.id];
+					const Icon = routeIcons[item.id];
+					const itemCopy = copy.navigation[item.id];
 
 					return (
 						<NavLink className="mobile-nav-link" end={item.to === '/'} key={item.id} to={item.to}>
 							<Icon aria-hidden="true" size={19} strokeWidth={2.35} />
-							<span className="max-w-full truncate">{item.shortLabel}</span>
+							<span className="max-w-full truncate">{itemCopy.shortLabel}</span>
 						</NavLink>
 					);
 				})}
@@ -357,11 +309,11 @@ function MobileNavigation() {
 	);
 }
 
-function IconButton({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
+function IconButton({ icon: Icon, label, variant = 'default' }: { icon: LucideIcon; label: string; variant?: 'default' | 'flat' }) {
 	return (
 		<button
 			aria-label={label}
-			className="icon-action"
+			className={`icon-action icon-action--${variant}`}
 			title={label}
 			type="button"
 		>

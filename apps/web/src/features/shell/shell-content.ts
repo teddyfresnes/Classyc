@@ -1,19 +1,6 @@
-import type { NavigationItemId } from '@/domain/navigation';
-
-export interface MetricPreview {
-	id: string;
-	label: string;
-	value: string;
-	detail: string;
-	tone: 'green' | 'blue' | 'amber';
-}
-
-export interface FocusAction {
-	id: string;
-	label: string;
-	value: string;
-	detail: string;
-}
+import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
+import type { ShellRouteId } from '@/domain/navigation';
+import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
 
 export interface LevelNodePreview {
 	id: string;
@@ -22,11 +9,11 @@ export interface LevelNodePreview {
 	state: 'ready' | 'next' | 'locked';
 }
 
-export interface SocialPreview {
+export interface DailyQuestPreview {
 	id: string;
-	name: string;
-	detail: string;
-	meta: string;
+	label: string;
+	value: string;
+	state: 'empty' | 'ready';
 }
 
 export interface ShellPanelPreview {
@@ -37,209 +24,163 @@ export interface ShellPanelPreview {
 }
 
 export interface ShellSectionPreview {
-	id: NavigationItemId;
+	id: Exclude<ShellRouteId, 'learn'>;
 	title: string;
 	kicker: string;
 	summary: string;
 	panels: readonly ShellPanelPreview[];
 }
 
-export const metricPreviews: readonly MetricPreview[] = [
-	{
-		id: 'xp',
-		label: 'XP',
-		value: '0',
-		detail: 'Compte invite',
-		tone: 'green'
-	},
-	{
-		id: 'level',
-		label: 'Niveau',
-		value: '1',
-		detail: 'Depart',
-		tone: 'blue'
-	},
-	{
-		id: 'streak',
-		label: 'Serie',
-		value: '0',
-		detail: 'jours',
-		tone: 'amber'
-	}
-];
+export function getLearningSummary(profile: GuestProfile) {
+	const copy = getUiCopy(profile.nativeLanguage);
+	const target = getLanguageOption(profile.targetLanguage, profile.nativeLanguage);
 
-export const focusActions: readonly FocusAction[] = [
-	{
-		id: 'native-language',
-		label: 'Langue de depart',
-		value: 'A choisir',
-		detail: 'FR, EN ou ZH'
-	},
-	{
-		id: 'target-language',
-		label: 'Objectif',
-		value: 'A definir',
-		detail: 'Parcours adapte'
-	},
-	{
-		id: 'character',
-		label: 'Personnage',
-		value: 'A creer',
-		detail: 'Open Peeps'
-	}
-];
+	return {
+		title: `${copy.navigation.learn.label} ${target.label}`,
+		mapTitle: target.label,
+		dailyQuests: copy.learn.dailyQuests,
+		emptyQuest: copy.learn.emptyQuest,
+		next: copy.learn.next
+	};
+}
 
 export const levelNodes: readonly LevelNodePreview[] = [
 	{
-		id: 'diagnostic',
-		label: 'Diagnostic',
-		detail: 'Depart',
+		id: 'start',
+		label: '1',
+		detail: 'Départ',
 		state: 'ready'
 	},
 	{
-		id: 'first-lesson',
-		label: 'Lecon 1',
-		detail: 'Campagne',
+		id: 'lesson-1',
+		label: '2',
+		detail: 'Leçon',
 		state: 'next'
 	},
 	{
+		id: 'lesson-2',
+		label: '3',
+		detail: 'Verrouillé',
+		state: 'locked'
+	},
+	{
 		id: 'daily',
-		label: 'Journalier',
-		detail: 'Routine',
+		label: '4',
+		detail: 'Bonus',
 		state: 'locked'
 	},
 	{
-		id: 'social',
-		label: 'Defi ami',
-		detail: 'Social',
+		id: 'checkpoint',
+		label: '5',
+		detail: 'Palier',
 		state: 'locked'
 	}
 ];
 
-export const socialPreviews: readonly SocialPreview[] = [
-	{
-		id: 'friend-feed',
-		name: 'Amis',
-		detail: 'Invitations et activite',
-		meta: '0'
-	},
-	{
-		id: 'message-feed',
-		name: 'Messages',
-		detail: 'Conversations rapides',
-		meta: '0'
-	},
-	{
-		id: 'draw-battle',
-		name: 'Draw Battle',
-		detail: 'Mini-jeu extensible',
-		meta: 'Plan'
-	}
-];
+export function createDailyQuests(language: SupportedLanguageCode): readonly DailyQuestPreview[] {
+	const copy = getUiCopy(language);
 
-export const shellSections: Record<Exclude<NavigationItemId, 'home'>, ShellSectionPreview> = {
-	learn: {
-		id: 'learn',
-		title: 'Parcours',
-		kicker: 'Apprentissage',
-		summary: 'La zone d apprentissage regroupe diagnostic, campagne et sessions journalieres.',
-		panels: [
-			{
-				id: 'diagnostic',
-				title: 'Diagnostic',
-				detail: 'Placement initial court avant les premieres lecons.',
-				meta: 'Prochaine'
-			},
-			{
-				id: 'campaign',
-				title: 'Campagne',
-				detail: 'Carte de niveaux avec etats et bonus XP.',
-				meta: 'Planifie'
-			},
-			{
-				id: 'daily',
-				title: 'Journalier',
-				detail: 'Session rapide avec difficulte variable.',
-				meta: 'Planifie'
-			}
-		]
-	},
-	friends: {
-		id: 'friends',
-		title: 'Amis',
-		kicker: 'Social',
-		summary: 'La future zone amis garde les relations et le classement dans un espace calme.',
-		panels: [
-			{
-				id: 'directory',
-				title: 'Liste',
-				detail: 'Profils amis et statuts simples.',
-				meta: 'Vide'
-			},
-			{
-				id: 'requests',
-				title: 'Invitations',
-				detail: 'Demandes entrantes et sortantes.',
-				meta: '0'
-			},
-			{
-				id: 'leaderboard',
-				title: 'Classement',
-				detail: 'XP, serie et progression hebdomadaire.',
-				meta: 'Planifie'
-			}
-		]
-	},
-	messages: {
-		id: 'messages',
-		title: 'Messages',
-		kicker: 'Conversations',
-		summary: 'La messagerie aura ses etats de lecture, saisie et emojis sans encombrer l apprentissage.',
-		panels: [
-			{
-				id: 'inbox',
-				title: 'Boite',
-				detail: 'Conversations envoyees et recues.',
-				meta: '0'
-			},
-			{
-				id: 'presence',
-				title: 'Presence',
-				detail: 'Vu, saisie et disponibilite.',
-				meta: 'Planifie'
-			},
-			{
-				id: 'games',
-				title: 'Mini-jeux',
-				detail: 'Premier emplacement pour Draw Battle.',
-				meta: 'Planifie'
-			}
-		]
-	},
-	profile: {
-		id: 'profile',
-		title: 'Profil',
-		kicker: 'Compte',
-		summary: 'Le profil garde le mode invite, les preferences et la migration future vers compte connecte.',
-		panels: [
-			{
-				id: 'guest',
-				title: 'Invite',
-				detail: 'Progression locale avant connexion.',
-				meta: 'Actif'
-			},
-			{
-				id: 'stats',
-				title: 'Stats',
-				detail: 'XP, niveau et serie.',
-				meta: '0 XP'
-			},
-			{
-				id: 'settings',
-				title: 'Parametres',
-				detail: 'Theme, langue et preferences.',
-				meta: 'Pret'
-			}
-		]
-	}
-};
+	return [
+		{
+			id: 'lesson',
+			label: copy.learn.next,
+			value: '0/1',
+			state: 'ready'
+		},
+		{
+			id: 'quest',
+			label: copy.learn.emptyQuest,
+			value: '0/3',
+			state: 'empty'
+		}
+	];
+}
+
+export function createShellSections(language: SupportedLanguageCode): Record<Exclude<ShellRouteId, 'learn'>, ShellSectionPreview> {
+	const copy = getUiCopy(language);
+
+	return {
+		stats: {
+			id: 'stats',
+			title: copy.stats.title,
+			kicker: copy.navigation.stats.label,
+			summary: copy.navigation.stats.description,
+			panels: [
+				{
+					id: 'recent-errors',
+					title: copy.stats.recentErrors,
+					detail: copy.stats.soon,
+					meta: '0'
+				},
+				{
+					id: 'history',
+					title: copy.stats.history,
+					detail: copy.stats.soon,
+					meta: '0'
+				},
+				{
+					id: 'progress',
+					title: copy.progress,
+					detail: copy.stats.soon,
+					meta: '0 XP'
+				}
+			]
+		},
+		friends: {
+			id: 'friends',
+			title: copy.navigation.friends.label,
+			kicker: copy.navigation.friends.label,
+			summary: copy.navigation.friends.description,
+			panels: [
+				{
+					id: 'directory',
+					title: copy.navigation.friends.label,
+					detail: copy.stats.soon,
+					meta: '0'
+				}
+			]
+		},
+		messages: {
+			id: 'messages',
+			title: copy.navigation.messages.label,
+			kicker: copy.navigation.messages.label,
+			summary: copy.navigation.messages.description,
+			panels: [
+				{
+					id: 'inbox',
+					title: copy.navigation.messages.label,
+					detail: copy.stats.soon,
+					meta: '0'
+				}
+			]
+		},
+		settings: {
+			id: 'settings',
+			title: copy.navigation.settings.label,
+			kicker: copy.navigation.settings.label,
+			summary: copy.navigation.settings.description,
+			panels: [
+				{
+					id: 'appearance',
+					title: copy.navigation.settings.label,
+					detail: copy.themeDark,
+					meta: 'UI'
+				}
+			]
+		},
+		profile: {
+			id: 'profile',
+			title: copy.navigation.profile.label,
+			kicker: copy.guestMode,
+			summary: copy.navigation.profile.description,
+			panels: [
+				{
+					id: 'guest',
+					title: copy.guestMode,
+					detail: copy.stats.soon,
+					meta: 'OK'
+				}
+			]
+		}
+	};
+}

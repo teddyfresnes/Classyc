@@ -64,7 +64,7 @@ Livrables prevus :
 
 ### Etape 3 - Onboarding initial
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : construire le premier parcours utilisateur sans complexite inutile.
 
@@ -77,6 +77,8 @@ Livrables prevus :
 - etat invite sauvegarde localement
 
 ### Etape 4 - Integration Open Peeps
+
+Statut : prochaine.
 
 Objectif : afficher des personnages Open Peeps dans l'onboarding.
 

@@ -1,10 +1,18 @@
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/app/theme-provider';
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+	labelDark?: string;
+	labelLight?: string;
+}
+
+export function ThemeToggle({
+	labelDark = 'Passer au thème sombre',
+	labelLight = 'Passer au thème clair'
+}: ThemeToggleProps) {
 	const { theme, toggleTheme } = useTheme();
 	const Icon = theme === 'dark' ? Sun : Moon;
-	const label = theme === 'dark' ? 'Passer au theme clair' : 'Passer au theme sombre';
+	const label = theme === 'dark' ? labelLight : labelDark;
 
 	return (
 		<button
