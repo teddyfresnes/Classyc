@@ -52,11 +52,11 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 5 - Personnalisation simple du personnage
+### Etape 5 - Createur complet de personnage
 
 Statut : prochaine.
 
-Objectif : ajouter quelques options simples autour du personnage choisi sans creer un systeme de personnalisation lourd.
+Objectif : remplacer la galerie simple par un createur de personnage complet inspire des logiques Mii/Bitmoji, sans copier leur interface, avec categories, options visuelles et couleurs.
 
 Taches prevues :
 
@@ -64,11 +64,15 @@ Taches prevues :
 - Lire les docs de reprise.
 - Inspecter les assets Open Peeps utiles dans `Flat Assets/Flat Assets/Separate Atoms/` et les templates deja indexes.
 - Ignorer `__MACOSX` et les fichiers `._*`.
-- Choisir une personnalisation minimale et stable selon les assets vraiment disponibles.
+- Creer un vrai modele de personnalisation : base/personnage, tete/cheveux, visage, pilosite, accessoires, corps/tenue, posture si les assets le permettent.
+- Permettre le choix des couleurs utiles : peau, cheveux, haut/vetement, accent/accessoire, et autres zones seulement si elles sont realistes avec les SVG disponibles.
 - Reutiliser `apps/web/src/assets/open-peeps.ts` ou l'etendre sans disperser les chemins d'assets.
-- Ajouter les champs necessaires au profil invite seulement si l'option est reellement sauvegardee.
-- Garder l'etape personnage simple, responsive et coherente avec le setup actuel.
-- Ne pas transformer l'etape en editeur avance.
+- Centraliser l'index des atomes Open Peeps et la composition du personnage dans des modules dedies, pas dans un gros composant.
+- Ajouter les champs necessaires au profil invite pour sauvegarder tous les choix de personnalisation.
+- Ajouter une interface de creation claire : apercu du personnage, categories sous forme d'onglets/segments avec icones, grille d'options, swatches de couleur.
+- Garder une ergonomie mobile propre : apercu visible, options scrollables, boutons en bas, aucune superposition.
+- Garder une ergonomie desktop proche d'un editeur : apercu a gauche ou au centre, options a droite ou en bas selon la place.
+- Ne pas utiliser de longs textes explicatifs dans l'UI ; les icones, libelles courts et etats selected doivent porter l'information.
 - Conserver la langue d'interface choisie dans le setup.
 - Garder les textes courts et utiles.
 - Ne pas réintroduire de header avec titre/description de page.
@@ -81,14 +85,15 @@ Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- L'utilisateur peut choisir au moins une option simple de personnage.
-- Le choix reste sauvegarde localement si l'option modifie le profil.
+- L'utilisateur peut personnaliser un personnage de facon complete avec les categories disponibles.
+- Les couleurs principales du personnage sont configurables.
+- Le choix complet est sauvegarde localement dans le profil invite.
+- L'avatar de profil dans la sidebar cadre la tete, pas le corps entier.
 - Les chemins d'assets restent centralises.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Editeur avance du personnage.
 - Index OpenMoji.
 - Exercices.
 - Diagnostic complet.

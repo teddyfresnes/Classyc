@@ -95,6 +95,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Index statique Open Peeps centralisé dans `apps/web/src/assets/open-peeps.ts`.
 - L'onboarding contient une étape personnage après le prénom, avec six templates `Bust` Open Peeps.
 - Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
+- L'avatar de profil de la sidebar est cadré sur la tête pour rester lisible en petit format.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
@@ -103,7 +104,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Systeme de niveaux.
 - Exercices.
 - XP, streak, amis, messagerie ou mini-jeux.
-- Personnalisation avancée du personnage Open Peeps.
+- Créateur complet de personnage Open Peeps.
 - Diagnostic complet.
 
 ## Verification du 2026-06-13
@@ -146,7 +147,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification HTTP du module `apps/web/src/assets/open-peeps.ts` : OK, status HTTP 200.
 - Verification HTTP d'un asset Open Peeps via Vite dev : OK, `peep-8.png` servi en `image/png`.
 - Navigateur intégré : indisponible dans cette session, `agent.browsers.list()` retourne `[]`.
+- Feedback préparation Etape 5 : la prochaine étape doit viser un créateur complet de personnage avec couleurs et catégories, pas une simple personnalisation minimale.
+- Correction avatar profil : cadrage zoomé sur la tête dans la sidebar.
+- Préparation créateur complet + correction avatar : `npm run lint`, `npm run typecheck`, `npm run build` OK.
+- Serveur local après correction avatar : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Navigateur intégré retenté après correction avatar : indisponible (`agent.browsers.list()` retourne `[]`).
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 5 de [docs/next-steps.md](next-steps.md) : personnalisation simple du personnage.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 5 de [docs/next-steps.md](next-steps.md) : createur complet de personnage.

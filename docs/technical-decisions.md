@@ -114,7 +114,7 @@ La resolution d'image doit pointer vers `Openmoji/icons/{hexcode}.png`.
 
 Statut : implementee en base pour l'Etape 4, a etendre a l'Etape 5.
 
-Utiliser les templates Open Peeps existants pour une premiere selection de personnage. Les atomes de personnalisation peuvent etre ajoutes apres la galerie de base.
+Utiliser les templates Open Peeps existants pour une premiere selection de personnage. Les atomes de personnalisation doivent ensuite servir a construire un createur complet de personnage.
 
 Ne pas importer les dossiers `__MACOSX`.
 
@@ -124,7 +124,7 @@ Implementation actuelle :
 - galerie de base dans `apps/web/src/assets/open-peeps.ts`
 - six templates `Bust` utilises depuis `Flat Assets/Flat Assets/Templates/Bust/`
 - selection sauvegardee dans le profil invite via `characterId`
-- rappel du personnage dans la zone profil de la sidebar desktop
+- rappel du personnage dans la zone profil de la sidebar desktop, cadre sur la tete en petit format
 
 ## D009 - Serveur
 
@@ -232,7 +232,7 @@ Le setup doit rester très ergonomique :
 - écran 2 : prénom
 - écran 3 : personnage Open Peeps
 - retour arrière possible
-- la personnalisation avancee du personnage sera ajoutée ensuite sans alourdir l'entree
+- la personnalisation complete du personnage sera ajoutée ensuite avec une interface dediee
 
 Raison : le prénom ne doit pas apparaître avant que l'utilisateur ait compris le choix principal de langue.
 
@@ -378,3 +378,19 @@ Règles :
 - le bouton compte doit rester une action secondaire discrète, pas un bouton bordé dominant.
 - placer les actions de chaque étape en bas de la carte avec le même couple bouton secondaire / bouton primaire.
 - pour les prochaines implémentations, supprimer toute micro-copie qui ne change pas la décision utilisateur ; préférer un état visuel clair à une phrase explicative.
+
+## D031 - Createur complet Open Peeps
+
+Statut : retenue pour l'Etape 5 apres feedback utilisateur.
+
+L'Etape 5 doit viser un vrai createur de personnage, inspire des principes d'edition de type Mii/Bitmoji sans copier leur interface.
+
+Regles retenues :
+
+- proposer des categories de personnalisation claires : base/personnage, tete/cheveux, visage, pilosite, accessoires, corps/tenue, posture selon assets disponibles.
+- permettre les couleurs principales quand les SVG le permettent : peau, cheveux, vetements, accents/accessoires.
+- garder une interface responsive avec apercu, onglets ou segments, swatches de couleur et grilles d'options.
+- centraliser l'index des atomes Open Peeps et la composition du personnage dans des modules dedies.
+- sauvegarder tous les choix utiles dans le profil invite.
+- cadrer l'avatar de profil sur la tete, car le corps entier devient illisible en petit format.
+- ne pas disperser les chemins d'assets dans les composants.

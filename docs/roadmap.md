@@ -89,17 +89,20 @@ Livrables prevus :
 - chemins d'assets centralises
 - fallback si un asset manque
 
-### Etape 5 - Personnalisation simple du personnage
+### Etape 5 - Createur complet de personnage
 
 Statut : prochaine.
 
-Objectif : ajouter quelques options de personnalisation sans systeme trop lourd.
+Objectif : creer une experience complete de creation de personnage inspiree des logiques Mii/Bitmoji, sans copier leur interface.
 
 Livrables prevus :
 
-- variantes simples : posture, couleur/accent, style choisi selon assets disponibles
-- apercu fluide
-- sauvegarde dans le profil invite
+- categories de personnalisation : base, tete/cheveux, visage, pilosite, accessoires, corps/tenue, posture selon assets disponibles
+- couleurs configurables : peau, cheveux, vetements, accents/accessoires selon zones disponibles
+- interface responsive avec apercu, onglets/segments, swatches et grilles d'options
+- composition modulaire des assets Open Peeps
+- sauvegarde complete dans le profil invite
+- avatar de profil cadre sur la tete pour rester lisible en petit
 
 ### Etape 6 - Integration OpenMoji et recherche d'icones
 
