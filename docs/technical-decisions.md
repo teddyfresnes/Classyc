@@ -269,6 +269,10 @@ Règles retenues :
 - pas de dégradés décoratifs pour les fonds, le logo ou la map.
 - les pages secondaires réutilisent les mêmes panneaux, bordures, rayons et ombres.
 - les textes de progression ne doivent pas être jaunes/orange ; la couleur vient des icônes si nécessaire.
+- éviter les traits/bordures visibles dans le header et les badges de progression ; préférer des surfaces avec ombre douce.
+- la navigation principale doit avoir un état actif clair sur `--accent`, sans glow/box-shadow décoratif.
+- le profil en bas de sidebar ne doit pas reprendre l'état actif des liens de navigation.
+- le chrome d'interface non éditable comme logo, stats et boutons doit éviter la sélection de texte accidentelle.
 
 ## D024 - Série avec pictogramme custom
 
@@ -287,3 +291,41 @@ Statut : retenue après feedback utilisateur sur l'Étape 3.
 Le shell desktop occupe `100vh`. La sidebar desktop ne scrolle pas et le contenu central utilise `overflow-y: auto`.
 
 Raison : garder une navigation stable comme une app et éviter que la sidebar dépasse de l'écran.
+
+## D026 - Learn path premium sobre
+
+Statut : retenue après feedback utilisateur sur l'Étape 3.
+
+Le learn path de `Apprendre` doit rester propre tant que le vrai système de niveaux n'existe pas : route courbe, pastilles rondes numérotées, états visuels clairs et palette bleue cohérente.
+
+Règles :
+
+- ne pas copier Duolingo directement.
+- éviter les effets fluo, les grands dégradés et les décorations trop IA.
+- ne pas afficher de libellés de type `Leçon`, `Mini-jeu`, `Révision` tant que le système de niveaux n'est pas implémenté.
+- ne pas utiliser d'icônes de niveaux provisoires ; les pastilles affichent seulement le numéro dans la preview actuelle.
+- ne pas afficher le bonus `1.5x` dans la preview tant que le vrai système de niveaux n'est pas implémenté.
+- utiliser les mêmes tokens de surface, ombre et accent que le shell.
+- dessiner la route et les pastilles dans un SVG unique pour éviter les décalages entre road et niveaux.
+- ne pas utiliser de box-shadow bleu en dessous des pastilles : ce faux relief a été explicitement rejeté.
+- ne pas ajouter de formes décoratives provisoires autour de la map.
+- ne pas afficher de bouton `Suivant` dans le ruban tant qu'il n'a pas de vraie action.
+- le vrai contenu pédagogique et la logique de progression restent pour les étapes suivantes.
+
+Note : les versions avec libellés/doodles visibles, icônes de niveaux provisoires, route/layout séparés ou faux socle bleu ont été rejetées. Garder cette zone calme jusqu'à la vraie étape niveaux.
+
+## D027 - Texte blanc sur navigation active
+
+Statut : retenue après feedback utilisateur sur l'Étape 3.
+
+Les items actifs de la sidebar et de la navigation mobile utilisent `--nav-active` et `--nav-active-contrast`, avec un texte blanc même en thème sombre.
+
+Raison : le texte noir sur bleu actif a été jugé visuellement incohérent.
+
+## D028 - Scroll indépendant sur Apprendre
+
+Statut : retenue après feedback utilisateur sur l'Étape 3.
+
+Sur desktop, `Apprendre` utilise `app-main:has(.learn-grid)` pour empêcher le scroll global de la page, puis donne un `overflow-y: auto` indépendant à `.learn-path` et `.learn-side`.
+
+Raison : scroller la map ne doit pas faire défiler les quêtes à droite, et inversement.

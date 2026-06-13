@@ -2,11 +2,8 @@ import { motion } from 'framer-motion';
 import {
 	Bell,
 	BookOpenCheck,
-	ChevronRight,
-	Lock,
 	MessageCircle,
 	Settings,
-	Star,
 	Trophy,
 	UserRound,
 	UsersRound
@@ -36,14 +33,18 @@ const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	profile: UserRound
 };
 
+const levelRoadPath = [
+	'M180 72',
+	'C226 100 258 132 238 176',
+	'C218 222 182 236 180 280',
+	'C178 324 128 338 122 384',
+	'C116 430 164 448 180 488',
+	'C196 528 238 548 238 592',
+	'C238 632 206 656 180 682'
+].join(' ');
+
 function navigationClassName({ isActive }: { isActive: boolean }) {
-	return [
-		'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition duration-200',
-		'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--focus)]',
-		isActive
-			? 'bg-[var(--accent-soft)] text-[var(--accent-strong)] shadow-[inset_3px_0_0_var(--accent)]'
-			: 'text-[var(--text-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--text-primary)]'
-	].join(' ');
+	return `nav-link${isActive ? ' active' : ''}`;
 }
 
 export function AppShell({ profile }: { profile: GuestProfile }) {
@@ -91,7 +92,9 @@ function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>;
 
 					return (
 						<NavLink className={navigationClassName} end={item.to === '/'} key={item.id} to={item.to}>
-							<Icon aria-hidden="true" size={19} strokeWidth={2.35} />
+							<span className="nav-link__icon">
+								<Icon aria-hidden="true" size={18} strokeWidth={2.35} />
+							</span>
 							<span className="min-w-0 truncate">{itemCopy.label}</span>
 						</NavLink>
 					);
@@ -135,8 +138,8 @@ function HeaderProgress({ copy, profile }: { copy: ReturnType<typeof getUiCopy>;
 
 	return (
 		<div className="top-progress" aria-label={copy.progress}>
-			<div className="top-progress__item" title={`${target.label} - ${profile.progress.xp} ${copy.xp}`}>
-				<span className="text-lg leading-none" aria-hidden="true">{target.flag}</span>
+			<div className="top-progress__item top-progress__item--xp" title={`${target.label} - ${profile.progress.xp} ${copy.xp}`}>
+				<span className="top-progress__flag" aria-hidden="true">{target.flag}</span>
 				<span className="tabular-nums">{profile.progress.xp}</span>
 				<span className="text-xs font-black text-[var(--text-muted)]">{copy.xp}</span>
 			</div>
@@ -186,20 +189,20 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 						<p className="text-xs font-black uppercase tracking-[0.12em] text-white/80">Section 1</p>
 						<h1 className="truncate text-2xl font-black text-white sm:text-3xl">{summary.mapTitle}</h1>
 					</div>
-					<button className="ribbon-action" type="button">
-						<span>{summary.next}</span>
-						<ChevronRight aria-hidden="true" size={18} strokeWidth={2.35} />
-					</button>
 				</div>
 
 				<div className="level-map" aria-label={summary.title}>
-					{levelNodes.map((node, index) => (
-						<LevelNodeCard index={index} key={node.id} node={node} />
-					))}
+					<svg className="level-map__canvas" viewBox="0 0 360 740" role="img" aria-label={summary.title}>
+						<path className="level-road level-road--base" d={levelRoadPath} pathLength={100} />
+						<path className="level-road level-road--progress" d={levelRoadPath} pathLength={100} />
+						{levelNodes.map((node, index) => (
+							<LevelNodeCard index={index} key={node.id} node={node} />
+						))}
+					</svg>
 				</div>
 			</motion.section>
 
-			<aside className="app-panel p-4 sm:p-5">
+			<aside className="learn-side">
 				<h2 className="mb-4 text-lg font-black">{summary.dailyQuests}</h2>
 				<div className="space-y-3">
 					{quests.map((quest) => (
@@ -212,27 +215,35 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 }
 
 function LevelNodeCard({ index, node }: { index: number; node: LevelNodePreview }) {
-	const Icon = node.state === 'locked' ? Lock : Star;
-
 	return (
-		<div className="level-map-row" data-side={index % 2 === 0 ? 'left' : 'right'}>
-			<article className="map-node">
-				<div className={`map-node__icon map-node__icon--${node.state}`}>
-					<Icon aria-hidden="true" size={22} strokeWidth={2.5} />
-				</div>
-				<div className="min-w-0">
-					<h3 className="truncate text-sm font-black">{node.label}</h3>
-					<p className="mt-1 truncate text-xs font-bold text-[var(--text-muted)]">{node.detail}</p>
-				</div>
-			</article>
-		</div>
+		<motion.g
+			animate={{ opacity: 1 }}
+			className={`map-node map-node--${node.state}`}
+			initial={{ opacity: 0 }}
+			transform={`translate(${node.x} ${node.y})`}
+			transition={{ delay: index * 0.035, duration: 0.22, ease: 'easeOut' }}
+		>
+			<title>{node.reward ? `Niveau ${node.label} - 1.5x d'XP gagné en plus` : `Niveau ${node.label}`}</title>
+			<circle className="map-node__ring" r="38" />
+			<circle className="map-node__disc" r="29" />
+			<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
+				{node.label}
+			</text>
+			{node.reward ? (
+				<g className="map-node__reward" transform="translate(31 -27)">
+					<rect height="24" rx="12" width="46" x="-23" y="-12" />
+					<text dominantBaseline="central" textAnchor="middle">1.5x</text>
+				</g>
+			) : null}
+		</motion.g>
 	);
 }
 
 function DailyQuestCard({ quest }: { quest: DailyQuestPreview }) {
 	return (
 		<article className="daily-quest">
-			<div className="min-w-0">
+			<span className={`daily-quest__dot daily-quest__dot--${quest.state}`} aria-hidden="true" />
+			<div className="min-w-0 flex-1">
 				<p className="truncate text-sm font-black">{quest.label}</p>
 				<div className="mt-2 h-2 rounded-full bg-[var(--surface-3)]">
 					<div className="h-full w-0 rounded-full bg-[var(--accent)]" />

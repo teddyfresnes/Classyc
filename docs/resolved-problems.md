@@ -67,3 +67,13 @@ Résolution : séparer le setup en deux temps avec animation courte : langues d'
 Problème : pendant la correction de palette et de navigation, Vite a gardé des erreurs HMR intermédiaires dans `.vite-dev.err.log`, alors que `lint`, `typecheck` et `build` passaient.
 
 Résolution : arrêter explicitement les processus `npm run dev`/`vite` du projet, supprimer les logs générés, puis relancer Vite. Le serveur répond en HTTP 200 et le log d'erreur frais est vide.
+
+## 2026-06-13 - Learn path trop chargé puis désaligné
+
+Problème : les essais de learn path avec layouts séparés, icônes et libellés provisoires donnaient un rendu brouillon. Les pastilles semblaient ne pas être traversées proprement par la route, les icônes de niveaux étaient jugées trop moches et le faux socle bleu sous les pastilles a été rejeté.
+
+Résolution : abandonner les icônes de niveaux provisoires et le faux relief bleu. Utiliser un SVG unique où la route et les pastilles partagent le même repère, avec des pastilles numérotées simples. Ne réintroduire des chemins plus expressifs qu'à l'étape réelle du système de niveaux.
+
+Mise à jour : le niveau 2 ne doit pas être sélectionné dans la preview et le bonus `1.5x` ne doit pas apparaître avant l'implémentation du vrai système de niveaux. Le texte actif de la sidebar reste blanc.
+
+Mise à jour 2 : les formes décoratives provisoires et le bouton `Suivant` du ruban ont aussi été retirés. Le scroll desktop de la map et des quêtes est séparé.

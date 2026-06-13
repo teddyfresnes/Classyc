@@ -62,9 +62,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Sidebar desktop : logo Classyc, navigation principale, entrée `Paramètres` sous `Messages`, profil en bas.
 - Cloche de notifications intégrée dans la zone profil en bas de sidebar.
 - Le mode clair/sombre est déplacé dans la page `Paramètres`.
-- Page `Apprendre` allégée avec ruban de section, chemin de niveaux à pastilles rondes et quêtes journalières à droite.
+- Page `Apprendre` allégée avec ruban de section, learn path sobre et quêtes journalières à droite.
+- Learn path repris après feedback : SVG unique avec route courbe et pastilles dessinées dans le même repère, sans icônes de niveaux, sans faux socle bleu et sans bonus `1.5x` affiché tant que le système de niveaux n'existe pas.
+- Le ruban de `Apprendre` n'affiche plus de bouton `Suivant` tant qu'il n'y a pas de vraie action de niveau.
+- La map ne contient pas de formes décoratives provisoires.
+- Alignement learn path : la route et les pastilles sont dans le même SVG ; ne pas séparer la road et les niveaux en layouts indépendants.
+- Sur desktop, la colonne `Apprendre` et les quêtes journalières scrollent indépendamment.
 - Palette clair/sombre réorientée vers un bleu sobre, sans effets fluo ni dégradés décoratifs.
 - Shell desktop en hauteur écran fixe : la sidebar ne scrolle pas, le contenu central utilise `overflow-y: auto`.
+- Polish UI shell : header sans trait inférieur dur, chips de progression sans bordures visibles, navigation sidebar sur la couleur accent sans glow, et quêtes journalières en colonne légère.
+- Le bloc profil en bas de sidebar n'affiche pas d'état `active` partiel ; il reste neutre même sur `/profile`.
+- Le logo, la progression du header et les actions principales ne sélectionnent pas de texte au glisser.
 - Logo Classyc partagé entre onboarding et shell avec police locale Fredoka.
 - Package partagé `@classyc/shared` avec premiers types de domaine.
 - Onboarding initial : langue utilisateur, entrée `J'ai déjà un compte`, prénom, langue à apprendre.
@@ -106,6 +114,16 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Correction palette/overflow : `npm run lint`, `npm run typecheck`, `npm run build` OK.
 - La série du header utilise un pictogramme SVG custom, pas un asset OpenMoji.
 - Serveur Vite redémarré après correction palette : status HTTP 200, `.vite-dev.err.log` vide.
+- Polish UI header/sidebar/quêtes : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; navigateur intégré toujours indisponible (`[]`).
+- Correction état profil/sidebar et bouton `Suivant` : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide.
+- Refonte learn path : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide ; navigateur intégré indisponible (`agent.browsers.list()` retourne `[]`).
+- Simplification learn path après rejet de la version trop chargée : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur Vite redémarré proprement sur `http://127.0.0.1:5173/`, logs frais vides.
+- Correction alignement learn path : retrait du placement par grille et de l'animation `y` Framer Motion qui pouvait casser le centrage des pastilles.
+- Correction road/nodes par coordonnées partagées : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide ; navigateur intégré toujours indisponible (`[]`).
+- Reprise complète learn path sans SVG ni icônes de niveaux : `npm run lint`, `npm run typecheck`, `npm run build` OK.
+- Reprise learn path en SVG unique sans icônes ni faux socle bleu : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide.
+- Correction preview learn path : niveau 2 non sélectionné, bonus `1.5x` retiré de la preview, sidebar active avec texte blanc.
+- Nettoyage map/ruban/scroll : formes décoratives retirées, bouton `Suivant` retiré, scroll desktop séparé entre map et quêtes.
 
 ## Reprise
 

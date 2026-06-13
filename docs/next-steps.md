@@ -23,6 +23,14 @@ Dernier feedback applique :
 - Page `Apprendre` plus proche d'un chemin de progression clair, avec moins de texte.
 - Palette passée sur un bleu sobre, sans effets fluo ni dégradés décoratifs.
 - Sidebar desktop fixée à la hauteur écran ; overflow réservé au contenu central.
+- Polish UI : limiter les bordures dures, préférer surfaces + ombres douces, garder les chips de progression propres et la navigation active sur le bleu accent sans glow.
+- Profil bas de sidebar neutre sur `/profile` : pas d'état selected intérieur.
+- Learn path repris après feedback : route courbe et pastilles dans un SVG unique, sans icônes de niveaux ni faux socle bleu.
+- Ne pas remettre les anciennes versions avec route/layout séparés, icônes provisoires ou box-shadow bleu sous les pastilles.
+- Le bonus `1.5x` ne doit pas apparaître dans la preview actuelle ; le réintroduire seulement avec le vrai système de niveaux.
+- Les items selected de sidebar gardent le texte blanc.
+- Ne pas remettre le bouton `Suivant` dans le ruban tant qu'il n'a pas de vraie action.
+- Sur desktop, garder le scroll de la colonne map séparé du scroll des quêtes.
 
 ## Prochaine
 
@@ -48,6 +56,7 @@ Taches prevues :
 - Ajouter le personnage après l'écran prénom, pas avant les langues.
 - Ne pas réintroduire de header avec titre/description de page.
 - Garder `Paramètres`, notifications et thème aux emplacements actuels.
+- Conserver le style actuel du shell : header sans trait inférieur, badges de progression sans contour dur, sidebar expressive avec selected blanc, learn path sobre sans détails pédagogiques prématurés ni bouton décoratif.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 

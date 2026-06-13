@@ -5,8 +5,10 @@ import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
 export interface LevelNodePreview {
 	id: string;
 	label: string;
-	detail: string;
+	x: number;
+	y: number;
 	state: 'ready' | 'next' | 'locked';
+	reward?: string;
 }
 
 export interface DailyQuestPreview {
@@ -48,31 +50,50 @@ export const levelNodes: readonly LevelNodePreview[] = [
 	{
 		id: 'start',
 		label: '1',
-		detail: 'Départ',
+		x: 180,
+		y: 72,
 		state: 'ready'
 	},
 	{
-		id: 'lesson-1',
+		id: 'step-2',
 		label: '2',
-		detail: 'Leçon',
-		state: 'next'
+		x: 238,
+		y: 176,
+		state: 'locked'
 	},
 	{
-		id: 'lesson-2',
+		id: 'step-3',
 		label: '3',
-		detail: 'Verrouillé',
+		x: 180,
+		y: 280,
 		state: 'locked'
 	},
 	{
-		id: 'daily',
+		id: 'step-4',
 		label: '4',
-		detail: 'Bonus',
+		x: 122,
+		y: 384,
 		state: 'locked'
 	},
 	{
-		id: 'checkpoint',
+		id: 'step-5',
 		label: '5',
-		detail: 'Palier',
+		x: 180,
+		y: 488,
+		state: 'locked'
+	},
+	{
+		id: 'step-6',
+		label: '6',
+		x: 238,
+		y: 592,
+		state: 'locked'
+	},
+	{
+		id: 'step-7',
+		label: '7',
+		x: 180,
+		y: 682,
 		state: 'locked'
 	}
 ];
