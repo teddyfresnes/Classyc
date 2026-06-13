@@ -8,40 +8,42 @@
 
 ## Etape actuelle
 
-Etape 0 - Fondations de pilotage.
+Etape 1 - Setup technique et squelette projet.
 
 Statut : terminee.
 
 ## Prochaine
 
-### Etape 1 - Setup technique et squelette projet
+### Etape 2 - UI shell moderne
 
 Statut : prochaine.
 
-Objectif : creer la base technique de l'application sans lancer les grosses fonctionnalites.
+Objectif : enrichir le shell avec une interface plus aboutie, responsive et preparee pour les futurs parcours sans encore implementer l'onboarding complet.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
-- Creer la structure applicative initiale.
-- Mettre en place React + TypeScript + Vite pour `apps/web`.
-- Preparer une structure modulaire : `app`, `components`, `features`, `domain`, `assets`, `styles`.
-- Installer ou configurer les dependances UI essentielles.
-- Ajouter un shell minimal responsive avec theme clair/sombre prepare.
-- Ajouter les scripts de dev/build/lint.
-- Ne pas implementer encore l'onboarding complet.
+- Lire les docs de reprise.
+- Ameliorer le layout desktop/mobile du shell existant.
+- Stabiliser les zones principales : navigation, contenu apprentissage, progression, acces profil/social.
+- Renforcer les tokens visuels clair/sombre.
+- Ajouter des micro-interactions sobres.
+- Preparer les emplacements propres pour onboarding, niveaux, profil, amis et messages.
+- Verifier que le texte ne deborde pas en desktop/mobile.
+- Lancer lint/build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- Le shell affiche une base propre et sobre.
+- Le shell est plus mature et coherent sur mobile/desktop.
+- Le theme clair/sombre reste fonctionnel.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Choix complet de langue.
+- Onboarding complet.
 - Personnage Open Peeps.
 - Index OpenMoji.
 - Exercices.
@@ -49,12 +51,6 @@ Hors scope :
 - XP, streak, social, messagerie et mini-jeux.
 
 ## Ensuite
-
-### Etape 2 - UI shell moderne
-
-Statut : en attente.
-
-Objectif : enrichir le shell avec navigation, responsive reel, themes finalises et micro-interactions de base.
 
 ### Etape 3 - Onboarding initial
 

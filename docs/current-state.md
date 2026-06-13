@@ -4,11 +4,11 @@ Date : 2026-06-13
 
 ## Statut court
 
-Etape courante : Etape 0 - Fondations de pilotage.
+Etape courante : Etape 1 - Setup technique et squelette projet.
 
 Etat : terminee.
 
-Le projet ne contient pas encore d'application web scaffoldée. Il contient surtout les assets Open Peeps et OpenMoji, plus la documentation de pilotage creee pour organiser les prochaines etapes.
+Le projet contient maintenant une workspace npm avec une application web React/Vite dans `apps/web`, un package partage dans `packages/shared`, un emplacement reserve pour le futur serveur dans `apps/api` et la documentation de pilotage.
 
 ## Structure observee
 
@@ -23,8 +23,15 @@ Le projet ne contient pas encore d'application web scaffoldée. Il contient surt
 ├── Openmoji/
 │   ├── icons/
 │   └── openmoji.json
+├── apps/
+│   ├── api/
+│   └── web/
+├── packages/
+│   └── shared/
 ├── AGENTS.md
-└── docs/
+├── docs/
+├── package.json
+└── tsconfig.base.json
 ```
 
 ## Assets confirmes
@@ -43,10 +50,16 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Roadmap progressive.
 - Decisions techniques proposees pour la prochaine etape.
 - Inventaire initial des assets.
+- Workspace npm.
+- Application web React + TypeScript + Vite.
+- Tailwind CSS via plugin Vite.
+- Theme clair/sombre via variables CSS.
+- Navigation shell responsive desktop/mobile.
+- Package partage `@classyc/shared` avec premiers types de domaine.
+- Dossier `apps/api` reserve sans implementation serveur.
 
 ## Ce qui n'existe pas encore
 
-- Application frontend.
 - Serveur/API.
 - Mode invite.
 - Onboarding.
@@ -54,6 +67,16 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Exercices.
 - XP, streak, amis, messagerie ou mini-jeux.
 
+## Verification du 2026-06-13
+
+- `npm install` : OK apres remplacement de `workspace:*` par `file:../../packages/shared`.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK.
+- Serveur local : OK sur `http://127.0.0.1:5173/`.
+- Verification HTTP : OK, status 200.
+- Verification navigateur integre : non disponible dans cette session, aucun navigateur `iab` liste par le plugin Browser.
+
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 1 de [docs/next-steps.md](next-steps.md) : setup technique et squelette projet.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 2 de [docs/next-steps.md](next-steps.md) : UI shell moderne.

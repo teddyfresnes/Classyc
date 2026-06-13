@@ -27,6 +27,8 @@ Livrables :
 
 ### Etape 1 - Setup technique et squelette projet
 
+Statut : terminee.
+
 Objectif : creer une base applicative propre sans implementer tout le produit.
 
 Livrables prevus :
@@ -47,6 +49,8 @@ Hors scope :
 - messagerie
 
 ### Etape 2 - UI shell moderne
+
+Statut : prochaine.
 
 Objectif : poser l'interface principale responsive avec navigation minimale.
 

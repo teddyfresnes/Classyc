@@ -1,0 +1,17 @@
+{
+	"name": "classyc",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"dev": "npm run dev -w @classyc/web",
+		"build": "npm run build -w @classyc/shared && npm run build -w @classyc/web",
+		"lint": "npm run lint -w @classyc/web",
+		"preview": "npm run preview -w @classyc/web",
+		"typecheck": "npm run typecheck --workspaces --if-present"
+	}
+}

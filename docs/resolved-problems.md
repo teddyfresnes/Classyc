@@ -17,3 +17,15 @@ Resolution : ajouter une regle de projet pour les ignorer. Les futurs scripts d'
 Probleme : la lecture console de `Openmoji/openmoji.json` affiche certains emojis avec un rendu degrade, probablement lie a l'encodage de sortie du terminal.
 
 Resolution : ne pas se baser sur l'affichage console des emojis. Utiliser les champs stables comme `hexcode`, `annotation`, `tags`, `group` et les fichiers PNG dans `Openmoji/icons/`.
+
+## 2026-06-13 - `npm install` refuse `workspace:*`
+
+Probleme : la premiere configuration utilisait `@classyc/shared` avec la version `workspace:*`, mais `npm install` a echoue avec `EUNSUPPORTEDPROTOCOL`.
+
+Resolution : remplacer la dependance par `file:../../packages/shared` dans `apps/web/package.json`. L'installation passe et les scripts de workspace restent fonctionnels.
+
+## 2026-06-13 - Audit npm sur Vite/esbuild
+
+Probleme : apres l'installation initiale, `npm audit --omit=dev` signalait deux vulnerabilites hautes via Vite/esbuild et proposait Vite 8.
+
+Resolution : mettre a jour Vite et `@vitejs/plugin-react` vers les versions actuelles. `npm install` indique ensuite `found 0 vulnerabilities`.
