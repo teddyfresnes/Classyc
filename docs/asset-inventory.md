@@ -32,6 +32,24 @@ Regles :
 - Ignorer `__MACOSX`.
 - Ignorer les fichiers commencant par `._`.
 
+Galerie actuelle Etape 4 :
+
+```text
+apps/web/src/assets/open-peeps.ts
+Flat Assets/Flat Assets/Templates/Bust/peep-1.png
+Flat Assets/Flat Assets/Templates/Bust/peep-8.png
+Flat Assets/Flat Assets/Templates/Bust/peep-29.png
+Flat Assets/Flat Assets/Templates/Bust/peep-45.png
+Flat Assets/Flat Assets/Templates/Bust/peep-76.png
+Flat Assets/Flat Assets/Templates/Bust/peep-103.png
+```
+
+Notes :
+
+- Les identifiants sauvegardes dans le profil sont definis dans `packages/shared/src/index.ts`.
+- Les chemins d'images restent centralises dans `apps/web/src/assets/open-peeps.ts`.
+- Le dossier `covid-19` n'est pas utilise pour la galerie de base.
+
 ## OpenMoji
 
 Chemins observes :

@@ -1,4 +1,5 @@
-import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
+import { isOpenPeepCharacterId } from '@classyc/shared';
+import type { GuestProfile, OpenPeepCharacterId, SupportedLanguageCode } from '@classyc/shared';
 
 const storageKey = 'classyc-guest-profile';
 const languageCodes: readonly SupportedLanguageCode[] = ['fr', 'en', 'zh'];
@@ -7,6 +8,7 @@ interface GuestProfileInput {
 	firstName: string;
 	nativeLanguage: SupportedLanguageCode;
 	targetLanguage: SupportedLanguageCode;
+	characterId: OpenPeepCharacterId;
 }
 
 function isSupportedLanguageCode(value: unknown): value is SupportedLanguageCode {
@@ -28,6 +30,7 @@ function isGuestProfile(value: unknown): value is GuestProfile {
 		&& isSupportedLanguageCode(profile.nativeLanguage)
 		&& isSupportedLanguageCode(profile.targetLanguage)
 		&& profile.nativeLanguage !== profile.targetLanguage
+		&& isOpenPeepCharacterId(profile.characterId)
 		&& typeof profile.createdAt === 'string'
 		&& typeof profile.onboardingCompletedAt === 'string'
 	);
@@ -50,6 +53,7 @@ export function createGuestProfile(input: GuestProfileInput): GuestProfile {
 		firstName: input.firstName.trim(),
 		nativeLanguage: input.nativeLanguage,
 		targetLanguage: input.targetLanguage,
+		characterId: input.characterId,
 		progress: {
 			xp: 0,
 			streakDays: 0

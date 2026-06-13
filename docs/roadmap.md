@@ -78,7 +78,7 @@ Livrables prevus :
 
 ### Etape 4 - Integration Open Peeps
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : afficher des personnages Open Peeps dans l'onboarding.
 
@@ -90,6 +90,8 @@ Livrables prevus :
 - fallback si un asset manque
 
 ### Etape 5 - Personnalisation simple du personnage
+
+Statut : prochaine.
 
 Objectif : ajouter quelques options de personnalisation sans systeme trop lourd.
 

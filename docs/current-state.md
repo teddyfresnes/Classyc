@@ -4,11 +4,11 @@ Date : 2026-06-13
 
 ## Statut court
 
-Etape courante : Etape 3 - Onboarding initial.
+Etape courante : Etape 4 - Integration Open Peeps.
 
 Etat : terminee.
 
-Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne et un onboarding initial avec profil invité local.
+Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et une première galerie Open Peeps.
 
 ## Structure observee
 
@@ -90,7 +90,11 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les actions du setup restent uniformes entre les étapes : boutons en bas de carte, même style primaire/secondaire.
 - Les cartes de langue du setup affichent uniquement le drapeau, le nom et l'état visuel ; pas de seconde ligne explicative.
 - Profil invité local sauvegardé dans `localStorage` avec XP et série initiaux.
+- Profil invité enrichi avec `characterId` pour mémoriser le personnage Open Peeps choisi.
 - Shell branché sur le profil invité après completion de l'onboarding.
+- Index statique Open Peeps centralisé dans `apps/web/src/assets/open-peeps.ts`.
+- L'onboarding contient une étape personnage après le prénom, avec six templates `Bust` Open Peeps.
+- Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
@@ -99,7 +103,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Systeme de niveaux.
 - Exercices.
 - XP, streak, amis, messagerie ou mini-jeux.
-- Personnage Open Peeps dans l'onboarding.
+- Personnalisation avancée du personnage Open Peeps.
 - Diagnostic complet.
 
 ## Verification du 2026-06-13
@@ -136,7 +140,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Uniformisation setup : les boutons de la première étape sont alignés et stylés comme ceux de l'étape prénom.
 - Simplification setup : retrait des textes secondaires sous les langues ; le drapeau et le cadenas suffisent.
 - Ajustement shell : scrollbar de `Apprendre` éloignée du contenu, icône `Stats` remplacée par une icône analytique, entrée `Classement` ajoutée avec trophée.
+- Integration Open Peeps : `npm run lint`, `npm run typecheck`, `npm run build` OK.
+- Build Vite : OK, les six PNG Open Peeps sont inclus dans `dist/assets`.
+- Serveur local existant : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Verification HTTP du module `apps/web/src/assets/open-peeps.ts` : OK, status HTTP 200.
+- Verification HTTP d'un asset Open Peeps via Vite dev : OK, `peep-8.png` servi en `image/png`.
+- Navigateur intégré : indisponible dans cette session, `agent.browsers.list()` retourne `[]`.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 4 de [docs/next-steps.md](next-steps.md) : integration Open Peeps.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 5 de [docs/next-steps.md](next-steps.md) : personnalisation simple du personnage.

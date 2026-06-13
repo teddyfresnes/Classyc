@@ -4,6 +4,29 @@ export type ThemePreference = 'light' | 'dark';
 
 export type LearningMode = 'campaign' | 'daily' | 'diagnostic';
 
+export type OpenPeepCharacterId =
+	| 'open-peep-bust-1'
+	| 'open-peep-bust-8'
+	| 'open-peep-bust-29'
+	| 'open-peep-bust-45'
+	| 'open-peep-bust-76'
+	| 'open-peep-bust-103';
+
+export const openPeepCharacterIds: readonly OpenPeepCharacterId[] = [
+	'open-peep-bust-1',
+	'open-peep-bust-8',
+	'open-peep-bust-29',
+	'open-peep-bust-45',
+	'open-peep-bust-76',
+	'open-peep-bust-103'
+] as const;
+
+export const defaultOpenPeepCharacterId: OpenPeepCharacterId = 'open-peep-bust-8';
+
+export function isOpenPeepCharacterId(value: unknown): value is OpenPeepCharacterId {
+	return typeof value === 'string' && openPeepCharacterIds.includes(value as OpenPeepCharacterId);
+}
+
 export interface SupportedLanguage {
 	code: SupportedLanguageCode;
 	label: string;
@@ -47,6 +70,7 @@ export interface GuestProfile {
 	firstName: string;
 	nativeLanguage: SupportedLanguageCode;
 	targetLanguage: SupportedLanguageCode;
+	characterId: OpenPeepCharacterId;
 	progress: PreviewProgress;
 	createdAt: string;
 	onboardingCompletedAt: string;

@@ -12,6 +12,8 @@ interface UiCopy {
 	accountUnavailable: string;
 	alreadyAccount: string;
 	back: string;
+	characterIntroTitle: string;
+	characterOption: string;
 	continue: string;
 	firstName: string;
 	guestMode: string;
@@ -51,6 +53,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: 'Connexion bientôt disponible.',
 		alreadyAccount: 'Déjà un compte',
 		back: 'Retour',
+		characterIntroTitle: 'Choisis ton personnage',
+		characterOption: 'Personnage',
 		continue: 'Continuer',
 		firstName: 'Prénom',
 		guestMode: 'Invité',
@@ -128,6 +132,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: 'Sign in is coming soon.',
 		alreadyAccount: 'Already have an account',
 		back: 'Back',
+		characterIntroTitle: 'Pick your character',
+		characterOption: 'Character',
 		continue: 'Continue',
 		firstName: 'First name',
 		guestMode: 'Guest',
@@ -205,6 +211,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: '登录功能即将推出。',
 		alreadyAccount: '已有账号',
 		back: '返回',
+		characterIntroTitle: '选择你的角色',
+		characterOption: '角色',
 		continue: '继续',
 		firstName: '名字',
 		guestMode: '访客',

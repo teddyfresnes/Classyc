@@ -112,11 +112,19 @@ La resolution d'image doit pointer vers `Openmoji/icons/{hexcode}.png`.
 
 ## D008 - Open Peeps
 
-Statut : a implementer aux Etapes 4 et 5.
+Statut : implementee en base pour l'Etape 4, a etendre a l'Etape 5.
 
 Utiliser les templates Open Peeps existants pour une premiere selection de personnage. Les atomes de personnalisation peuvent etre ajoutes apres la galerie de base.
 
 Ne pas importer les dossiers `__MACOSX`.
+
+Implementation actuelle :
+
+- identifiants de personnages dans `packages/shared/src/index.ts`
+- galerie de base dans `apps/web/src/assets/open-peeps.ts`
+- six templates `Bust` utilises depuis `Flat Assets/Flat Assets/Templates/Bust/`
+- selection sauvegardee dans le profil invite via `characterId`
+- rappel du personnage dans la zone profil de la sidebar desktop
 
 ## D009 - Serveur
 
@@ -170,6 +178,7 @@ Le profil invite est defini dans `packages/shared/src/index.ts` avec :
 - prenom
 - langue utilisateur
 - langue a apprendre
+- personnage Open Peeps choisi
 - XP/niveau/serie initiaux
 - dates de creation et de completion onboarding
 
@@ -212,17 +221,18 @@ La progression utile est déplacée dans la sidebar avec XP et série. La page `
 
 `Stats` doit rester orienté erreurs, historique et analyse de progression ; son icône doit donc rester analytique plutôt que trophée.
 
-## D018 - Setup en deux temps
+## D018 - Setup en trois temps
 
-Statut : retenue après feedback utilisateur sur l'Étape 3.
+Statut : retenue après feedback utilisateur sur l'Étape 3 et implementee a l'Etape 4.
 
 Le setup doit rester très ergonomique :
 
 - écran 1 : langue parlée puis langue à apprendre
 - bouton `Continuer`
 - écran 2 : prénom
+- écran 3 : personnage Open Peeps
 - retour arrière possible
-- la personnalisation du personnage sera ajoutée ensuite comme troisième temps
+- la personnalisation avancee du personnage sera ajoutée ensuite sans alourdir l'entree
 
 Raison : le prénom ne doit pas apparaître avant que l'utilisateur ait compris le choix principal de langue.
 

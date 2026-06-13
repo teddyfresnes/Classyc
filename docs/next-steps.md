@@ -8,11 +8,22 @@
 
 ## Etape actuelle
 
-Etape 3 - Onboarding initial.
+Etape 4 - Integration Open Peeps.
 
 Statut : terminee.
 
-Dernier feedback applique :
+Derniere etape appliquee :
+
+- Galerie Open Peeps ajoutée après l'écran prénom, sans personnalisation avancée.
+- Six templates `Bust` sont référencés depuis `apps/web/src/assets/open-peeps.ts`.
+- Le profil invité sauvegarde maintenant `characterId`.
+- Le personnage choisi est affiché discrètement dans la zone profil de la sidebar desktop.
+- Les imports d'assets restent centralisés et ignorent `__MACOSX`, `._*` et le dossier `covid-19`.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent.
+- Serveur local vérifié sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Navigateur intégré indisponible dans cette session (`agent.browsers.list()` retourne `[]`).
+
+Garde-fous UX conserves :
 
 - Interface principale moins chargée : suppression du titre/description de page dans le header.
 - `Paramètres` est une entrée de navigation sous `Messages`.
@@ -41,32 +52,28 @@ Dernier feedback applique :
 
 ## Prochaine
 
-### Etape 4 - Integration Open Peeps
+### Etape 5 - Personnalisation simple du personnage
 
 Statut : prochaine.
 
-Objectif : afficher des personnages Open Peeps dans l'onboarding sans encore faire de personnalisation avancee.
+Objectif : ajouter quelques options simples autour du personnage choisi sans creer un systeme de personnalisation lourd.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Inspecter les assets Open Peeps utiles dans `Flat Assets/Flat Assets/Templates/`.
+- Inspecter les assets Open Peeps utiles dans `Flat Assets/Flat Assets/Separate Atoms/` et les templates deja indexes.
 - Ignorer `__MACOSX` et les fichiers `._*`.
-- Creer un petit index statique ou helper d'assets pour une premiere galerie.
-- Ajouter une etape personnage dans l'onboarding existant.
-- Sauvegarder le choix de personnage dans le profil invite.
-- Afficher un rappel du personnage choisi dans le shell si pertinent.
-- Garder la galerie simple, responsive et sans personnalisation avancee.
+- Choisir une personnalisation minimale et stable selon les assets vraiment disponibles.
+- Reutiliser `apps/web/src/assets/open-peeps.ts` ou l'etendre sans disperser les chemins d'assets.
+- Ajouter les champs necessaires au profil invite seulement si l'option est reellement sauvegardee.
+- Garder l'etape personnage simple, responsive et coherente avec le setup actuel.
+- Ne pas transformer l'etape en editeur avance.
 - Conserver la langue d'interface choisie dans le setup.
 - Garder les textes courts et utiles.
-- Ajouter le personnage après l'écran prénom, pas avant les langues.
 - Ne pas réintroduire de header avec titre/description de page.
 - Garder `Paramètres`, notifications et thème aux emplacements actuels.
-- Conserver le style actuel du shell : header sans trait inférieur, badges de progression sans contour dur, sidebar expressive avec selected blanc, learn path sobre sans détails pédagogiques prématurés ni bouton décoratif.
 - Conserver les animations actuelles sobres via Framer Motion et respecter `MotionConfig reducedMotion="user"`.
-- Ajouter l'étape personnage après l'écran prénom en gardant la même taille de setup et une transition cohérente.
-- Pour l'étape personnage, suivre le style setup actuel : peu de texte, actions secondaires discrètes, cartes propres et états selected/disabled évidents.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
@@ -74,14 +81,14 @@ Critere d'acceptation :
 
 - L'application demarre localement.
 - Le build passe.
-- L'onboarding propose quelques personnages Open Peeps.
-- Le choix du personnage est sauvegarde localement.
-- Les chemins d'assets sont centralises.
+- L'utilisateur peut choisir au moins une option simple de personnage.
+- Le choix reste sauvegarde localement si l'option modifie le profil.
+- Les chemins d'assets restent centralises.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Personnalisation avancee du personnage.
+- Editeur avance du personnage.
 - Index OpenMoji.
 - Exercices.
 - Diagnostic complet.
@@ -90,8 +97,8 @@ Hors scope :
 
 ## Ensuite
 
-### Etape 5 - Personnalisation simple du personnage
+### Etape 6 - Integration OpenMoji et recherche d'icones
 
 Statut : en attente.
 
-Objectif : ajouter quelques options simples autour du personnage choisi.
+Objectif : rendre les icones OpenMoji facilement retrouvables par le code et l'IA.

@@ -13,6 +13,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import type { GuestProfile } from '@classyc/shared';
+import { getOpenPeepCharacter } from '@/assets/open-peeps';
 import type { ShellRouteId } from '@/domain/navigation';
 import { navigationItems } from '@/domain/navigation';
 import { BrandLogo } from '@/components/ui/brand-logo';
@@ -124,6 +125,8 @@ function PageTransition({ children }: { children: ReactNode }) {
 }
 
 function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
+	const character = getOpenPeepCharacter(profile.characterId);
+
 	return (
 		<aside className="desktop-sidebar">
 			<div className="mb-7 px-2">
@@ -149,8 +152,8 @@ function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>;
 			<div className="sidebar-footer">
 				<div className="sidebar-profile-card">
 					<NavLink className="profile-link" to="/profile">
-						<div className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--surface-3)] text-[var(--accent-strong)]">
-							<UserRound aria-hidden="true" size={19} strokeWidth={2.35} />
+						<div className="sidebar-character-avatar">
+							<img alt="" src={character.src} />
 						</div>
 						<div className="min-w-0">
 							<p className="truncate text-sm font-black">{profile.firstName}</p>
