@@ -213,8 +213,8 @@ button {
 		padding: 0.75rem 1rem;
 		color: #ffffff;
 		font-size: 0.95rem;
-		font-weight: 900;
-		box-shadow: 0 10px 22px rgba(37, 99, 235, 0.18);
+		font-weight: 800;
+		box-shadow: 0 6px 0 color-mix(in srgb, var(--accent-strong) 78%, #000000), 0 10px 18px rgba(37, 99, 235, 0.14);
 	}
 
 	.primary-action:hover {
@@ -234,18 +234,19 @@ button {
 		align-items: center;
 		justify-content: center;
 		gap: 0.55rem;
-		border: 1px solid var(--border-soft);
+		border: 0;
 		border-radius: 8px;
-		background: var(--surface-2);
+		background: var(--surface-3);
 		padding: 0.75rem 1rem;
 		color: var(--text-primary);
 		font-size: 0.95rem;
-		font-weight: 900;
+		font-weight: 800;
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 58%, transparent);
 	}
 
 	.secondary-action:hover {
 		transform: translateY(-1px);
-		background: var(--surface-3);
+		background: color-mix(in srgb, var(--surface-3) 78%, var(--accent-soft));
 	}
 
 	.icon-action {
@@ -385,48 +386,77 @@ button {
 
 	.onboarding-card {
 		display: grid;
-		width: min(100%, 44rem);
-		min-height: min(39rem, calc(100vh - 7rem));
-		border: 1px solid var(--border-soft);
+		width: min(100%, 41rem);
+		min-height: min(35.5rem, calc(100vh - 7rem));
+		border: 0;
 		border-radius: 8px;
-		background: color-mix(in srgb, var(--surface-2) 96%, transparent);
+		background: var(--surface-2);
 		padding: clamp(1rem, 0.75rem + 1.4vw, 1.75rem);
-		box-shadow: var(--shadow-soft);
+		box-shadow: var(--shadow-soft), inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 54%, transparent);
 	}
 
 	.onboarding-step {
+		height: 100%;
 		display: flex;
 		min-height: 0;
 		flex-direction: column;
 		gap: 1.25rem;
 	}
 
+	.onboarding-step--languages,
 	.onboarding-step--name {
 		justify-content: space-between;
+	}
+
+	.onboarding-step-body {
+		display: flex;
+		min-height: 0;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.onboarding-title {
+		color: var(--text-primary);
+		font-family: "Fredoka Classyc", Inter, sans-serif;
+		font-size: clamp(1.65rem, 1.2rem + 1.6vw, 2.25rem);
+		font-weight: 650;
+		letter-spacing: 0;
+		line-height: 1.04;
+	}
+
+	.onboarding-section-label {
+		color: var(--text-muted);
+		font-size: 0.82rem;
+		font-weight: 750;
+		letter-spacing: 0;
 	}
 
 	.onboarding-name-intro {
 		display: flex;
 		min-height: 8rem;
-		align-items: center;
-		gap: 0.85rem;
-		border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 72%, transparent);
-		padding: 0.25rem 0 1rem;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.25rem 0 0.75rem;
 	}
 
-	.onboarding-name-badge {
-		display: grid;
-		width: 2.65rem;
-		height: 2.65rem;
+	.onboarding-language-pair {
+		display: inline-flex;
+		min-height: 2.45rem;
+		align-items: center;
+		gap: 0.45rem;
 		flex-shrink: 0;
-		place-items: center;
 		border-radius: 8px;
-		background: var(--nav-active);
-		color: var(--nav-active-contrast);
-		font-family: "Fredoka Classyc", Inter, sans-serif;
-		font-size: 1.25rem;
-		font-weight: 750;
+		background: var(--surface-1);
+		padding: 0.42rem 0.55rem;
+		color: var(--text-muted);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 58%, transparent);
 		user-select: none;
+	}
+
+	.onboarding-language-pair span {
+		font-size: 1.15rem;
+		line-height: 1;
 	}
 
 	.onboarding-actions {
@@ -438,50 +468,89 @@ button {
 	}
 
 	.choice-card {
+		position: relative;
 		display: flex;
-		min-height: 5.75rem;
+		min-height: 5rem;
 		flex-direction: column;
 		align-items: flex-start;
 		justify-content: center;
-		border: 1px solid var(--border-soft);
+		border: 0;
 		border-radius: 8px;
 		background: var(--surface-1);
-		padding: 1rem;
+		padding: 0.9rem 0.95rem;
 		text-align: left;
 		color: var(--text-primary);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 72%, transparent);
 	}
 
 	.choice-card:hover,
 	.choice-card[data-selected="true"] {
-		transform: translateY(-1px);
-		border-color: var(--accent);
 		background: var(--accent-soft);
 	}
 
 	.choice-card:disabled {
 		cursor: not-allowed;
-		opacity: 0.45;
+		background: color-mix(in srgb, var(--surface-3) 84%, var(--surface-2));
+		color: var(--text-muted);
+		filter: saturate(0.65);
+		opacity: 1;
 		transform: none;
 	}
 
 	.choice-card:disabled:hover {
-		border-color: var(--border-soft);
-		background: var(--surface-1);
+		background: color-mix(in srgb, var(--surface-3) 84%, var(--surface-2));
 	}
 
 	.choice-card[data-selected="true"] {
-		box-shadow: inset 0 0 0 1px var(--accent);
+		box-shadow: inset 0 0 0 2px var(--accent), 0 10px 18px rgba(37, 99, 235, 0.08);
+	}
+
+	.choice-card__top {
+		display: flex;
+		width: 100%;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 0.75rem;
+	}
+
+	.choice-card__flag {
+		font-size: 1.65rem;
+		line-height: 1;
+	}
+
+	.choice-card__lock {
+		display: grid;
+		width: 1.55rem;
+		height: 1.55rem;
+		place-items: center;
+		border-radius: 999px;
+		background: var(--surface-2);
+		color: var(--text-muted);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 58%, transparent);
+	}
+
+	.choice-card__label {
+		margin-top: 0.65rem;
+		font-size: 1rem;
+		font-weight: 750;
+		line-height: 1.15;
+	}
+
+	.choice-card:disabled .choice-card__flag,
+	.choice-card:disabled .choice-card__label {
+		opacity: 0.62;
 	}
 
 	.text-input {
 		width: 100%;
-		border: 1px solid var(--border-soft);
+		border: 0;
 		border-radius: 8px;
 		background: var(--surface-1);
-		padding: 0.85rem 0.95rem;
+		padding: 0.95rem 1rem;
 		color: var(--text-primary);
 		font-size: 1rem;
-		font-weight: 800;
+		font-weight: 700;
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 72%, transparent);
 	}
 
 	.text-input::placeholder {
@@ -489,10 +558,10 @@ button {
 	}
 
 	.account-note {
-		border: 1px solid var(--border-soft);
+		border: 0;
 		border-radius: 8px;
-		background: var(--surface-1);
-		padding: 0.9rem 1rem;
+		background: var(--surface-3);
+		padding: 0.75rem 0.85rem;
 	}
 
 	.map-node,
@@ -840,6 +909,13 @@ button {
 		width: 100%;
 	}
 
+	.onboarding-name-intro {
+		min-height: 6.75rem;
+		align-items: flex-start;
+		flex-direction: column;
+		justify-content: flex-end;
+	}
+
 	.level-map {
 		padding: 1rem;
 	}
@@ -904,11 +980,11 @@ button {
 	}
 
 	.learn-path {
-		padding-right: 0.35rem;
+		padding-right: 0.9rem;
 	}
 
 	.learn-side {
-		padding: 0.2rem 0.35rem 0.2rem 0;
+		padding: 0.2rem 0.6rem 0.2rem 0;
 	}
 }
 

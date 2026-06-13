@@ -57,9 +57,10 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Navigation shell responsive desktop/mobile.
 - Page principale `Apprendre` avec map de progression et quêtes journalières.
 - Page `Stats` prévue pour erreurs récentes, historique et progression.
+- Page `Classement` ajoutée comme placeholder de future leaderboard/ligues.
 - Header principal réduit : plus de titre/breadcrumb de page ni description décorative.
 - En haut à droite : drapeau de la langue apprise + XP, puis flamme custom orange à deux tons pour la série.
-- Sidebar desktop : logo Classyc, navigation principale, entrée `Paramètres` sous `Messages`, profil en bas.
+- Sidebar desktop : logo Classyc, navigation principale (`Apprendre`, `Stats`, `Classement`, `Amis`, `Messages`, `Paramètres`), profil en bas.
 - Cloche de notifications intégrée dans la zone profil en bas de sidebar.
 - Le mode clair/sombre est déplacé dans la page `Paramètres`.
 - Page `Apprendre` allégée avec ruban de section, learn path sobre et quêtes journalières à droite.
@@ -84,7 +85,10 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Le bouton thème n'apparaît plus dans le header ni dans l'onboarding.
 - Animations sobres via Framer Motion : transition de page, apparition progressive des cartes/niveaux/quêtes, micro-interactions sur les actions.
 - Le setup garde une carte de taille stable entre le choix des langues et le prénom.
-- L'étape prénom contient une zone haute dédiée `Dites-nous en plus sur vous` pour éviter une popup vide ou déséquilibrée.
+- L'étape prénom contient une zone haute dédiée `Comment tu t'appelles ?` avec un rappel minimal des langues par drapeaux.
+- Polish setup après feedback : moins de texte répété sur les cartes de langue, typographie moins lourde, état disabled plus visible pour la langue déjà choisie, bouton compte transformé en action discrète, badge d'étape retiré de l'écran prénom.
+- Les actions du setup restent uniformes entre les étapes : boutons en bas de carte, même style primaire/secondaire.
+- Les cartes de langue du setup affichent uniquement le drapeau, le nom et l'état visuel ; pas de seconde ligne explicative.
 - Profil invité local sauvegardé dans `localStorage` avec XP et série initiaux.
 - Shell branché sur le profil invité après completion de l'onboarding.
 - Dossier `apps/api` réservé sans implémentation serveur.
@@ -128,6 +132,10 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Correction preview learn path : niveau 2 non sélectionné, bonus `1.5x` retiré de la preview, sidebar active avec texte blanc.
 - Nettoyage map/ruban/scroll : formes décoratives retirées, bouton `Suivant` retiré, scroll desktop séparé entre map et quêtes.
 - Animations shell/setup : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide ; navigateur intégré indisponible (`agent.browsers.list()` retourne `[]`) ; Playwright non installé localement.
+- Polish setup langue/prénom : correction des répétitions de libellés, boutons et disabled state revus ; vérification à relancer après toute retouche visuelle.
+- Uniformisation setup : les boutons de la première étape sont alignés et stylés comme ceux de l'étape prénom.
+- Simplification setup : retrait des textes secondaires sous les langues ; le drapeau et le cadenas suffisent.
+- Ajustement shell : scrollbar de `Apprendre` éloignée du contenu, icône `Stats` remplacée par une icône analytique, entrée `Classement` ajoutée avec trophée.
 
 ## Reprise
 

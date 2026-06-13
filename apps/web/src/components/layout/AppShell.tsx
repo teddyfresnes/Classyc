@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
 	Bell,
 	BookOpenCheck,
+	ChartNoAxesCombined,
 	MessageCircle,
 	Settings,
 	Trophy,
@@ -27,7 +28,8 @@ import type { DailyQuestPreview, LevelNodePreview, ShellSectionPreview } from '@
 
 const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	learn: BookOpenCheck,
-	stats: Trophy,
+	stats: ChartNoAxesCombined,
+	leaderboard: Trophy,
 	friends: UsersRound,
 	messages: MessageCircle,
 	settings: Settings,
@@ -71,6 +73,10 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 								<Route
 									element={<PageTransition><ShellSection section={shellSections.stats} /></PageTransition>}
 									path="/stats"
+								/>
+								<Route
+									element={<PageTransition><ShellSection section={shellSections.leaderboard} /></PageTransition>}
+									path="/leaderboard"
 								/>
 								<Route
 									element={<PageTransition><ShellSection section={shellSections.friends} /></PageTransition>}
@@ -356,7 +362,7 @@ function SettingsPage({ copy }: { copy: ReturnType<typeof getUiCopy> }) {
 function MobileNavigation({ copy }: { copy: ReturnType<typeof getUiCopy> }) {
 	return (
 		<nav aria-label="Navigation mobile" className="fixed inset-x-0 bottom-0 z-20 border-t border-[var(--border-soft)] bg-[var(--surface-2)] px-2 py-2 shadow-[0_-10px_28px_rgba(15,23,42,0.08)] lg:hidden">
-			<div className="mx-auto grid max-w-lg grid-cols-5 gap-1">
+			<div className="mx-auto grid max-w-xl grid-cols-6 gap-1">
 				{navigationItems.map((item) => {
 					const Icon = routeIcons[item.id];
 					const itemCopy = copy.navigation[item.id];

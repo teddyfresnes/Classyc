@@ -1,4 +1,4 @@
-export type NavigationItemId = 'learn' | 'stats' | 'friends' | 'messages' | 'settings';
+export type NavigationItemId = 'learn' | 'stats' | 'leaderboard' | 'friends' | 'messages' | 'settings';
 
 export type ShellRouteId = NavigationItemId | 'profile';
 
@@ -15,6 +15,10 @@ export const navigationItems: readonly NavigationItem[] = [
 	{
 		id: 'stats',
 		to: '/stats'
+	},
+	{
+		id: 'leaderboard',
+		to: '/leaderboard'
 	},
 	{
 		id: 'friends',

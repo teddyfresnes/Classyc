@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { ArrowLeft, ArrowRight, CheckCircle2, LogIn } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle2, Lock, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supportedLanguages } from '@classyc/shared';
 import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
@@ -19,12 +19,19 @@ const choiceCardVariants: Variants = {
 		opacity: 1,
 		y: 0,
 		transition: {
-			delay: index * 0.035,
-			duration: 0.18,
+			delay: index * 0.03,
+			duration: 0.2,
 			ease: 'easeOut'
 		}
 	})
 };
+
+const stepTransition = {
+	type: 'spring',
+	stiffness: 360,
+	damping: 32,
+	mass: 0.8
+} as const;
 
 interface OnboardingFlowProps {
 	onComplete: (profile: GuestProfile) => void;
@@ -40,6 +47,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 	const trimmedName = firstName.trim();
 	const canContinueToName = Boolean(nativeLanguage && targetLanguage);
 	const canStart = Boolean(nativeLanguage && targetLanguage && trimmedName.length >= 2);
+	const nativeOption = nativeLanguage ? getLanguageOption(nativeLanguage, nativeLanguage) : null;
+	const targetOption = targetLanguage ? getLanguageOption(targetLanguage, nativeLanguage) : null;
 
 	useEffect(() => {
 		document.documentElement.lang = nativeLanguage ?? 'fr';
@@ -97,39 +106,49 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 					<AnimatePresence mode="wait">
 						{step === 'languages' && (
 							<motion.div
-								animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
-								className="onboarding-step"
-								exit={{ opacity: 0, x: -16, filter: 'blur(2px)' }}
-								initial={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
+								animate={{ opacity: 1, y: 0 }}
+								className="onboarding-step onboarding-step--languages"
+								exit={{ opacity: 0, y: -8 }}
+								initial={{ opacity: 0, y: 10 }}
 								key="languages"
-								transition={{ duration: 0.22, ease: 'easeOut' }}
+								transition={stepTransition}
 							>
-								<section className="space-y-3">
-									<h1 className="text-2xl font-black leading-tight sm:text-3xl">{copy.onboardingTitle}</h1>
+								<div className="onboarding-step-body">
+									<section className="space-y-3">
+										<h1 className="onboarding-title">{copy.onboardingTitle}</h1>
+										<LanguageChoiceGrid
+											copyLanguage={nativeLanguage}
+											disabledLanguage={null}
+											label={copy.yourLanguage}
+											onSelect={selectNativeLanguage}
+											selectedLanguage={nativeLanguage}
+										/>
+									</section>
+
 									<LanguageChoiceGrid
 										copyLanguage={nativeLanguage}
-										disabledLanguage={null}
-										label={copy.yourLanguage}
-										onSelect={selectNativeLanguage}
-										selectedLanguage={nativeLanguage}
+										disabledLanguage={nativeLanguage}
+										label={copy.learnLanguage}
+										onSelect={setTargetLanguage}
+										selectedLanguage={targetLanguage}
 									/>
-								</section>
 
-								<LanguageChoiceGrid
-									copyLanguage={nativeLanguage}
-									disabledLanguage={nativeLanguage}
-									disabledText={copy.targetDisabled}
-									label={copy.learnLanguage}
-									onSelect={setTargetLanguage}
-									selectedLanguage={targetLanguage}
-								/>
-
-								{showAccountNote && (
-									<div className="account-note" role="status">
-										<p className="text-sm font-black">{copy.accountUnavailable}</p>
-										<p className="mt-1 text-sm font-semibold text-[var(--text-muted)]">{copy.loginLater}</p>
-									</div>
-								)}
+									<AnimatePresence>
+										{showAccountNote && (
+											<motion.div
+												animate={{ opacity: 1, y: 0 }}
+												className="account-note"
+												exit={{ opacity: 0, y: -4 }}
+												initial={{ opacity: 0, y: 6 }}
+												role="status"
+												transition={{ duration: 0.16, ease: 'easeOut' }}
+											>
+												<p className="text-sm font-bold">{copy.accountUnavailable}</p>
+												<p className="mt-1 text-sm font-medium text-[var(--text-muted)]">{copy.loginLater}</p>
+											</motion.div>
+										)}
+									</AnimatePresence>
+								</div>
 
 								<div className="onboarding-actions">
 									<motion.button className="secondary-action" onClick={() => setShowAccountNote(true)} type="button" whileTap={{ scale: 0.98 }}>
@@ -146,12 +165,12 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
 						{step === 'name' && (
 							<motion.div
-								animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+								animate={{ opacity: 1, y: 0 }}
 								className="onboarding-step onboarding-step--name"
-								exit={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
-								initial={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
+								exit={{ opacity: 0, y: 8 }}
+								initial={{ opacity: 0, y: 10 }}
 								key="name"
-								transition={{ duration: 0.22, ease: 'easeOut' }}
+								transition={stepTransition}
 							>
 								<div className="space-y-5">
 									<motion.div
@@ -160,18 +179,18 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 										initial={{ opacity: 0, y: 10 }}
 										transition={{ delay: 0.08, duration: 0.22, ease: 'easeOut' }}
 									>
-										<motion.span
-											animate={{ scale: [1, 1.06, 1] }}
-											className="onboarding-name-badge"
-											transition={{ delay: 0.18, duration: 0.5, ease: 'easeOut' }}
-										>
-											2
-										</motion.span>
-										<p className="text-xl font-black leading-tight sm:text-2xl">{copy.nameIntroTitle}</p>
+										<p className="onboarding-title">{copy.nameIntroTitle}</p>
+										{nativeOption && targetOption ? (
+											<div className="onboarding-language-pair" title={`${nativeOption.label} -> ${targetOption.label}`}>
+												<span aria-hidden="true">{nativeOption.flag}</span>
+												<ArrowRight aria-hidden="true" size={16} strokeWidth={2.35} />
+												<span aria-hidden="true">{targetOption.flag}</span>
+											</div>
+										) : null}
 									</motion.div>
 
 									<label className="block">
-										<span className="mb-2 block text-sm font-black">{copy.firstName}</span>
+										<span className="sr-only">{copy.firstName}</span>
 										<input
 											autoComplete="given-name"
 											autoFocus
@@ -207,21 +226,19 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 function LanguageChoiceGrid({
 	copyLanguage,
 	disabledLanguage,
-	disabledText,
 	label,
 	onSelect,
 	selectedLanguage
 }: {
 	copyLanguage: SupportedLanguageCode | null;
 	disabledLanguage: SupportedLanguageCode | null;
-	disabledText?: string;
 	label: string;
 	onSelect: (language: SupportedLanguageCode) => void;
 	selectedLanguage: SupportedLanguageCode | null;
 }) {
 	return (
 		<section className="space-y-2">
-			<h2 className="text-sm font-black">{label}</h2>
+			<h2 className="onboarding-section-label">{label}</h2>
 			<div className="grid gap-3 sm:grid-cols-3">
 				{supportedLanguages.map((language, index) => {
 					const option = getLanguageOption(language.code, copyLanguage);
@@ -240,13 +257,18 @@ function LanguageChoiceGrid({
 							onClick={() => onSelect(language.code)}
 							type="button"
 							variants={choiceCardVariants}
+							whileHover={isDisabled ? undefined : { y: -2 }}
 							whileTap={{ scale: 0.98 }}
 						>
-							<span className="text-2xl" aria-hidden="true">{option.flag}</span>
-							<span className="mt-2 text-base font-black">{option.label}</span>
-							<span className="mt-1 text-sm font-bold text-[var(--text-muted)]">
-								{isDisabled && disabledText ? disabledText : option.nativeLabel}
+							<span className="choice-card__top">
+								<span className="choice-card__flag" aria-hidden="true">{option.flag}</span>
+								{isDisabled ? (
+									<span className="choice-card__lock" aria-hidden="true">
+										<Lock size={14} strokeWidth={2.45} />
+									</span>
+								) : null}
 							</span>
+							<span className="choice-card__label">{option.label}</span>
 						</motion.button>
 					);
 				})}

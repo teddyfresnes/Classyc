@@ -198,7 +198,7 @@ Règles retenues :
 - afficher les langues avec un drapeau
 - désactiver la langue cible identique à la langue utilisateur
 
-## D017 - Navigation Apprendre / Stats
+## D017 - Navigation Apprendre / Stats / Classement
 
 Statut : retenue après feedback utilisateur sur l'Étape 3.
 
@@ -206,8 +206,11 @@ La navigation principale utilise désormais :
 
 - `Apprendre` pour la page principale
 - `Stats` pour l'ancien espace `Parcours`
+- `Classement` pour le futur leaderboard/ligues avec icône trophée dédiée
 
 La progression utile est déplacée dans la sidebar avec XP et série. La page `Apprendre` prépare une map de niveaux et un panneau de quêtes journalières.
+
+`Stats` doit rester orienté erreurs, historique et analyse de progression ; son icône doit donc rester analytique plutôt que trophée.
 
 ## D018 - Setup en deux temps
 
@@ -348,3 +351,20 @@ Règles :
 - ne pas casser le scroll séparé de `Apprendre`.
 - garder la carte de setup stable entre les étapes pour éviter un effet de popup qui change brutalement de taille.
 - ne pas ajouter une nouvelle bibliothèque d'animation tant que Framer Motion couvre le besoin.
+
+## D030 - Setup minimal et lisible
+
+Statut : retenue après feedback utilisateur sur l'Étape 3.
+
+Le setup est la porte d'entrée principale, donc il doit être plus éditorial et moins formulaire administratif.
+
+Règles :
+
+- ne pas répéter deux fois le même nom de langue dans une carte (`Français / Français` est à éviter).
+- ne pas afficher de seconde ligne sous les langues dans le setup : le drapeau, le label et l'état visuel suffisent.
+- rendre la langue cible déjà choisie visuellement disabled avec un état clair, pas seulement une faible opacité.
+- éviter les badges d'étape isolés si toutes les étapes ne sont pas numérotées de façon cohérente.
+- garder les textes courts et les graisses typographiques plus modérées que le reste du shell.
+- le bouton compte doit rester une action secondaire discrète, pas un bouton bordé dominant.
+- placer les actions de chaque étape en bas de la carte avec le même couple bouton secondaire / bouton primaire.
+- pour les prochaines implémentations, supprimer toute micro-copie qui ne change pas la décision utilisateur ; préférer un état visuel clair à une phrase explicative.

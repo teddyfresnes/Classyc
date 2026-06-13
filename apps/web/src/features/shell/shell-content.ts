@@ -147,6 +147,20 @@ export function createShellSections(language: SupportedLanguageCode): Record<Exc
 				}
 			]
 		},
+		leaderboard: {
+			id: 'leaderboard',
+			title: copy.navigation.leaderboard.label,
+			kicker: copy.navigation.leaderboard.label,
+			summary: copy.navigation.leaderboard.description,
+			panels: [
+				{
+					id: 'league',
+					title: copy.navigation.leaderboard.label,
+					detail: copy.stats.soon,
+					meta: '0'
+				}
+			]
+		},
 		friends: {
 			id: 'friends',
 			title: copy.navigation.friends.label,
