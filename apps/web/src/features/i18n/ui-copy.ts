@@ -17,6 +17,7 @@ interface UiCopy {
 	guestMode: string;
 	learnLanguage: string;
 	loginLater: string;
+	nameIntroTitle: string;
 	namePlaceholder: string;
 	navigation: Record<ShellRouteId, NavigationCopy>;
 	onboardingTitle: string;
@@ -55,6 +56,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		guestMode: 'Invité',
 		learnLanguage: 'Je veux apprendre',
 		loginLater: 'Tu peux continuer en invité.',
+		nameIntroTitle: 'Dites-nous en plus sur vous',
 		namePlaceholder: 'Alex',
 		onboardingTitle: 'Configuration',
 		progress: 'Progression',
@@ -126,6 +128,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		guestMode: 'Guest',
 		learnLanguage: 'I want to learn',
 		loginLater: 'You can continue as a guest.',
+		nameIntroTitle: 'Tell us a little about you',
 		namePlaceholder: 'Alex',
 		onboardingTitle: 'Setup',
 		progress: 'Progress',
@@ -197,6 +200,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		guestMode: '访客',
 		learnLanguage: '我想学习',
 		loginLater: '你可以先以访客身份继续。',
+		nameIntroTitle: '再介绍一下你自己',
 		namePlaceholder: 'Alex',
 		onboardingTitle: '设置',
 		progress: '进度',

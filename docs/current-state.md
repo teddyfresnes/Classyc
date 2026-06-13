@@ -82,6 +82,9 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Le profil n'est plus dans la navigation principale ; il est accessible via le prénom en bas de sidebar.
 - L'icône paramètres n'est plus un bouton isolé : `Paramètres` est une destination de navigation.
 - Le bouton thème n'apparaît plus dans le header ni dans l'onboarding.
+- Animations sobres via Framer Motion : transition de page, apparition progressive des cartes/niveaux/quêtes, micro-interactions sur les actions.
+- Le setup garde une carte de taille stable entre le choix des langues et le prénom.
+- L'étape prénom contient une zone haute dédiée `Dites-nous en plus sur vous` pour éviter une popup vide ou déséquilibrée.
 - Profil invité local sauvegardé dans `localStorage` avec XP et série initiaux.
 - Shell branché sur le profil invité après completion de l'onboarding.
 - Dossier `apps/api` réservé sans implémentation serveur.
@@ -124,6 +127,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Reprise learn path en SVG unique sans icônes ni faux socle bleu : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide.
 - Correction preview learn path : niveau 2 non sélectionné, bonus `1.5x` retiré de la preview, sidebar active avec texte blanc.
 - Nettoyage map/ruban/scroll : formes décoratives retirées, bouton `Suivant` retiré, scroll desktop séparé entre map et quêtes.
+- Animations shell/setup : `npm run lint`, `npm run typecheck`, `npm run build` OK ; serveur local HTTP 200 ; `.vite-dev.err.log` vide ; navigateur intégré indisponible (`agent.browsers.list()` retourne `[]`) ; Playwright non installé localement.
 
 ## Reprise
 

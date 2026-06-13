@@ -31,6 +31,8 @@ Dernier feedback applique :
 - Les items selected de sidebar gardent le texte blanc.
 - Ne pas remettre le bouton `Suivant` dans le ruban tant qu'il n'a pas de vraie action.
 - Sur desktop, garder le scroll de la colonne map séparé du scroll des quêtes.
+- Animations ajoutées avec Framer Motion : transitions de pages, setup animé, apparition progressive des éléments, micro-interactions sobres.
+- Le setup conserve une taille de popup stable entre langues et prénom ; ne pas revenir à une carte qui rétrécit fortement sur l'étape prénom.
 
 ## Prochaine
 
@@ -57,6 +59,8 @@ Taches prevues :
 - Ne pas réintroduire de header avec titre/description de page.
 - Garder `Paramètres`, notifications et thème aux emplacements actuels.
 - Conserver le style actuel du shell : header sans trait inférieur, badges de progression sans contour dur, sidebar expressive avec selected blanc, learn path sobre sans détails pédagogiques prématurés ni bouton décoratif.
+- Conserver les animations actuelles sobres via Framer Motion et respecter `MotionConfig reducedMotion="user"`.
+- Ajouter l'étape personnage après l'écran prénom en gardant la même taille de setup et une transition cohérente.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 

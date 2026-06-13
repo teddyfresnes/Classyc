@@ -1,3 +1,4 @@
+import { MotionConfig } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { GuestProfile } from '@classyc/shared';
 import { AppShell } from '@/components/layout/AppShell';
@@ -11,9 +12,9 @@ export function App() {
 		document.documentElement.lang = guestProfile?.nativeLanguage ?? 'fr';
 	}, [guestProfile?.nativeLanguage]);
 
-	if (!guestProfile) {
-		return <OnboardingFlow onComplete={setGuestProfile} />;
-	}
-
-	return <AppShell profile={guestProfile} />;
+	return (
+		<MotionConfig reducedMotion="user">
+			{guestProfile ? <AppShell profile={guestProfile} /> : <OnboardingFlow onComplete={setGuestProfile} />}
+		</MotionConfig>
+	);
 }

@@ -329,3 +329,22 @@ Statut : retenue après feedback utilisateur sur l'Étape 3.
 Sur desktop, `Apprendre` utilise `app-main:has(.learn-grid)` pour empêcher le scroll global de la page, puis donne un `overflow-y: auto` indépendant à `.learn-path` et `.learn-side`.
 
 Raison : scroller la map ne doit pas faire défiler les quêtes à droite, et inversement.
+
+## D029 - Animations sobres avec Framer Motion
+
+Statut : retenue après feedback utilisateur sur l'Étape 3.
+
+Framer Motion est utilisé pour les animations utiles de l'interface :
+
+- transition douce entre les routes du shell via `AnimatePresence`.
+- apparition progressive des cartes, quêtes et pastilles de la map.
+- micro-interactions `whileTap` sur les actions principales.
+- transition animée entre les étapes de setup.
+- `MotionConfig reducedMotion="user"` au niveau app pour respecter les préférences système.
+
+Règles :
+
+- rester sobre, sans effet fluo, sans grande animation décorative et sans surcharge visuelle.
+- ne pas casser le scroll séparé de `Apprendre`.
+- garder la carte de setup stable entre les étapes pour éviter un effet de popup qui change brutalement de taille.
+- ne pas ajouter une nouvelle bibliothèque d'animation tant que Framer Motion couvre le besoin.

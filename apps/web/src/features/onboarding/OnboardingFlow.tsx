@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { supportedLanguages } from '@classyc/shared';
@@ -8,6 +9,22 @@ import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import { createGuestProfile, saveGuestProfile } from '@/features/onboarding/guest-profile-storage';
 
 type SetupStep = 'languages' | 'name';
+
+const choiceCardVariants: Variants = {
+	hidden: {
+		opacity: 0,
+		y: 8
+	},
+	show: (index: number) => ({
+		opacity: 1,
+		y: 0,
+		transition: {
+			delay: index * 0.035,
+			duration: 0.18,
+			ease: 'easeOut'
+		}
+	})
+};
 
 interface OnboardingFlowProps {
 	onComplete: (profile: GuestProfile) => void;
@@ -61,8 +78,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 			<main className="onboarding-main">
 				<motion.form
 					animate={{ opacity: 1, y: 0 }}
-					className="onboarding-card space-y-5"
+					className="onboarding-card"
 					initial={{ opacity: 0, y: 8 }}
+					layout
 					onSubmit={(event) => {
 						event.preventDefault();
 
@@ -79,12 +97,12 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 					<AnimatePresence mode="wait">
 						{step === 'languages' && (
 							<motion.div
-								animate={{ opacity: 1, x: 0 }}
-								className="space-y-5"
-								exit={{ opacity: 0, x: -12 }}
-								initial={{ opacity: 0, x: 12 }}
+								animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+								className="onboarding-step"
+								exit={{ opacity: 0, x: -16, filter: 'blur(2px)' }}
+								initial={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
 								key="languages"
-								transition={{ duration: 0.2, ease: 'easeOut' }}
+								transition={{ duration: 0.22, ease: 'easeOut' }}
 							>
 								<section className="space-y-3">
 									<h1 className="text-2xl font-black leading-tight sm:text-3xl">{copy.onboardingTitle}</h1>
@@ -114,50 +132,68 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 								)}
 
 								<div className="onboarding-actions">
-									<button className="secondary-action" onClick={() => setShowAccountNote(true)} type="button">
+									<motion.button className="secondary-action" onClick={() => setShowAccountNote(true)} type="button" whileTap={{ scale: 0.98 }}>
 										<LogIn aria-hidden="true" size={18} strokeWidth={2.35} />
 										<span>{copy.alreadyAccount}</span>
-									</button>
-									<button className="primary-action" disabled={!canContinueToName} type="submit">
+									</motion.button>
+									<motion.button className="primary-action" disabled={!canContinueToName} type="submit" whileTap={{ scale: 0.98 }}>
 										<span>{copy.continue}</span>
 										<ArrowRight aria-hidden="true" size={18} strokeWidth={2.35} />
-									</button>
+									</motion.button>
 								</div>
 							</motion.div>
 						)}
 
 						{step === 'name' && (
 							<motion.div
-								animate={{ opacity: 1, x: 0 }}
-								className="space-y-5"
-								exit={{ opacity: 0, x: 12 }}
-								initial={{ opacity: 0, x: 12 }}
+								animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
+								className="onboarding-step onboarding-step--name"
+								exit={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
+								initial={{ opacity: 0, x: 16, filter: 'blur(2px)' }}
 								key="name"
-								transition={{ duration: 0.2, ease: 'easeOut' }}
+								transition={{ duration: 0.22, ease: 'easeOut' }}
 							>
-								<label className="block">
-									<span className="mb-2 block text-sm font-black">{copy.firstName}</span>
-									<input
-										autoComplete="given-name"
-										autoFocus
-										className="text-input"
-										maxLength={32}
-										onChange={(event) => setFirstName(event.target.value)}
-										placeholder={copy.namePlaceholder}
-										type="text"
-										value={firstName}
-									/>
-								</label>
+								<div className="space-y-5">
+									<motion.div
+										animate={{ opacity: 1, y: 0 }}
+										className="onboarding-name-intro"
+										initial={{ opacity: 0, y: 10 }}
+										transition={{ delay: 0.08, duration: 0.22, ease: 'easeOut' }}
+									>
+										<motion.span
+											animate={{ scale: [1, 1.06, 1] }}
+											className="onboarding-name-badge"
+											transition={{ delay: 0.18, duration: 0.5, ease: 'easeOut' }}
+										>
+											2
+										</motion.span>
+										<p className="text-xl font-black leading-tight sm:text-2xl">{copy.nameIntroTitle}</p>
+									</motion.div>
+
+									<label className="block">
+										<span className="mb-2 block text-sm font-black">{copy.firstName}</span>
+										<input
+											autoComplete="given-name"
+											autoFocus
+											className="text-input"
+											maxLength={32}
+											onChange={(event) => setFirstName(event.target.value)}
+											placeholder={copy.namePlaceholder}
+											type="text"
+											value={firstName}
+										/>
+									</label>
+								</div>
 
 								<div className="onboarding-actions">
-									<button className="secondary-action" onClick={() => setStep('languages')} type="button">
+									<motion.button className="secondary-action" onClick={() => setStep('languages')} type="button" whileTap={{ scale: 0.98 }}>
 										<ArrowLeft aria-hidden="true" size={18} strokeWidth={2.35} />
 										<span>{copy.back}</span>
-									</button>
-									<button className="primary-action" disabled={!canStart} type="submit">
+									</motion.button>
+									<motion.button className="primary-action" disabled={!canStart} type="submit" whileTap={{ scale: 0.98 }}>
 										<span>{copy.start}</span>
 										<CheckCircle2 aria-hidden="true" size={18} strokeWidth={2.35} />
-									</button>
+									</motion.button>
 								</div>
 							</motion.div>
 						)}
@@ -187,26 +223,31 @@ function LanguageChoiceGrid({
 		<section className="space-y-2">
 			<h2 className="text-sm font-black">{label}</h2>
 			<div className="grid gap-3 sm:grid-cols-3">
-				{supportedLanguages.map((language) => {
+				{supportedLanguages.map((language, index) => {
 					const option = getLanguageOption(language.code, copyLanguage);
 					const isDisabled = disabledLanguage === language.code;
 
 					return (
-						<button
+						<motion.button
+							animate="show"
 							aria-pressed={selectedLanguage === language.code}
 							className="choice-card"
+							custom={index}
 							data-selected={selectedLanguage === language.code}
 							disabled={isDisabled}
+							initial="hidden"
 							key={language.code}
 							onClick={() => onSelect(language.code)}
 							type="button"
+							variants={choiceCardVariants}
+							whileTap={{ scale: 0.98 }}
 						>
 							<span className="text-2xl" aria-hidden="true">{option.flag}</span>
 							<span className="mt-2 text-base font-black">{option.label}</span>
 							<span className="mt-1 text-sm font-bold text-[var(--text-muted)]">
 								{isDisabled && disabledText ? disabledText : option.nativeLabel}
 							</span>
-						</button>
+						</motion.button>
 					);
 				})}
 			</div>

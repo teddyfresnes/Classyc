@@ -149,6 +149,10 @@ button {
 		padding: 1.15rem 1rem 1.5rem;
 	}
 
+	.page-transition {
+		min-height: 100%;
+	}
+
 	.brand-logo {
 		display: inline-flex;
 		min-width: 0;
@@ -380,12 +384,49 @@ button {
 	}
 
 	.onboarding-card {
+		display: grid;
 		width: min(100%, 44rem);
+		min-height: min(39rem, calc(100vh - 7rem));
 		border: 1px solid var(--border-soft);
 		border-radius: 8px;
 		background: color-mix(in srgb, var(--surface-2) 96%, transparent);
 		padding: clamp(1rem, 0.75rem + 1.4vw, 1.75rem);
 		box-shadow: var(--shadow-soft);
+	}
+
+	.onboarding-step {
+		display: flex;
+		min-height: 0;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.onboarding-step--name {
+		justify-content: space-between;
+	}
+
+	.onboarding-name-intro {
+		display: flex;
+		min-height: 8rem;
+		align-items: center;
+		gap: 0.85rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--border-soft) 72%, transparent);
+		padding: 0.25rem 0 1rem;
+	}
+
+	.onboarding-name-badge {
+		display: grid;
+		width: 2.65rem;
+		height: 2.65rem;
+		flex-shrink: 0;
+		place-items: center;
+		border-radius: 8px;
+		background: var(--nav-active);
+		color: var(--nav-active-contrast);
+		font-family: "Fredoka Classyc", Inter, sans-serif;
+		font-size: 1.25rem;
+		font-weight: 750;
+		user-select: none;
 	}
 
 	.onboarding-actions {
@@ -838,6 +879,11 @@ button {
 
 	.app-main:has(.learn-grid) {
 		overflow: hidden;
+	}
+
+	.page-transition:has(.learn-grid) {
+		height: 100%;
+		min-height: 0;
 	}
 
 	.learn-grid {

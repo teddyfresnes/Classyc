@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
 	Bell,
 	BookOpenCheck,
@@ -9,7 +9,8 @@ import {
 	UsersRound
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { NavLink, Route, Routes } from 'react-router-dom';
+import type { ReactNode } from 'react';
+import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import type { GuestProfile } from '@classyc/shared';
 import type { ShellRouteId } from '@/domain/navigation';
 import { navigationItems } from '@/domain/navigation';
@@ -48,6 +49,7 @@ function navigationClassName({ isActive }: { isActive: boolean }) {
 }
 
 export function AppShell({ profile }: { profile: GuestProfile }) {
+	const location = useLocation();
 	const copy = getUiCopy(profile.nativeLanguage);
 	const shellSections = createShellSections(profile.nativeLanguage);
 
@@ -60,21 +62,58 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 					<ShellHeader copy={copy} profile={profile} />
 
 					<main className="app-main">
-						<Routes>
-							<Route element={<LearningHome profile={profile} />} path="/" />
-							<Route element={<ShellSection section={shellSections.stats} />} path="/stats" />
-							<Route element={<ShellSection section={shellSections.friends} />} path="/friends" />
-							<Route element={<ShellSection section={shellSections.messages} />} path="/messages" />
-							<Route element={<SettingsPage copy={copy} />} path="/settings" />
-							<Route element={<ShellSection section={shellSections.profile} />} path="/profile" />
-							<Route element={<LearningHome profile={profile} />} path="*" />
-						</Routes>
+						<AnimatePresence mode="wait">
+							<Routes key={location.pathname} location={location}>
+								<Route
+									element={<PageTransition><LearningHome profile={profile} /></PageTransition>}
+									path="/"
+								/>
+								<Route
+									element={<PageTransition><ShellSection section={shellSections.stats} /></PageTransition>}
+									path="/stats"
+								/>
+								<Route
+									element={<PageTransition><ShellSection section={shellSections.friends} /></PageTransition>}
+									path="/friends"
+								/>
+								<Route
+									element={<PageTransition><ShellSection section={shellSections.messages} /></PageTransition>}
+									path="/messages"
+								/>
+								<Route
+									element={<PageTransition><SettingsPage copy={copy} /></PageTransition>}
+									path="/settings"
+								/>
+								<Route
+									element={<PageTransition><ShellSection section={shellSections.profile} /></PageTransition>}
+									path="/profile"
+								/>
+								<Route
+									element={<PageTransition><LearningHome profile={profile} /></PageTransition>}
+									path="*"
+								/>
+							</Routes>
+						</AnimatePresence>
 					</main>
 				</div>
 			</div>
 
 			<MobileNavigation copy={copy} />
 		</div>
+	);
+}
+
+function PageTransition({ children }: { children: ReactNode }) {
+	return (
+		<motion.div
+			animate={{ opacity: 1, y: 0, scale: 1 }}
+			className="page-transition"
+			exit={{ opacity: 0, y: 8, scale: 0.99 }}
+			initial={{ opacity: 0, y: 10, scale: 0.99 }}
+			transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+		>
+			{children}
+		</motion.div>
 	);
 }
 
@@ -205,8 +244,8 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 			<aside className="learn-side">
 				<h2 className="mb-4 text-lg font-black">{summary.dailyQuests}</h2>
 				<div className="space-y-3">
-					{quests.map((quest) => (
-						<DailyQuestCard key={quest.id} quest={quest} />
+					{quests.map((quest, index) => (
+						<DailyQuestCard index={index} key={quest.id} quest={quest} />
 					))}
 				</div>
 			</aside>
@@ -216,32 +255,39 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 
 function LevelNodeCard({ index, node }: { index: number; node: LevelNodePreview }) {
 	return (
-		<motion.g
-			animate={{ opacity: 1 }}
-			className={`map-node map-node--${node.state}`}
-			initial={{ opacity: 0 }}
-			transform={`translate(${node.x} ${node.y})`}
-			transition={{ delay: index * 0.035, duration: 0.22, ease: 'easeOut' }}
-		>
-			<title>{node.reward ? `Niveau ${node.label} - 1.5x d'XP gagné en plus` : `Niveau ${node.label}`}</title>
-			<circle className="map-node__ring" r="38" />
-			<circle className="map-node__disc" r="29" />
-			<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
-				{node.label}
-			</text>
-			{node.reward ? (
-				<g className="map-node__reward" transform="translate(31 -27)">
-					<rect height="24" rx="12" width="46" x="-23" y="-12" />
-					<text dominantBaseline="central" textAnchor="middle">1.5x</text>
-				</g>
-			) : null}
-		</motion.g>
+		<g className={`map-node map-node--${node.state}`} transform={`translate(${node.x} ${node.y})`}>
+			<motion.g
+				animate={{ opacity: 1, scale: 1 }}
+				initial={{ opacity: 0, scale: 0.92 }}
+				style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
+				transition={{ delay: index * 0.045, duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+			>
+				<title>{node.reward ? `Niveau ${node.label} - 1.5x d'XP gagné en plus` : `Niveau ${node.label}`}</title>
+				<circle className="map-node__ring" r="38" />
+				<circle className="map-node__disc" r="29" />
+				<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
+					{node.label}
+				</text>
+				{node.reward ? (
+					<g className="map-node__reward" transform="translate(31 -27)">
+						<rect height="24" rx="12" width="46" x="-23" y="-12" />
+						<text dominantBaseline="central" textAnchor="middle">1.5x</text>
+					</g>
+				) : null}
+			</motion.g>
+		</g>
 	);
 }
 
-function DailyQuestCard({ quest }: { quest: DailyQuestPreview }) {
+function DailyQuestCard({ index, quest }: { index: number; quest: DailyQuestPreview }) {
 	return (
-		<article className="daily-quest">
+		<motion.article
+			animate={{ opacity: 1, x: 0 }}
+			className="daily-quest"
+			initial={{ opacity: 0, x: 10 }}
+			transition={{ delay: index * 0.04, duration: 0.2, ease: 'easeOut' }}
+			whileHover={{ y: -1 }}
+		>
 			<span className={`daily-quest__dot daily-quest__dot--${quest.state}`} aria-hidden="true" />
 			<div className="min-w-0 flex-1">
 				<p className="truncate text-sm font-black">{quest.label}</p>
@@ -250,7 +296,7 @@ function DailyQuestCard({ quest }: { quest: DailyQuestPreview }) {
 				</div>
 			</div>
 			<span className="rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">{quest.value}</span>
-		</article>
+		</motion.article>
 	);
 }
 
@@ -271,14 +317,21 @@ function ShellSection({ section }: { section: ShellSectionPreview }) {
 			</section>
 
 			<section className="grid gap-3 md:grid-cols-3">
-				{section.panels.map((panel) => (
-					<article className="app-panel p-4" key={panel.id}>
+				{section.panels.map((panel, index) => (
+					<motion.article
+						animate={{ opacity: 1, y: 0 }}
+						className="app-panel p-4"
+						initial={{ opacity: 0, y: 8 }}
+						key={panel.id}
+						transition={{ delay: index * 0.04, duration: 0.2, ease: 'easeOut' }}
+						whileHover={{ y: -2 }}
+					>
 						<div className="mb-4 flex items-start justify-between gap-3">
 							<h3 className="min-w-0 text-base font-black">{panel.title}</h3>
 							<span className="shrink-0 rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">{panel.meta}</span>
 						</div>
 						<p className="text-sm leading-6 text-[var(--text-muted)]">{panel.detail}</p>
-					</article>
+					</motion.article>
 				))}
 			</section>
 		</div>
