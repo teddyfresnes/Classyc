@@ -84,6 +84,7 @@ Regles Etape 5 :
 - creer un index d'atomes dedie avant de composer le personnage.
 - verifier quels SVG acceptent une recolorisation propre avant d'exposer une couleur dans l'UI.
 - viser un createur complet par categories, pas seulement une variante de couleur.
+- implementation actuelle : `apps/web/src/assets/open-peeps-atoms.ts` indexe les SVG via `import.meta.glob` et les expose par categorie.
 
 Preparation Etape 5 du 2026-06-13 :
 

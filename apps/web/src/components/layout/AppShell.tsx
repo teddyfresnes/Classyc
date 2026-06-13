@@ -18,6 +18,7 @@ import type { ShellRouteId } from '@/domain/navigation';
 import { navigationItems } from '@/domain/navigation';
 import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	createDailyQuests,
@@ -126,6 +127,7 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
 	const character = getOpenPeepCharacter(profile.characterId);
+	const hasCustomCharacter = Boolean(profile.characterCustomization);
 
 	return (
 		<aside className="desktop-sidebar">
@@ -153,7 +155,15 @@ function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>;
 				<div className="sidebar-profile-card">
 					<NavLink className="profile-link" to="/profile">
 						<div className="sidebar-character-avatar">
-							<img alt="" src={character.src} />
+							{hasCustomCharacter ? (
+								<OpenPeepComposer
+									className="sidebar-character-svg"
+									customization={profile.characterCustomization}
+									framing="head"
+								/>
+							) : (
+								<img alt="" src={character.src} />
+							)}
 						</div>
 						<div className="min-w-0">
 							<p className="truncate text-sm font-black">{profile.firstName}</p>

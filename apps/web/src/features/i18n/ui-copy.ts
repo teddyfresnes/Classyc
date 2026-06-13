@@ -8,10 +8,36 @@ interface NavigationCopy {
 	description: string;
 }
 
+export interface CharacterCreatorCopy {
+	categories: {
+		accessories: string;
+		body: string;
+		colors: string;
+		face: string;
+		facialHair: string;
+		head: string;
+		posture: string;
+	};
+	colors: {
+		accessory: string;
+		hair: string;
+		ink: string;
+		outfit: string;
+		skin: string;
+	};
+	none: string;
+	posture: {
+		bust: string;
+		sitting: string;
+		standing: string;
+	};
+}
+
 interface UiCopy {
 	accountUnavailable: string;
 	alreadyAccount: string;
 	back: string;
+	characterCreator: CharacterCreatorCopy;
 	characterIntroTitle: string;
 	characterOption: string;
 	continue: string;
@@ -53,6 +79,30 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: 'Connexion bientôt disponible.',
 		alreadyAccount: 'Déjà un compte',
 		back: 'Retour',
+		characterCreator: {
+			categories: {
+				accessories: 'Accessoires',
+				body: 'Tenue',
+				colors: 'Couleurs',
+				face: 'Visage',
+				facialHair: 'Barbe',
+				head: 'Tête',
+				posture: 'Pose'
+			},
+			colors: {
+				accessory: 'Accessoire',
+				hair: 'Cheveux',
+				ink: 'Trait',
+				outfit: 'Tenue',
+				skin: 'Peau'
+			},
+			none: 'Aucun',
+			posture: {
+				bust: 'Buste',
+				sitting: 'Assis',
+				standing: 'Debout'
+			}
+		},
 		characterIntroTitle: 'Choisis ton personnage',
 		characterOption: 'Personnage',
 		continue: 'Continuer',
@@ -132,6 +182,30 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: 'Sign in is coming soon.',
 		alreadyAccount: 'Already have an account',
 		back: 'Back',
+		characterCreator: {
+			categories: {
+				accessories: 'Accessories',
+				body: 'Outfit',
+				colors: 'Colors',
+				face: 'Face',
+				facialHair: 'Beard',
+				head: 'Head',
+				posture: 'Pose'
+			},
+			colors: {
+				accessory: 'Accessory',
+				hair: 'Hair',
+				ink: 'Line',
+				outfit: 'Outfit',
+				skin: 'Skin'
+			},
+			none: 'None',
+			posture: {
+				bust: 'Bust',
+				sitting: 'Sitting',
+				standing: 'Standing'
+			}
+		},
 		characterIntroTitle: 'Pick your character',
 		characterOption: 'Character',
 		continue: 'Continue',
@@ -211,6 +285,30 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		accountUnavailable: '登录功能即将推出。',
 		alreadyAccount: '已有账号',
 		back: '返回',
+		characterCreator: {
+			categories: {
+				accessories: '配件',
+				body: '服装',
+				colors: '颜色',
+				face: '表情',
+				facialHair: '胡子',
+				head: '头部',
+				posture: '姿势'
+			},
+			colors: {
+				accessory: '配件',
+				hair: '头发',
+				ink: '线条',
+				outfit: '服装',
+				skin: '肤色'
+			},
+			none: '无',
+			posture: {
+				bust: '半身',
+				sitting: '坐',
+				standing: '站'
+			}
+		},
 		characterIntroTitle: '选择你的角色',
 		characterOption: '角色',
 		continue: '继续',

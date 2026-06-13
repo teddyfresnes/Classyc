@@ -4,11 +4,11 @@ Date : 2026-06-13
 
 ## Statut court
 
-Etape courante : Etape 4 - Integration Open Peeps.
+Etape courante : Etape 5 - Createur complet de personnage.
 
 Etat : terminee.
 
-Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et une première galerie Open Peeps.
+Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
 ## Structure observee
 
@@ -93,7 +93,14 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Profil invité enrichi avec `characterId` pour mémoriser le personnage Open Peeps choisi.
 - Shell branché sur le profil invité après completion de l'onboarding.
 - Index statique Open Peeps centralisé dans `apps/web/src/assets/open-peeps.ts`.
-- L'onboarding contient une étape personnage après le prénom, avec six templates `Bust` Open Peeps.
+- Index SVG Open Peeps centralisé dans `apps/web/src/assets/open-peeps-atoms.ts`.
+- Modèle partagé `OpenPeepCustomization` pour sauvegarder corps/tenue, tête/cheveux, visage, pilosité, accessoires, posture et couleurs.
+- L'onboarding contient une étape personnage après le prénom, avec un créateur complet plutôt qu'une simple galerie.
+- Le créateur affiche un aperçu SVG, des onglets avec icônes, des grilles d'options, des swatches et des inputs couleur.
+- Couleurs configurables : peau, cheveux, tenue, accessoire et trait/contour.
+- `OpenPeepComposer` compose les SVG pour le buste, les postures debout/assis et le cadrage tête.
+- Le personnage personnalisé est sauvegardé dans le profil invité via `characterCustomization`.
+- Les anciens profils sans personnalisation complète gardent le fallback PNG `characterId`.
 - Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
 - L'avatar de profil de la sidebar est cadré sur la tête pour rester lisible en petit format.
 - Dossier `apps/api` réservé sans implémentation serveur.
@@ -104,7 +111,6 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Systeme de niveaux.
 - Exercices.
 - XP, streak, amis, messagerie ou mini-jeux.
-- Créateur complet de personnage Open Peeps.
 - Diagnostic complet.
 
 ## Verification du 2026-06-13
@@ -155,7 +161,11 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `nextstepprep` Etape 5 : inspection des SVG Open Peeps terminee et plan d'implementation documente.
 - Preparation Etape 5 : 169 SVG utiles reperes dans `Separate Atoms/`, dimensions par categorie confirmees, offsets de composition du buste notes dans `asset-inventory.md`.
 - Verification `nextstepprep` : `git diff --check` OK ; pas de lint/typecheck/build relances car aucun code applicatif n'a ete modifie.
+- Etape 5 créateur complet : `npm run lint`, `npm run typecheck`, `npm run build` OK.
+- Serveur local après Etape 5 : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Build Vite Etape 5 : OK avec avertissement de bundle JS volumineux, attendu car les SVG bruts Open Peeps sont embarqués pour le créateur complet.
+- Navigateur intégré retenté après Etape 5 : indisponible (`agent.browsers.list()` retourne `[]`).
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 5 de [docs/next-steps.md](next-steps.md) : createur complet de personnage.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 6 de [docs/next-steps.md](next-steps.md) : integration OpenMoji et recherche d'icones.

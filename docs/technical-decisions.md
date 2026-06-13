@@ -381,7 +381,7 @@ Règles :
 
 ## D031 - Createur complet Open Peeps
 
-Statut : retenue pour l'Etape 5 apres feedback utilisateur.
+Statut : retenue et implementee pour l'Etape 5 apres feedback utilisateur.
 
 L'Etape 5 doit viser un vrai createur de personnage, inspire des principes d'edition de type Mii/Bitmoji sans copier leur interface.
 
@@ -404,3 +404,11 @@ Preparation technique du 2026-06-13 :
 - pour sitting/standing, les offsets de tete internes restent equivalents : face `(159, 186)`, facial-hair `(123, 338)`, accessories `(47, 241)`.
 - les couleurs peuvent etre exposees par remplacement controle des fills SVG : `#FFFFFF`/`white` pour les zones pleines et `#000000`/`#231F20`/`#221E1F` pour les traits, cheveux ou accessoires selon la categorie.
 - le modele doit rester extensible : garder le `characterId` historique pour compatibilite, puis ajouter une personnalisation complete sauvegardee dans le profil invite.
+
+Implementation Etape 5 :
+
+- `OpenPeepCustomization` est ajoute au package partage et sauvegarde le corps, la tete, le visage, la pilosite, les accessoires, la posture et les couleurs.
+- `apps/web/src/assets/open-peeps-atoms.ts` centralise l'index SVG via `import.meta.glob` et filtre les fichiers metadata.
+- `OpenPeepComposer` compose les atomes en SVG pour le buste, les postures debout/assis et le cadrage tete de l'avatar.
+- `CharacterCreator` remplace la galerie PNG dans l'onboarding avec onglets, grilles d'options, swatches et inputs couleur.
+- Le build Vite signale un bundle JS volumineux car les SVG bruts sont embarques pour rendre le createur complet disponible immediatement. A optimiser plus tard si le poids devient prioritaire.

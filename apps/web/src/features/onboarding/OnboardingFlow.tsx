@@ -2,10 +2,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2, Lock, LogIn } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { defaultOpenPeepCharacterId, supportedLanguages } from '@classyc/shared';
-import type { GuestProfile, OpenPeepCharacterId, SupportedLanguageCode } from '@classyc/shared';
-import { openPeepCharacters } from '@/assets/open-peeps';
+import { defaultOpenPeepCharacterId, defaultOpenPeepCustomization, supportedLanguages } from '@classyc/shared';
+import type { GuestProfile, OpenPeepCustomization, SupportedLanguageCode } from '@classyc/shared';
 import { BrandLogo } from '@/components/ui/brand-logo';
+import { CharacterCreator } from '@/features/character/CharacterCreator';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import { createGuestProfile, saveGuestProfile } from '@/features/onboarding/guest-profile-storage';
 
@@ -43,13 +43,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 	const [nativeLanguage, setNativeLanguage] = useState<SupportedLanguageCode | null>(null);
 	const [targetLanguage, setTargetLanguage] = useState<SupportedLanguageCode | null>(null);
 	const [firstName, setFirstName] = useState('');
-	const [selectedCharacterId, setSelectedCharacterId] = useState<OpenPeepCharacterId>(defaultOpenPeepCharacterId);
+	const [characterCustomization, setCharacterCustomization] = useState<OpenPeepCustomization>(defaultOpenPeepCustomization);
 	const [showAccountNote, setShowAccountNote] = useState(false);
 	const copy = getUiCopy(nativeLanguage);
 	const trimmedName = firstName.trim();
 	const canContinueToName = Boolean(nativeLanguage && targetLanguage);
 	const canContinueToCharacter = Boolean(nativeLanguage && targetLanguage && trimmedName.length >= 2);
-	const canStart = Boolean(nativeLanguage && targetLanguage && trimmedName.length >= 2 && selectedCharacterId);
+	const canStart = Boolean(nativeLanguage && targetLanguage && trimmedName.length >= 2);
 	const nativeOption = nativeLanguage ? getLanguageOption(nativeLanguage, nativeLanguage) : null;
 	const targetOption = targetLanguage ? getLanguageOption(targetLanguage, nativeLanguage) : null;
 
@@ -75,7 +75,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 			firstName: trimmedName,
 			nativeLanguage,
 			targetLanguage,
-			characterId: selectedCharacterId
+			characterId: defaultOpenPeepCharacterId,
+			characterCustomization
 		});
 
 		saveGuestProfile(profile);
@@ -251,10 +252,10 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 										) : null}
 									</motion.div>
 
-									<CharacterChoiceGrid
-										copy={copy}
-										onSelect={setSelectedCharacterId}
-										selectedCharacterId={selectedCharacterId}
+									<CharacterCreator
+										copy={copy.characterCreator}
+										onChange={setCharacterCustomization}
+										value={characterCustomization}
 									/>
 								</div>
 
@@ -274,46 +275,6 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 				</motion.form>
 			</main>
 		</div>
-	);
-}
-
-function CharacterChoiceGrid({
-	copy,
-	onSelect,
-	selectedCharacterId
-}: {
-	copy: ReturnType<typeof getUiCopy>;
-	onSelect: (characterId: OpenPeepCharacterId) => void;
-	selectedCharacterId: OpenPeepCharacterId;
-}) {
-	return (
-		<section>
-			<h2 className="sr-only">{copy.characterIntroTitle}</h2>
-			<div className="peep-choice-grid">
-				{openPeepCharacters.map((character, index) => (
-					<motion.button
-						animate="show"
-						aria-label={`${copy.characterOption} ${index + 1}`}
-						aria-pressed={selectedCharacterId === character.id}
-						className="peep-choice-card"
-						custom={index}
-						data-selected={selectedCharacterId === character.id}
-						initial="hidden"
-						key={character.id}
-						onClick={() => onSelect(character.id)}
-						type="button"
-						variants={choiceCardVariants}
-						whileHover={{ y: -2 }}
-						whileTap={{ scale: 0.98 }}
-					>
-						<img alt="" className="peep-choice-card__image" draggable="false" src={character.src} />
-						<span className="peep-choice-card__check" aria-hidden="true">
-							<CheckCircle2 size={17} strokeWidth={2.6} />
-						</span>
-					</motion.button>
-				))}
-			</div>
-		</section>
 	);
 }
 

@@ -91,7 +91,7 @@ Livrables prevus :
 
 ### Etape 5 - Createur complet de personnage
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : creer une experience complete de creation de personnage inspiree des logiques Mii/Bitmoji, sans copier leur interface.
 
@@ -105,6 +105,8 @@ Livrables prevus :
 - avatar de profil cadre sur la tete pour rester lisible en petit
 
 ### Etape 6 - Integration OpenMoji et recherche d'icones
+
+Statut : prochaine.
 
 Objectif : rendre les icones OpenMoji facilement retrouvables par le code et l'IA.
 

@@ -1,5 +1,5 @@
-import { isOpenPeepCharacterId } from '@classyc/shared';
-import type { GuestProfile, OpenPeepCharacterId, SupportedLanguageCode } from '@classyc/shared';
+import { isOpenPeepCharacterId, isOpenPeepCustomization } from '@classyc/shared';
+import type { GuestProfile, OpenPeepCharacterId, OpenPeepCustomization, SupportedLanguageCode } from '@classyc/shared';
 
 const storageKey = 'classyc-guest-profile';
 const languageCodes: readonly SupportedLanguageCode[] = ['fr', 'en', 'zh'];
@@ -9,6 +9,7 @@ interface GuestProfileInput {
 	nativeLanguage: SupportedLanguageCode;
 	targetLanguage: SupportedLanguageCode;
 	characterId: OpenPeepCharacterId;
+	characterCustomization?: OpenPeepCustomization;
 }
 
 function isSupportedLanguageCode(value: unknown): value is SupportedLanguageCode {
@@ -31,6 +32,10 @@ function isGuestProfile(value: unknown): value is GuestProfile {
 		&& isSupportedLanguageCode(profile.targetLanguage)
 		&& profile.nativeLanguage !== profile.targetLanguage
 		&& isOpenPeepCharacterId(profile.characterId)
+		&& (
+			profile.characterCustomization === undefined
+			|| isOpenPeepCustomization(profile.characterCustomization)
+		)
 		&& typeof profile.createdAt === 'string'
 		&& typeof profile.onboardingCompletedAt === 'string'
 	);
@@ -54,6 +59,7 @@ export function createGuestProfile(input: GuestProfileInput): GuestProfile {
 		nativeLanguage: input.nativeLanguage,
 		targetLanguage: input.targetLanguage,
 		characterId: input.characterId,
+		characterCustomization: input.characterCustomization,
 		progress: {
 			xp: 0,
 			streakDays: 0
