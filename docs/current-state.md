@@ -96,9 +96,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Index SVG Open Peeps centralisé dans `apps/web/src/assets/open-peeps-atoms.ts`.
 - Modèle partagé `OpenPeepCustomization` pour sauvegarder corps/tenue, tête/cheveux, visage, pilosité, accessoires, posture et couleurs.
 - L'onboarding contient une étape personnage après le prénom, avec un créateur complet plutôt qu'une simple galerie.
-- Le créateur affiche un aperçu SVG, des onglets avec icônes, des grilles d'options, des pastilles contextuelles et des inputs couleur.
+- Le créateur affiche un aperçu personnage, des onglets avec icônes, des grilles d'options, des pastilles contextuelles et des inputs couleur.
 - Couleurs configurables : peau, cheveux, tenue et accessoire. Le trait/contour reste noir.
-- `OpenPeepComposer` compose les SVG pour le buste, les postures debout/assis et le cadrage tête.
+- `OpenPeepComposer` compose les SVG pour les postures debout/assis et le cadrage tete fallback ; les bustes colorisables passent par CSS-Peeps.
+- `OpenPeepComposer` supporte aussi un cadrage `outfit` pour previsualiser les tenues de buste sans la tete dans les grilles.
+- Les tenues restent limitees au mode buste : choisir une tenue met a jour `bodyId`, sans forcer ni recomposer les poses debout/assises.
+- La colorisation des tenues de buste passe par CSS-Peeps, car les SVG `body` locaux sont trop aplatis pour separer proprement peau, vetement, objet et details noirs chemin par chemin.
 - La recolorisation Open Peeps est contextuelle : chapeaux/foulards en neutres sombres, cheveux/barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
 - Le créateur est organisé dans l'ordre : cheveux, visage, barbe, accessoires, tenues, poses.
 - Les pastilles de couleur rondes sont placées sous le personnage et changent selon la catégorie active.
@@ -182,6 +185,19 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `git diff --check` : OK.
 - Serveur local : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre retente : indisponible (`agent.browsers.list()` retourne `[]`).
+- Correction feedback tenues/poses : retrait du rendu de tenue force sur les poses debout/assises, juge trop moche.
+- Decision appliquee : les assets `pose/standing` et `pose/sitting` restent rendus comme des poses completes ; les tenues `body` ne sont gerees proprement que sur le buste et les previews `Tenues`.
+- Recherche web feedback tenues : Open Peeps documente les assets noir/blanc comme base personnalisable, et les implementations DiceBear/CSS-Peeps montrent une separation couleur `skin` / `clothes` / `object`.
+- Limite constatee : les SVG `body` locaux sont aplatis avec des chemins noir/blanc qui melangent parfois peau, vetement et objets. La tentative `open-peep-body-recolor.ts` cassait trop facilement les contours, bras, mains et details.
+- Correction appliquee : suppression de `open-peep-body-recolor.ts` et ajout de `css-peeps`, avec `apps/web/src/features/character/open-peep-css-peeps.ts` comme mapping explicite des 30 bodies vers les tokens Open Peeps colorisables.
+- Les bustes et previews `Tenues` utilisent maintenant les variables CSS-Peeps `--peep-skin-color`, `--peep-clothes-color` et `--peep-object-color`; les details/contours restent noirs via les masques de detail d'origine.
+- Les poses debout/assises ne recoivent toujours pas les tenues `body`, car leurs assets complets ne fournissent pas de calque vetement separable.
+- Verification visuelle via planche Edge headless avec trois variantes : peau claire + tenue bleue, peau foncee + tenue rouge, peau moyenne + tenue verte.
+- Verification layout via Edge headless : ecran personnage desktop et mobile atteints dans le vrai onboarding, 31 rendus CSS-Peeps detectes (personnage principal + 30 options de tenue).
+- Certaines tenues restent volontairement majoritairement noires ou blanches quand le dessin Open Peeps/CSS-Peeps les definit ainsi ; seules leurs zones colorisables prennent la couleur de tenue.
+- Verification finale correction tenues CSS-Peeps : `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec avertissement Vite connu sur le bundle volumineux, accentue par les SVG bruts et le CSS-Peeps.
+- Serveur local apres correction tenues CSS-Peeps : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Navigateur integre retente apres correction tenues CSS-Peeps : indisponible (`agent.browsers.list()` retourne `[]`).
 
 ## Reprise
 

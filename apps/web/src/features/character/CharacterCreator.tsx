@@ -189,7 +189,7 @@ function AssetPanel({
 						whileTap={{ scale: 0.98 }}
 					>
 						<span className="character-option-preview" style={getOptionPreviewStyle(category, customization)}>
-							<OpenPeepAtomPreview asset={asset} className="character-option-svg" customization={customization} />
+							<AssetPreview asset={asset} category={category} customization={customization} />
 						</span>
 						<span className="character-option-label">{getAssetLabel(asset, copy)}</span>
 					</motion.button>
@@ -197,6 +197,32 @@ function AssetPanel({
 			})}
 		</div>
 	);
+}
+
+function AssetPreview({
+	asset,
+	category,
+	customization
+}: {
+	asset: OpenPeepAtomAsset;
+	category: OpenPeepAtomCategory;
+	customization: OpenPeepCustomization;
+}) {
+	if (category === 'body') {
+		return (
+			<OpenPeepComposer
+				className="character-option-svg"
+				customization={{
+					...customization,
+					bodyId: asset.id,
+					postureMode: 'bust'
+				}}
+				framing="outfit"
+			/>
+		);
+	}
+
+	return <OpenPeepAtomPreview asset={asset} className="character-option-svg" customization={customization} />;
 }
 
 function InlineColorControls({

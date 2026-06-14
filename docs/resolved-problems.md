@@ -44,6 +44,26 @@ Probleme : certains atomes Open Peeps reutilisent les memes fills SVG pour des r
 
 Resolution : centraliser des helpers de couleur dans `apps/web/src/features/character/open-peep-colors.ts` et appliquer une recolorisation semantique dans `OpenPeepComposer`. Les couvre-chefs restent gris/noir, les cheveux et barbes recoivent un accent de contraste, les visages utilisent une ombre derivee de la peau, les apercus visage/accessoires gardent un fond lisible, et le trait/contour reste noir fixe.
 
+## 2026-06-14 - Tenues sans effet sur les poses debout/assises
+
+Probleme : la categorie `Tenues` modifiait `bodyId`, mais `OpenPeepComposer` ignorait `bodyId` en mode debout ou assis et rendait directement `standingPoseId` ou `sittingPoseId`. Les SVG `pose/standing` et `pose/sitting` contiennent le corps et la tenue dans le meme asset, avec seulement des fills globaux `#FFFFFF` et `#000000`, donc il n'existe pas de couche vetement independante a recomposer proprement.
+
+Resolution : retirer le mapping tenue -> pose, puis retirer aussi la tentative de couche de torse sur les poses car le rendu etait trop approximatif. `bodyId` reste la source de verite de la tenue uniquement pour le buste. Les previews `Tenues` passent par `OpenPeepComposer` en cadrage `outfit` et posture `bust`, tandis que les previews `Poses` reviennent aux assets de pose natifs.
+
+Limite : les SVG `pose/standing` et `pose/sitting` Open Peeps embarquent posture, corps et tenue dans un meme asset avec seulement des fills globaux. Il n'y a donc pas de calque vetement natif parfaitement recomposable pour chaque pose sans dessiner ou modifier de nouveaux assets.
+
+Suite : ne pas tenter de recomposer les tenues `body` sur ces poses sans source separee par calques. Les poses restent rendues comme assets complets.
+
+## 2026-06-14 - Bodies Open Peeps aplatis et recolorisation directe trop fragile
+
+Probleme : les 30 assets `body` Open Peeps locaux ne sont pas structures par couches propres. Plusieurs assets ont un chemin clair unique qui contient a la fois bras, mains, cou et vetement. D'autres ont des chemins composes noirs avec `fill-rule="evenodd"` ou des objets tenus qui partagent le meme sous-chemin que la main. La tentative `open-peep-body-recolor.ts` produisait donc des tenues a moitie colorees, des contours noirs perdus, des zones peau/vetement melangees et des details manquants.
+
+Recherche : la page officielle Open Peeps confirme que le noir/blanc est une base de personnalisation. DiceBear et CSS-Peeps exposent des roles separes (`skin`, `clothes`, `object`) issus d'Open Peeps, ce qui correspond au rendu attendu.
+
+Resolution : supprimer `apps/web/src/features/character/open-peep-body-recolor.ts`, installer `css-peeps`, importer `css-peeps/css-peeps.compat.css`, puis ajouter `apps/web/src/features/character/open-peep-css-peeps.ts` avec un mapping explicite des 30 bodies locaux vers les tokens CSS-Peeps. Les bustes et previews `Tenues` utilisent maintenant `--peep-skin-color`, `--peep-clothes-color` et `--peep-object-color`, tandis que les contours et details noirs viennent des masques de detail CSS-Peeps.
+
+Limites : les assets locaux restent trop aplatis pour etre recolorises proprement chemin par chemin. Les poses debout/assises ne sont pas recolorisees par tenue. Certaines tenues restent volontairement majoritairement noires ou blanches quand le dessin Open Peeps/CSS-Peeps les definit ainsi ; seules leurs zones colorisables prennent la couleur de tenue.
+
 ## 2026-06-13 - Libelle chinois degrade dans TypeScript
 
 Probleme : le libelle natif chinois etait degrade dans la sortie terminal et dans le fichier partage.

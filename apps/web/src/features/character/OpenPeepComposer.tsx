@@ -1,6 +1,7 @@
 import type { OpenPeepCustomization, OpenPeepPostureMode } from '@classyc/shared';
 import { getOpenPeepAtom, resolveOpenPeepCustomization } from '@/assets/open-peeps-atoms';
 import type { OpenPeepAtomAsset, OpenPeepAtomCategory } from '@/assets/open-peeps-atoms';
+import { canRenderCssPeep, createCssPeepRenderData } from '@/features/character/open-peep-css-peeps';
 import {
 	createHairAccentColor,
 	createSkinShadowColor,
@@ -10,7 +11,7 @@ import {
 } from '@/features/character/open-peep-colors';
 
 type OpenPeepRenderCategory = OpenPeepAtomCategory | 'pose';
-type OpenPeepFraming = 'full' | 'head';
+type OpenPeepFraming = 'full' | 'head' | 'outfit';
 
 interface SvgColorSemantics {
 	accent: string;
@@ -34,6 +35,7 @@ interface OpenPeepAtomPreviewProps {
 interface ComposerLayout {
 	viewBox: string;
 	headViewBox: string;
+	outfitViewBox: string;
 	body: {
 		x: number;
 		y: number;
@@ -60,6 +62,7 @@ const composerLayouts: Record<OpenPeepPostureMode, ComposerLayout> = {
 	bust: {
 		viewBox: '0 0 1136 1533',
 		headViewBox: '320 95 620 705',
+		outfitViewBox: '100 590 930 850',
 		body: {
 			x: 147,
 			y: 639
@@ -84,6 +87,7 @@ const composerLayouts: Record<OpenPeepPostureMode, ComposerLayout> = {
 	standing: {
 		viewBox: '0 0 1179 3291',
 		headViewBox: '350 95 620 705',
+		outfitViewBox: '0 620 1179 2520',
 		body: {
 			x: -121,
 			y: 634
@@ -108,6 +112,7 @@ const composerLayouts: Record<OpenPeepPostureMode, ComposerLayout> = {
 	sitting: {
 		viewBox: '0 0 1647 2500',
 		headViewBox: '290 95 620 705',
+		outfitViewBox: '0 610 1500 1880',
 		body: {
 			x: -81,
 			y: 637
@@ -147,7 +152,22 @@ export function OpenPeepComposer({
 	const poseAsset = resolvedCustomization.postureMode === 'standing'
 		? getOpenPeepAtom('standingPose', resolvedCustomization.standingPoseId)
 		: getOpenPeepAtom('sittingPose', resolvedCustomization.sittingPoseId);
-	const viewBox = framing === 'head' ? layout.headViewBox : layout.viewBox;
+	const viewBox = getComposerViewBox(layout, framing);
+
+	if (resolvedCustomization.postureMode === 'bust' && canRenderCssPeep(resolvedCustomization)) {
+		const cssPeep = createCssPeepRenderData(resolvedCustomization, framing);
+
+		return (
+			<div
+				aria-hidden={title ? undefined : true}
+				aria-label={title}
+				className={['open-peep-css-peep', className].filter(Boolean).join(' ')}
+				data-css-peeps={cssPeep.tokens}
+				role={title ? 'img' : undefined}
+				style={cssPeep.style}
+			/>
+		);
+	}
 
 	return (
 		<svg
@@ -176,27 +196,29 @@ export function OpenPeepComposer({
 					/>
 				)}
 
-				<g transform={`translate(${layout.head.x} ${layout.head.y})`}>
-					<OpenPeepSvgGroup asset={headAsset} category="head" customization={resolvedCustomization} />
-					<OpenPeepSvgGroup
-						asset={faceAsset}
-						category="face"
-						customization={resolvedCustomization}
-						transform={`translate(${layout.face.x} ${layout.face.y})`}
-					/>
-					<OpenPeepSvgGroup
-						asset={facialHairAsset}
-						category="facialHair"
-						customization={resolvedCustomization}
-						transform={`translate(${layout.facialHair.x} ${layout.facialHair.y})`}
-					/>
-					<OpenPeepSvgGroup
-						asset={accessoriesAsset}
-						category="accessories"
-						customization={resolvedCustomization}
-						transform={`translate(${layout.accessories.x} ${layout.accessories.y})`}
-					/>
-				</g>
+				{framing === 'outfit' ? null : (
+					<g transform={`translate(${layout.head.x} ${layout.head.y})`}>
+						<OpenPeepSvgGroup asset={headAsset} category="head" customization={resolvedCustomization} />
+						<OpenPeepSvgGroup
+							asset={faceAsset}
+							category="face"
+							customization={resolvedCustomization}
+							transform={`translate(${layout.face.x} ${layout.face.y})`}
+						/>
+						<OpenPeepSvgGroup
+							asset={facialHairAsset}
+							category="facialHair"
+							customization={resolvedCustomization}
+							transform={`translate(${layout.facialHair.x} ${layout.facialHair.y})`}
+						/>
+						<OpenPeepSvgGroup
+							asset={accessoriesAsset}
+							category="accessories"
+							customization={resolvedCustomization}
+							transform={`translate(${layout.accessories.x} ${layout.accessories.y})`}
+						/>
+					</g>
+				)}
 			</g>
 		</svg>
 	);
@@ -243,8 +265,9 @@ function OpenPeepSvgGroup({
 
 function createOpenPeepSvgMarkup(asset: OpenPeepAtomAsset, category: OpenPeepRenderCategory, customization: OpenPeepCustomization) {
 	const colors = getSvgColorSemantics(asset, category, customization);
+	const svgContent = getSvgContent(asset.raw);
 
-	return getSvgContent(asset.raw)
+	return svgContent
 		.replace(/fill="#FFFFFF"/gi, `fill="${colors.light}"`)
 		.replace(/fill="white"/gi, `fill="${colors.light}"`)
 		.replace(/fill="#000000"/gi, `fill="${colors.dark}"`)
@@ -261,6 +284,18 @@ function getSvgContent(rawSvg: string) {
 		.replace(/<title>[\s\S]*?<\/title>/gi, '')
 		.replace(/<desc>[\s\S]*?<\/desc>/gi, '')
 		.trim();
+}
+
+function getComposerViewBox(layout: ComposerLayout, framing: OpenPeepFraming) {
+	if (framing === 'head') {
+		return layout.headViewBox;
+	}
+
+	if (framing === 'outfit') {
+		return layout.outfitViewBox;
+	}
+
+	return layout.viewBox;
 }
 
 function getSvgColorSemantics(asset: OpenPeepAtomAsset, category: OpenPeepRenderCategory, customization: OpenPeepCustomization): SvgColorSemantics {
@@ -319,7 +354,7 @@ function getSvgColorSemantics(asset: OpenPeepAtomAsset, category: OpenPeepRender
 	return {
 		accent: fixedInkColor,
 		dark: fixedInkColor,
-		light: colors.outfit
+		light: category === 'body' ? colors.skin : colors.outfit
 	};
 }
 

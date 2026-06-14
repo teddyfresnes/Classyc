@@ -19,17 +19,21 @@ Derniere etape appliquee :
 - `characterId` reste conserve pour compatibilite avec les profils existants.
 - `apps/web/src/assets/open-peeps-atoms.ts` centralise l'index SVG Open Peeps via `import.meta.glob`.
 - Les fichiers `__MACOSX` et metadata restent ignores.
-- `OpenPeepComposer` compose les SVG Open Peeps pour buste, debout, assis et cadrage tete.
+- `OpenPeepComposer` compose les SVG Open Peeps pour debout, assis et cadrage tete fallback ; les bustes colorisables passent par CSS-Peeps.
+- `OpenPeepComposer` ajoute un cadrage `outfit` pour previsualiser les tenues de buste sans la tete dans les grilles.
 - La recolorisation est contextuelle : chapeaux/foulards en neutres sombres, cheveux et barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
 - `CharacterCreator` fournit l'interface de creation : apercu, onglets dans l'ordre cheveux/visage/barbe/accessoires/tenues/poses, grilles d'options, pastilles rondes contextuelles sous le personnage et inputs couleur.
+- Les tenues restent limitees au buste : selectionner une tenue met a jour `bodyId`, sans recomposer les assets debout/assis.
+- La colorisation des 30 bodies en mode buste est corrigee via `css-peeps` et `open-peep-css-peeps.ts`, avec un mapping explicite de chaque tenue locale vers un token Open Peeps colorisable.
+- Les SVG `body` locaux restent documentes comme trop aplatis pour une recolorisation fiable chemin par chemin ; les poses debout/assises ne recoivent pas les tenues `body`.
 - Les couleurs configurables sont : peau, cheveux, tenue et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.
-- `npm run lint`, `npm run typecheck` et `npm run build` passent apres la correction feedback du 2026-06-14.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-14, y compris le retrait du rendu force sur poses et la correction CSS-Peeps des tenues de buste.
 - Serveur local verifie sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre indisponible dans cette session (`agent.browsers.list()` retourne `[]`).
-- Note build : Vite signale un bundle JS volumineux car les SVG bruts sont inclus pour le createur complet.
+- Note build : Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont inclus pour le createur complet.
 
 Garde-fous UX conserves :
 

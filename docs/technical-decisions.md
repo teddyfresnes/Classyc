@@ -391,6 +391,7 @@ Regles retenues :
 - permettre les couleurs principales quand les SVG le permettent : peau, cheveux, vetements, accents/accessoires.
 - placer les pastilles rondes de couleur sous l'apercu du personnage et les rendre contextuelles a la categorie active.
 - garder le trait/contour noir fixe ; il ne doit plus etre expose comme couleur configurable.
+- les tenues sont gerees proprement en mode buste ; les assets debout/assis ne sont pas forces a reprendre une tenue `body` quand le pack ne fournit pas de calque vetement compatible.
 - garder une interface responsive avec apercu, onglets ou segments, swatches de couleur et grilles d'options.
 - centraliser l'index des atomes Open Peeps et la composition du personnage dans des modules dedies.
 - sauvegarder tous les choix utiles dans le profil invite.
@@ -418,4 +419,6 @@ Implementation Etape 5 :
 - `OpenPeepComposer` compose les atomes en SVG pour le buste, les postures debout/assis et le cadrage tete de l'avatar.
 - `CharacterCreator` remplace la galerie PNG dans l'onboarding avec onglets, grilles d'options, pastilles contextuelles sous le personnage et inputs couleur.
 - Correction feedback du 2026-06-14 : suppression de la section `Couleurs`, categorie `Tête` renommee `Cheveux`, ordre des categories ajuste, trait noir fixe, recolorisation corrigee pour les couvre-chefs, cheveux, barbes, visages et accessoires.
-- Le build Vite signale un bundle JS volumineux car les SVG bruts sont embarques pour rendre le createur complet disponible immediatement. A optimiser plus tard si le poids devient prioritaire.
+- Correction feedback tenues/poses du 2026-06-14 : abandon du rendu force de tenue sur les poses debout/assises. Les poses restent des assets complets, et `bodyId` ne pilote que le buste et les previews `Tenues`.
+- Correction feedback tenues du 2026-06-14 : les SVG `body` locaux Open Peeps sont trop aplatis pour une recolorisation fiable chemin par chemin. La tentative `open-peep-body-recolor.ts` est supprimee. Les bustes et previews `Tenues` passent par `css-peeps/css-peeps.compat.css`, pilote par `apps/web/src/features/character/open-peep-css-peeps.ts`, qui mappe explicitement les 30 bodies vers des tokens Open Peeps colorisables et expose les variables `skin`, `clothes`, `object`, `hair`, `accessory`. Les contours/details noirs restent ceux du rendu CSS-Peeps. Les tenues dont le dessin source est volontairement noir/blanc restent partiellement noires/blanches.
+- Le build Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont embarques pour rendre le createur complet disponible immediatement. A optimiser plus tard si le poids devient prioritaire.
