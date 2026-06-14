@@ -64,6 +64,8 @@ Resolution : supprimer `apps/web/src/features/character/open-peep-body-recolor.t
 
 Suite feedback : plusieurs bodies CSS-Peeps gardaient encore leur masse de vetement dans une couche de detail noire (`Turtleneck`, `Sweater Dots`, `Gym Shirt`, `Dress`, etc.). Resolution : declarer par body si ce detail noir represente la couleur principale ou secondaire, recolorer le SVG de detail CSS-Peeps existant a l'execution, puis ajouter un stroke noir sur le meme path pour conserver les contours. Les bodies a deux zones exposent `outfitSecondary` uniquement dans l'UI quand ils en ont besoin.
 
+Mise a jour contours : le stroke noir initial etait trop fin pour plusieurs bodies, donc les contours semblaient prendre la couleur principale ou secondaire. Resolution : renforcer le stroke noir des details recolores, arrondir ses extremites et corriger `Sweater` pour que le vetement principal utilise `outfit` tandis que les taches utilisent `outfitSecondary`.
+
 Limites : les assets locaux restent trop aplatis pour etre recolorises proprement chemin par chemin. Les poses debout/assises ne sont pas recolorisees par tenue. La correction ne cree pas de nouvelle forme ; elle ne peut donc pas separer des sous-zones qui ne sont pas deja representees par le detail CSS-Peeps.
 
 ## 2026-06-13 - Libelle chinois degrade dans TypeScript

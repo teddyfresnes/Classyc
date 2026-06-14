@@ -27,12 +27,14 @@ Derniere etape appliquee :
 - La colorisation des 30 bodies en mode buste est corrigee via `css-peeps` et `open-peep-css-peeps.ts`, avec un mapping explicite de chaque tenue locale vers un token Open Peeps colorisable.
 - Les tenues dont la masse principale etait dans la couche noire CSS-Peeps recolorent ce detail existant avec la couleur principale, tout en gardant un stroke noir sur le meme path.
 - Les tenues avec deux zones personnalisables utilisent `outfitSecondary`; les pastilles secondaires s'affichent seulement pour ces bodies.
+- Les contours des details CSS-Peeps recolores ont ete renforces en noir et arrondis apres feedback, pour eviter que les contours de bodies comme `Blazer Black Tee`, `Dress` ou `Sweater` prennent la couleur principale ou secondaire.
+- `Sweater` utilise maintenant la couleur principale pour la masse du vetement et `outfitSecondary` pour les taches.
 - Les SVG `body` locaux restent documentes comme trop aplatis pour une recolorisation fiable chemin par chemin ; les poses debout/assises ne recoivent pas les tenues `body`.
 - Les couleurs configurables sont : peau, cheveux, tenue, tenue secondaire quand disponible, et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.
-- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-14, y compris le retrait du rendu force sur poses et la correction CSS-Peeps des tenues de buste.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-14, y compris le retrait du rendu force sur poses, la correction CSS-Peeps des tenues de buste et la correction des contours noirs des bodies recolores.
 - Serveur local verifie sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre indisponible dans cette session (`agent.browsers.list()` retourne `[]`).
 - Note build : Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont inclus pour le createur complet.

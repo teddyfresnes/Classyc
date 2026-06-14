@@ -40,7 +40,7 @@ const bodyRules: Record<string, BodyColorRule> = {
 	Device: createBodyRule('phone'),
 	Dress: createBodyRule('dress', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	}),
 	Explaining: createBodyRule('explaining'),
 	'Fur Jacket': createBodyRule('jacket', {
@@ -51,12 +51,12 @@ const bodyRules: Record<string, BodyColorRule> = {
 	Gaming: createBodyRule('gaming'),
 	'Gym Shirt': createBodyRule('tank', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	}),
 	Hoodie: createBodyRule('hoodie'),
 	Killer: createBodyRule('killer', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	}),
 	Macbook: createBodyRule('laptop'),
 	Paper: createBodyRule('paper', {
@@ -96,8 +96,7 @@ const bodyRules: Record<string, BodyColorRule> = {
 		secondary: true
 	}),
 	Sweater: createBodyRule('sweater-crossed', {
-		clothesColor: 'outfitSecondary',
-		detailFill: 'outfit',
+		detailFill: 'outfitSecondary',
 		secondary: true
 	}),
 	'Sweater Dots': createBodyRule('sweater-dots', {
@@ -108,11 +107,11 @@ const bodyRules: Record<string, BodyColorRule> = {
 	'Tee 1': createBodyRule('tee1'),
 	'Tee 2': createBodyRule('tee2', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	}),
 	'Tee Arms Crossed': createBodyRule('tee-crossed', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	}),
 	'Tee Selena': createBodyRule('tee-selena', {
 		clothesColor: 'outfitSecondary',
@@ -126,11 +125,11 @@ const bodyRules: Record<string, BodyColorRule> = {
 	}),
 	Turtleneck: createBodyRule('turtleneck', {
 		detailFill: 'outfit',
-		strokeWidth: 7
+		strokeWidth: 10
 	}),
 	Whatever: createBodyRule('shrug', {
 		detailFill: 'outfit',
-		strokeWidth: 6
+		strokeWidth: 10
 	})
 };
 
@@ -269,7 +268,7 @@ export function createCssPeepRenderData(customization: OpenPeepCustomization, fr
 			fillColor: customization.colors[bodyRule.detailFill],
 			sourceVariable: `--peep_${bodyRule.token.replace(/-/g, '_')}_detail`,
 			strokeColor: fixedInkColor,
-			strokeWidth: bodyRule.strokeWidth ?? 6
+			strokeWidth: bodyRule.strokeWidth ?? 10
 		} : undefined,
 		tokens: tokens.join(' '),
 		style: {

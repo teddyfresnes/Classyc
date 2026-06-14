@@ -201,6 +201,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification finale correction tenues CSS-Peeps : `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec avertissement Vite connu sur le bundle volumineux, accentue par les SVG bruts et le CSS-Peeps.
 - Serveur local apres correction tenues CSS-Peeps : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre retente apres correction tenues CSS-Peeps : indisponible (`agent.browsers.list()` retourne `[]`).
+- Correction feedback contours bodies Open Peeps : les details CSS-Peeps recolores gardent un stroke noir plus lisible et arrondi, afin que les contours de bodies comme `Blazer Black Tee`, `Dress`, `Sweater`, etc. ne prennent plus la couleur principale ou secondaire.
+- Correction `Sweater` : la masse principale utilise `outfit` et les taches utilisent `outfitSecondary`.
+- Recherche web feedback contours : la page officielle Open Peeps confirme que les couleurs noir/blanc sont personnalisables ; CSS-Peeps reste utilise pour les roles de couleur, avec conservation explicite du trait noir.
+- Verification correction contours : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Planche Edge headless locale verifiee avec tenue bleue + secondaire rose.
+- Serveur local apres correction contours : deja actif et OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Navigateur integre retente apres correction contours : indisponible car le plugin Browser ne fournit pas `scripts/browser-client.mjs` dans cette session ; verification visuelle faite via Edge headless.
 
 ## Reprise
 

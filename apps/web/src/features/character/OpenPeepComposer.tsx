@@ -292,7 +292,7 @@ function createRecoloredCssPeepDetail(sourceDetail: string, detailRecolor: CssPe
 
 	const recoloredSvg = svg.replace(
 		/<path fill="#000"/g,
-		`<path fill="${detailRecolor.fillColor}" stroke="${detailRecolor.strokeColor}" stroke-width="${detailRecolor.strokeWidth}" stroke-linejoin="round"`
+		`<path fill="${detailRecolor.fillColor}" stroke="${detailRecolor.strokeColor}" stroke-width="${detailRecolor.strokeWidth}" stroke-linecap="round" stroke-linejoin="round"`
 	);
 
 	return `url("data:image/svg+xml,${encodeURIComponent(recoloredSvg)}")`;
