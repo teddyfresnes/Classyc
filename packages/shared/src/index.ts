@@ -33,6 +33,7 @@ export interface OpenPeepCustomizationColors {
 	skin: string;
 	hair: string;
 	outfit: string;
+	outfitSecondary: string;
 	accessory: string;
 	ink: string;
 }
@@ -62,6 +63,7 @@ export const defaultOpenPeepCustomization: OpenPeepCustomization = {
 		skin: '#F2C7A5',
 		hair: '#1F2937',
 		outfit: '#2563EB',
+		outfitSecondary: '#F8FAFC',
 		accessory: '#111827',
 		ink: '#111827'
 	}
@@ -105,6 +107,7 @@ export function isOpenPeepCustomization(value: unknown): value is OpenPeepCustom
 		&& isHexColor(colors?.skin)
 		&& isHexColor(colors?.hair)
 		&& isHexColor(colors?.outfit)
+		&& (colors?.outfitSecondary === undefined || isHexColor(colors.outfitSecondary))
 		&& isHexColor(colors?.accessory)
 		&& isHexColor(colors?.ink)
 	);

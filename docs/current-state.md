@@ -194,7 +194,10 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les poses debout/assises ne recoivent toujours pas les tenues `body`, car leurs assets complets ne fournissent pas de calque vetement separable.
 - Verification visuelle via planche Edge headless avec trois variantes : peau claire + tenue bleue, peau foncee + tenue rouge, peau moyenne + tenue verte.
 - Verification layout via Edge headless : ecran personnage desktop et mobile atteints dans le vrai onboarding, 31 rendus CSS-Peeps detectes (personnage principal + 30 options de tenue).
-- Certaines tenues restent volontairement majoritairement noires ou blanches quand le dessin Open Peeps/CSS-Peeps les definit ainsi ; seules leurs zones colorisables prennent la couleur de tenue.
+- Correction feedback tenues secondaires : les bodies dont la masse de vetement etait portee par la couche noire CSS-Peeps recolorent maintenant cette couche existante avec la couleur principale, en conservant un trait noir par stroke sur le meme path.
+- Les tenues a deux zones personnalisables exposent une couleur `outfitSecondary` uniquement quand le body selectionne le permet, par exemple `Blazer Black Tee` avec blazer principal et tee secondaire.
+- L'override CSS-Peeps retire les masques blancs de la pile `::after` seulement quand un detail de body est recolore, afin que les couleurs secondaires claires restent visibles sans ajouter de formes.
+- Verification feedback tenues secondaires : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Edge headless desktop/mobile confirme `Blazer Black Tee` avec deux controles `Tenue`/`Secondaire` et `Turtleneck` avec un seul controle `Tenue`.
 - Verification finale correction tenues CSS-Peeps : `git diff --check`, `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec avertissement Vite connu sur le bundle volumineux, accentue par les SVG bruts et le CSS-Peeps.
 - Serveur local apres correction tenues CSS-Peeps : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre retente apres correction tenues CSS-Peeps : indisponible (`agent.browsers.list()` retourne `[]`).

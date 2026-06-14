@@ -18,6 +18,7 @@ import {
 import type { OpenPeepAtomAsset, OpenPeepAtomCategory } from '@/assets/open-peeps-atoms';
 import type { CharacterCreatorCopy } from '@/features/i18n/ui-copy';
 import { OpenPeepAtomPreview, OpenPeepComposer } from '@/features/character/OpenPeepComposer';
+import { hasSecondaryOutfitColor } from '@/features/character/open-peep-css-peeps';
 import { createReadablePreviewColor } from '@/features/character/open-peep-colors';
 
 type CharacterCreatorCategory =
@@ -66,6 +67,7 @@ const colorPalettes: Record<CharacterColorKey, readonly string[]> = {
 	skin: ['#F8D4B8', '#F2C7A5', '#DFA07B', '#B87355', '#8E563E', '#6B3F2E', '#F4D8C8', '#C68662'],
 	hair: ['#111827', '#3B2418', '#6B3F2E', '#8B5E34', '#B77B45', '#D6D3D1', '#6B7280', '#7C3AED'],
 	outfit: ['#2563EB', '#14B8A6', '#22C55E', '#F97316', '#EF4444', '#A855F7', '#0F172A', '#F8FAFC'],
+	outfitSecondary: ['#F8FAFC', '#0F172A', '#94A3B8', '#FDE68A', '#FCA5A5', '#A7F3D0', '#BFDBFE', '#DDD6FE'],
 	accessory: ['#111827', '#2563EB', '#0EA5E9', '#F59E0B', '#EF4444', '#A855F7', '#64748B', '#F8FAFC']
 };
 
@@ -236,7 +238,7 @@ function InlineColorControls({
 	customization: OpenPeepCustomization;
 	onChange: (patch: Partial<OpenPeepCustomizationColors>) => void;
 }) {
-	const activeColorKeys = getActiveColorKeys(activeCategory);
+	const activeColorKeys = getActiveColorKeys(activeCategory, customization);
 
 	return (
 		<div className="character-color-dock">
@@ -363,7 +365,7 @@ function getAssetLabel(asset: OpenPeepAtomAsset, copy: CharacterCreatorCopy) {
 	return asset.id === '_ None' ? copy.none : asset.label;
 }
 
-function getActiveColorKeys(activeCategory: CharacterCreatorCategory): readonly CharacterColorKey[] {
+function getActiveColorKeys(activeCategory: CharacterCreatorCategory, customization: OpenPeepCustomization): readonly CharacterColorKey[] {
 	switch (activeCategory) {
 		case 'head':
 			return ['hair', 'skin'];
@@ -374,6 +376,7 @@ function getActiveColorKeys(activeCategory: CharacterCreatorCategory): readonly 
 		case 'accessories':
 			return ['accessory'];
 		case 'body':
+			return hasSecondaryOutfitColor(customization.bodyId) ? ['outfit', 'outfitSecondary'] : ['outfit'];
 		case 'posture':
 			return ['outfit'];
 	}

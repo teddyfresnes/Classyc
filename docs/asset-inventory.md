@@ -88,7 +88,8 @@ Regles Etape 5 :
 - tenues/poses : les assets `body` restent la source de verite de la tenue uniquement pour le buste et les previews `Tenues`.
 - limite importante : les poses debout/assises embarquent tenue et posture dans le meme SVG avec des fills globaux ; il n'existe pas de calque vetement natif reutilisable assez propre. Ne pas forcer les tenues `body` sur ces poses.
 - colorisation bodies : les SVG `body` locaux sont trop aplatis pour une recolorisation fiable chemin par chemin. Le rendu buste et les previews `Tenues` utilisent `css-peeps` via `apps/web/src/features/character/open-peep-css-peeps.ts`, avec un mapping explicite des 30 bodies vers les tokens Open Peeps colorisables.
-- limite bodies : certaines tenues restent majoritairement noires/blanches quand le dessin source CSS-Peeps les definit ainsi. Les poses debout/assises ne recoivent pas les tenues `body`, car leurs assets complets ne fournissent pas de calque vetement separable.
+- details noirs CSS-Peeps : quand une couche noire represente une masse de vetement, `OpenPeepComposer` recolore le SVG de detail CSS-Peeps existant et ajoute un stroke noir sur le meme path. Les tenues a deux zones activent `outfitSecondary`.
+- limite bodies : les poses debout/assises ne recoivent pas les tenues `body`, car leurs assets complets ne fournissent pas de calque vetement separable.
 
 Preparation Etape 5 du 2026-06-13 :
 

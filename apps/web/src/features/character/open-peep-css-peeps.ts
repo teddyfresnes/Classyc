@@ -5,43 +5,133 @@ import { fixedInkColor } from '@/features/character/open-peep-colors';
 type CssPeepFraming = 'full' | 'head' | 'outfit';
 
 interface CssPeepRenderData {
+	detailRecolor?: CssPeepDetailRecolor;
 	tokens: string;
 	style: CSSProperties;
 }
 
+export interface CssPeepDetailRecolor {
+	fillColor: string;
+	sourceVariable: string;
+	strokeColor: string;
+	strokeWidth: number;
+}
+
+type OutfitColorSlot = 'outfit' | 'outfitSecondary';
+
+interface BodyColorRule {
+	clothesColor: OutfitColorSlot;
+	detailFill?: OutfitColorSlot;
+	secondary: boolean;
+	strokeWidth?: number;
+	token: string;
+}
+
 const transparentPeepPart = 'url("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7")';
 
-const bodyTokens: Record<string, string> = {
-	'Blazer Black Tee': 'blazer',
-	'Button Shirt 1': 'buttonup1',
-	'Button Shirt 2': 'buttonup2',
-	Coffee: 'coffee',
-	Device: 'phone',
-	Dress: 'dress',
-	Explaining: 'explaining',
-	'Fur Jacket': 'jacket',
-	Gaming: 'gaming',
-	'Gym Shirt': 'tank',
-	Hoodie: 'hoodie',
-	Killer: 'killer',
-	Macbook: 'laptop',
-	Paper: 'paper',
-	'Pointing Up': 'pointing-up',
-	'Polka Dot Jacket': 'polkadot-jacket',
-	'Polo and Sweater': 'polo-sweater',
-	'Shirt and Coat': 'shirt-coat',
-	'Sporty Tee': 'sporty-tee',
-	'Striped Pocket Tee': 'striped-pocket-tee',
-	'Striped Tee': 'striped-tee',
-	Sweater: 'sweater-crossed',
-	'Sweater Dots': 'sweater-dots',
-	'Tee 1': 'tee1',
-	'Tee 2': 'tee2',
-	'Tee Arms Crossed': 'tee-crossed',
-	'Tee Selena': 'tee-selena',
-	'Thunder T-Shirt': 'thunder-tee',
-	Turtleneck: 'turtleneck',
-	Whatever: 'shrug'
+const bodyRules: Record<string, BodyColorRule> = {
+	'Blazer Black Tee': createBodyRule('blazer', {
+		detailFill: 'outfitSecondary',
+		secondary: true
+	}),
+	'Button Shirt 1': createBodyRule('buttonup1'),
+	'Button Shirt 2': createBodyRule('buttonup2'),
+	Coffee: createBodyRule('coffee'),
+	Device: createBodyRule('phone'),
+	Dress: createBodyRule('dress', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	}),
+	Explaining: createBodyRule('explaining'),
+	'Fur Jacket': createBodyRule('jacket', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	Gaming: createBodyRule('gaming'),
+	'Gym Shirt': createBodyRule('tank', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	}),
+	Hoodie: createBodyRule('hoodie'),
+	Killer: createBodyRule('killer', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	}),
+	Macbook: createBodyRule('laptop'),
+	Paper: createBodyRule('paper', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Pointing Up': createBodyRule('pointing-up', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Polka Dot Jacket': createBodyRule('polkadot-jacket', {
+		detailFill: 'outfitSecondary',
+		secondary: true
+	}),
+	'Polo and Sweater': createBodyRule('polo-sweater', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Shirt and Coat': createBodyRule('shirt-coat', {
+		detailFill: 'outfitSecondary',
+		secondary: true
+	}),
+	'Sporty Tee': createBodyRule('sporty-tee', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Striped Pocket Tee': createBodyRule('striped-pocket-tee', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Striped Tee': createBodyRule('striped-tee', {
+		secondary: true
+	}),
+	Sweater: createBodyRule('sweater-crossed', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Sweater Dots': createBodyRule('sweater-dots', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Tee 1': createBodyRule('tee1'),
+	'Tee 2': createBodyRule('tee2', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	}),
+	'Tee Arms Crossed': createBodyRule('tee-crossed', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	}),
+	'Tee Selena': createBodyRule('tee-selena', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	'Thunder T-Shirt': createBodyRule('thunder-tee', {
+		clothesColor: 'outfitSecondary',
+		detailFill: 'outfit',
+		secondary: true
+	}),
+	Turtleneck: createBodyRule('turtleneck', {
+		detailFill: 'outfit',
+		strokeWidth: 7
+	}),
+	Whatever: createBodyRule('shrug', {
+		detailFill: 'outfit',
+		strokeWidth: 6
+	})
 };
 
 const headTokens: Record<string, string> = {
@@ -157,12 +247,17 @@ const accessoryTokens: Record<string, string> = {
 };
 
 export function canRenderCssPeep(customization: OpenPeepCustomization) {
-	return Boolean(bodyTokens[customization.bodyId]);
+	return Boolean(bodyRules[customization.bodyId]);
+}
+
+export function hasSecondaryOutfitColor(bodyId: string) {
+	return Boolean(bodyRules[bodyId]?.secondary);
 }
 
 export function createCssPeepRenderData(customization: OpenPeepCustomization, framing: CssPeepFraming): CssPeepRenderData {
+	const bodyRule = bodyRules[customization.bodyId];
 	const tokens = [
-		bodyTokens[customization.bodyId],
+		bodyRule?.token,
 		framing === 'outfit' ? undefined : headTokens[customization.headId],
 		framing === 'outfit' ? undefined : faceTokens[customization.faceId],
 		framing === 'outfit' || customization.facialHairId === '_ None' ? undefined : facialHairTokens[customization.facialHairId],
@@ -170,10 +265,16 @@ export function createCssPeepRenderData(customization: OpenPeepCustomization, fr
 	].filter((token): token is string => Boolean(token));
 
 	return {
+		detailRecolor: bodyRule?.detailFill ? {
+			fillColor: customization.colors[bodyRule.detailFill],
+			sourceVariable: `--peep_${bodyRule.token.replace(/-/g, '_')}_detail`,
+			strokeColor: fixedInkColor,
+			strokeWidth: bodyRule.strokeWidth ?? 6
+		} : undefined,
 		tokens: tokens.join(' '),
 		style: {
 			'--peep-accessory-color': customization.colors.accessory,
-			'--peep-clothes-color': customization.colors.outfit,
+			'--peep-clothes-color': bodyRule ? customization.colors[bodyRule.clothesColor] : customization.colors.outfit,
 			'--peep-facial-hair-color': customization.colors.hair,
 			'--peep-hair-color': customization.colors.hair,
 			'--peep-hat-color': fixedInkColor,
@@ -182,6 +283,16 @@ export function createCssPeepRenderData(customization: OpenPeepCustomization, fr
 			...(framing === 'head' ? createHeadFramingStyle() : {}),
 			...(framing === 'outfit' ? createOutfitFramingStyle() : {})
 		} as CSSProperties
+	};
+}
+
+function createBodyRule(token: string, rule: Partial<Omit<BodyColorRule, 'token'>> = {}): BodyColorRule {
+	return {
+		clothesColor: rule.clothesColor ?? 'outfit',
+		detailFill: rule.detailFill,
+		secondary: rule.secondary ?? false,
+		strokeWidth: rule.strokeWidth,
+		token
 	};
 }
 

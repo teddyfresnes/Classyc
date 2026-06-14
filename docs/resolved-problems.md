@@ -62,7 +62,9 @@ Recherche : la page officielle Open Peeps confirme que le noir/blanc est une bas
 
 Resolution : supprimer `apps/web/src/features/character/open-peep-body-recolor.ts`, installer `css-peeps`, importer `css-peeps/css-peeps.compat.css`, puis ajouter `apps/web/src/features/character/open-peep-css-peeps.ts` avec un mapping explicite des 30 bodies locaux vers les tokens CSS-Peeps. Les bustes et previews `Tenues` utilisent maintenant `--peep-skin-color`, `--peep-clothes-color` et `--peep-object-color`, tandis que les contours et details noirs viennent des masques de detail CSS-Peeps.
 
-Limites : les assets locaux restent trop aplatis pour etre recolorises proprement chemin par chemin. Les poses debout/assises ne sont pas recolorisees par tenue. Certaines tenues restent volontairement majoritairement noires ou blanches quand le dessin Open Peeps/CSS-Peeps les definit ainsi ; seules leurs zones colorisables prennent la couleur de tenue.
+Suite feedback : plusieurs bodies CSS-Peeps gardaient encore leur masse de vetement dans une couche de detail noire (`Turtleneck`, `Sweater Dots`, `Gym Shirt`, `Dress`, etc.). Resolution : declarer par body si ce detail noir represente la couleur principale ou secondaire, recolorer le SVG de detail CSS-Peeps existant a l'execution, puis ajouter un stroke noir sur le meme path pour conserver les contours. Les bodies a deux zones exposent `outfitSecondary` uniquement dans l'UI quand ils en ont besoin.
+
+Limites : les assets locaux restent trop aplatis pour etre recolorises proprement chemin par chemin. Les poses debout/assises ne sont pas recolorisees par tenue. La correction ne cree pas de nouvelle forme ; elle ne peut donc pas separer des sous-zones qui ne sont pas deja representees par le detail CSS-Peeps.
 
 ## 2026-06-13 - Libelle chinois degrade dans TypeScript
 

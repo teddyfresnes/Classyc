@@ -1477,6 +1477,16 @@ button {
 	}
 }
 
+.open-peep-css-peep[data-recolored-body-detail="true"]::after {
+	--peep_detail: var(--peep_accessory_detail, )
+		var(--peep_facial_hair_detail, )
+		var(--peep_face_detail, )
+		var(--peep_head_detail, )
+		var(--peep_body_detail, var(--peep_invisible));
+	background: var(--peep_detail);
+	mix-blend-mode: normal;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,

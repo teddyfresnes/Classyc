@@ -25,8 +25,10 @@ Derniere etape appliquee :
 - `CharacterCreator` fournit l'interface de creation : apercu, onglets dans l'ordre cheveux/visage/barbe/accessoires/tenues/poses, grilles d'options, pastilles rondes contextuelles sous le personnage et inputs couleur.
 - Les tenues restent limitees au buste : selectionner une tenue met a jour `bodyId`, sans recomposer les assets debout/assis.
 - La colorisation des 30 bodies en mode buste est corrigee via `css-peeps` et `open-peep-css-peeps.ts`, avec un mapping explicite de chaque tenue locale vers un token Open Peeps colorisable.
+- Les tenues dont la masse principale etait dans la couche noire CSS-Peeps recolorent ce detail existant avec la couleur principale, tout en gardant un stroke noir sur le meme path.
+- Les tenues avec deux zones personnalisables utilisent `outfitSecondary`; les pastilles secondaires s'affichent seulement pour ces bodies.
 - Les SVG `body` locaux restent documentes comme trop aplatis pour une recolorisation fiable chemin par chemin ; les poses debout/assises ne recoivent pas les tenues `body`.
-- Les couleurs configurables sont : peau, cheveux, tenue et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
+- Les couleurs configurables sont : peau, cheveux, tenue, tenue secondaire quand disponible, et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.

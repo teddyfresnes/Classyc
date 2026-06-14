@@ -21,6 +21,7 @@ export interface CharacterCreatorCopy {
 		accessory: string;
 		hair: string;
 		outfit: string;
+		outfitSecondary: string;
 		skin: string;
 	};
 	none: string;
@@ -90,6 +91,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				accessory: 'Accessoire',
 				hair: 'Cheveux',
 				outfit: 'Tenue',
+				outfitSecondary: 'Secondaire',
 				skin: 'Peau'
 			},
 			none: 'Aucun',
@@ -191,6 +193,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				accessory: 'Accessory',
 				hair: 'Hair',
 				outfit: 'Outfit',
+				outfitSecondary: 'Secondary',
 				skin: 'Skin'
 			},
 			none: 'None',
@@ -292,6 +295,7 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				accessory: '配件',
 				hair: '头发',
 				outfit: '服装',
+				outfitSecondary: '\u6b21\u8272',
 				skin: '肤色'
 			},
 			none: '无',
