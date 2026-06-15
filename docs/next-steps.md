@@ -28,8 +28,8 @@ Derniere etape appliquee :
 - Les tenues dont la masse principale etait dans la couche noire CSS-Peeps recolorent ce detail existant avec la couleur principale, tout en gardant un stroke noir sur le meme path.
 - Les tenues avec deux zones personnalisables utilisent `outfitSecondary`; les pastilles secondaires s'affichent seulement pour ces bodies.
 - Les contours des details CSS-Peeps recolores ont ete renforces en noir et arrondis apres feedback, pour eviter que les contours de bodies comme `Blazer Black Tee`, `Dress` ou `Sweater` prennent la couleur principale ou secondaire.
-- Ajustement feedback 2026-06-15 au cas par cas : `Blazer Black Tee` et `Polka Dot Jacket` ont un stroke noir plus fort pour les lignes autour de la couleur secondaire ; la plupart des bodies signales ont un stroke noir intermediaire ; `Sweater` garde un stroke plus leger pour preserver les taches.
-- `Macbook` ajoute une couche de peau ciblee dans `--peep-body-paint` pour le bras visible sous l'objet, et `Paper` utilise le stroke renforce pour mieux connecter poignets, manches et mains.
+- Ajustement feedback 2026-06-15 au cas par cas : `Blazer Black Tee` et `Polka Dot Jacket` ont un stroke noir specifique pour les lignes autour de la couleur secondaire ; la plupart des bodies signales ont un stroke noir intermediaire ; ces strokes ont ensuite ete reduits car ils etaient trop epais.
+- `Macbook` ajoute une couche de peau ciblee dans `--peep-body-paint` pour le bras visible sous l'objet, et `Paper` utilise un stroke ajuste pour mieux connecter poignets, manches et mains.
 - `Sweater` utilise maintenant la couleur principale pour la masse du vetement et `outfitSecondary` pour les taches.
 - Les SVG `body` locaux restent documentes comme trop aplatis pour une recolorisation fiable chemin par chemin ; les poses debout/assises ne recoivent pas les tenues `body`.
 - Les couleurs configurables sont : peau, cheveux, tenue, tenue secondaire quand disponible, et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.

@@ -34,7 +34,7 @@ const bodyRules: Record<string, BodyColorRule> = {
 	'Blazer Black Tee': createBodyRule('blazer', {
 		detailFill: 'outfitSecondary',
 		secondary: true,
-		strokeWidth: 18
+		strokeWidth: 14
 	}),
 	'Button Shirt 1': createBodyRule('buttonup1'),
 	'Button Shirt 2': createBodyRule('buttonup2'),
@@ -42,24 +42,24 @@ const bodyRules: Record<string, BodyColorRule> = {
 	Device: createBodyRule('phone'),
 	Dress: createBodyRule('dress', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Explaining: createBodyRule('explaining'),
 	'Fur Jacket': createBodyRule('jacket', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Gaming: createBodyRule('gaming'),
 	'Gym Shirt': createBodyRule('tank', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Hoodie: createBodyRule('hoodie'),
 	Killer: createBodyRule('killer', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Macbook: createBodyRule('laptop', {
 		bodyPaint: 'var(--peep_laptop_paint) linear-gradient(var(--peep-skin-color) 0 100%) calc(72% + var(--peep_b_o_x)) calc(96% + var(--peep_b_o_y)) / 7% 17% no-repeat,'
@@ -68,7 +68,7 @@ const bodyRules: Record<string, BodyColorRule> = {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Pointing Up': createBodyRule('pointing-up', {
 		clothesColor: 'outfitSecondary',
@@ -78,30 +78,30 @@ const bodyRules: Record<string, BodyColorRule> = {
 	'Polka Dot Jacket': createBodyRule('polkadot-jacket', {
 		detailFill: 'outfitSecondary',
 		secondary: true,
-		strokeWidth: 18
+		strokeWidth: 14
 	}),
 	'Polo and Sweater': createBodyRule('polo-sweater', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Shirt and Coat': createBodyRule('shirt-coat', {
 		detailFill: 'outfitSecondary',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Sporty Tee': createBodyRule('sporty-tee', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Striped Pocket Tee': createBodyRule('striped-pocket-tee', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Striped Tee': createBodyRule('striped-tee', {
 		secondary: true
@@ -109,7 +109,7 @@ const bodyRules: Record<string, BodyColorRule> = {
 	Sweater: createBodyRule('sweater-crossed', {
 		detailFill: 'outfitSecondary',
 		secondary: true,
-		strokeWidth: 12
+		strokeWidth: 10
 	}),
 	'Sweater Dots': createBodyRule('sweater-dots', {
 		clothesColor: 'outfitSecondary',
@@ -119,31 +119,31 @@ const bodyRules: Record<string, BodyColorRule> = {
 	'Tee 1': createBodyRule('tee1'),
 	'Tee 2': createBodyRule('tee2', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Tee Arms Crossed': createBodyRule('tee-crossed', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Tee Selena': createBodyRule('tee-selena', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	'Thunder T-Shirt': createBodyRule('thunder-tee', {
 		clothesColor: 'outfitSecondary',
 		detailFill: 'outfit',
 		secondary: true,
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Turtleneck: createBodyRule('turtleneck', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	}),
 	Whatever: createBodyRule('shrug', {
 		detailFill: 'outfit',
-		strokeWidth: 16
+		strokeWidth: 12
 	})
 };
 

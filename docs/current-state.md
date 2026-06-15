@@ -210,11 +210,11 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 
 ## Verification du 2026-06-15
 
-- Correction feedback contours tenues au cas par cas : `Blazer Black Tee` et `Polka Dot Jacket` utilisent un stroke noir plus fort pour conserver les lignes noires autour des zones secondaires.
-- Les bodies signales avec contours partiellement recolores (`Dress`, `Gym Shirt`, `Killer`, `Polo and Sweater`, `Tee 2`, `Tee Arms Crossed`, `Turtleneck`, `Whatever`, `Fur Jacket`, `Shirt and Coat`, `Sporty Tee`, `Striped Pocket Tee`, `Tee Selena`, `Thunder T-Shirt`) ont des largeurs de stroke ajustees individuellement.
-- `Sweater` garde un stroke plus leger pour conserver les taches secondaires lisibles.
+- Correction feedback contours tenues au cas par cas : `Blazer Black Tee` et `Polka Dot Jacket` gardent un stroke noir specifique pour conserver les lignes autour des zones secondaires, puis ce stroke a ete reduit apres feedback car il etait trop epais.
+- Les bodies signales avec contours partiellement recolores (`Dress`, `Gym Shirt`, `Killer`, `Polo and Sweater`, `Tee 2`, `Tee Arms Crossed`, `Turtleneck`, `Whatever`, `Fur Jacket`, `Shirt and Coat`, `Sporty Tee`, `Striped Pocket Tee`, `Tee Selena`, `Thunder T-Shirt`) ont des largeurs de stroke ajustees individuellement puis affinies.
+- `Sweater` garde le stroke le plus leger pour conserver les taches secondaires lisibles.
 - `Macbook` ajoute une petite couche de peau dans `--peep-body-paint` sous l'objet, afin que le bras visible ne prenne plus la couleur de tenue.
-- `Paper` garde le mapping existant mais utilise le stroke renforce pour mieux connecter poignets, manches et mains.
+- `Paper` garde le mapping existant mais utilise un stroke ajuste pour mieux connecter poignets, manches et mains sans lignes trop epaisses.
 - Aucun asset source Open Peeps n'a ete modifie.
 - `npm run lint` : OK.
 - `npm run typecheck` : OK.
