@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-14
+Date : 2026-06-15
 
 ## Statut court
 
@@ -207,6 +207,21 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification correction contours : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Planche Edge headless locale verifiee avec tenue bleue + secondaire rose.
 - Serveur local apres correction contours : deja actif et OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre retente apres correction contours : indisponible car le plugin Browser ne fournit pas `scripts/browser-client.mjs` dans cette session ; verification visuelle faite via Edge headless.
+
+## Verification du 2026-06-15
+
+- Correction feedback contours tenues au cas par cas : `Blazer Black Tee` et `Polka Dot Jacket` utilisent un stroke noir plus fort pour conserver les lignes noires autour des zones secondaires.
+- Les bodies signales avec contours partiellement recolores (`Dress`, `Gym Shirt`, `Killer`, `Polo and Sweater`, `Tee 2`, `Tee Arms Crossed`, `Turtleneck`, `Whatever`, `Fur Jacket`, `Shirt and Coat`, `Sporty Tee`, `Striped Pocket Tee`, `Tee Selena`, `Thunder T-Shirt`) ont des largeurs de stroke ajustees individuellement.
+- `Sweater` garde un stroke plus leger pour conserver les taches secondaires lisibles.
+- `Macbook` ajoute une petite couche de peau dans `--peep-body-paint` sous l'objet, afin que le bras visible ne prenne plus la couleur de tenue.
+- `Paper` garde le mapping existant mais utilise le stroke renforce pour mieux connecter poignets, manches et mains.
+- Aucun asset source Open Peeps n'a ete modifie.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
+- `git diff --check` : OK.
+- Serveur local : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
+- Verification visuelle via Playwright Chromium temporaire sur le vrai parcours onboarding/createur, avec tenue primaire bleue et secondaire rose.
 
 ## Reprise
 
