@@ -22,7 +22,7 @@ Derniere etape appliquee :
 - `OpenPeepComposer` compose les SVG Open Peeps pour debout, assis et cadrage tete fallback ; les bustes colorisables passent par CSS-Peeps.
 - `OpenPeepComposer` ajoute un cadrage `outfit` pour previsualiser les tenues de buste sans la tete dans les grilles.
 - La recolorisation est contextuelle : chapeaux/foulards en neutres sombres, cheveux et barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
-- `CharacterCreator` fournit l'interface de creation : apercu, onglets dans l'ordre cheveux/visage/barbe/accessoires/tenues/poses, grilles d'options, pastilles rondes contextuelles sous le personnage et inputs couleur.
+- `CharacterCreator` fournit l'interface de creation : apercu, onglets dans l'ordre cheveux/visage/barbe/accessoires/tenues, grilles d'options et pastilles rondes contextuelles sous le personnage.
 - Les tenues restent limitees au buste : selectionner une tenue met a jour `bodyId`, sans recomposer les assets debout/assis.
 - La colorisation des 30 bodies en mode buste est corrigee via `css-peeps` et `open-peep-css-peeps.ts`, avec un mapping explicite de chaque tenue locale vers un token Open Peeps colorisable.
 - Les tenues dont la masse principale etait dans la couche noire CSS-Peeps recolorent ce detail existant avec la couleur principale, tout en gardant un stroke noir sur le meme path.
@@ -32,14 +32,22 @@ Derniere etape appliquee :
 - `Macbook` ajoute une couche de peau ciblee dans `--peep-body-paint` pour le bras visible sous l'objet, et `Paper` utilise un stroke ajuste pour mieux connecter poignets, manches et mains.
 - `Sweater` utilise maintenant la couleur principale pour la masse du vetement et `outfitSecondary` pour les taches.
 - Les SVG `body` locaux restent documentes comme trop aplatis pour une recolorisation fiable chemin par chemin ; les poses debout/assises ne recoivent pas les tenues `body`.
-- Les couleurs configurables sont : peau, cheveux, tenue, tenue secondaire quand disponible, et accessoire. La section `Couleurs` a ete retiree et le trait/contour reste noir.
+- Les couleurs configurables sont : peau, cheveux, tenue, tenue secondaire quand disponible, et accessoire. La section `Couleurs`, les labels visibles de couleur et l'input couleur custom ont ete retires ; le trait/contour reste noir.
+- Feedback setup personnage 2026-06-20 : la popup personnage garde la taille des etapes langues/prenom sur desktop, affiche le buste compact a gauche et garde les onglets de categories fixes en haut du panneau droit pendant le scroll des options.
+- Les poses sont retirees du createur pendant le setup ; la personnalisation reste forcee en mode `bust` pour garder les tenues coherentes.
+- Correction feedback cheveux 2026-06-20 : le rendu CSS-Peeps du personnage recolorise aussi le calque `--peep-head-detail` pour les coiffures normales, afin que la couleur cheveux appliquee dans les previews soit identique sur le personnage selectionne.
+- Les pastilles de couleur utilisent un rail horizontal sans scrollbar native, pilote par deux boutons fleches gauche/droite.
+- L'apercu personnage est agrandi dans sa zone desktop/mobile.
+- Correction feedback cheveux applique 2026-06-20 : l'apercu principal du buste utilise maintenant un rendu hybride, avec corps/tenue CSS-Peeps et tete SVG Open Peeps original, pour que la coupe appliquee corresponde aux previews sans formes noires parasites autour du crane.
+- Le calque `--peep-head-detail` CSS-Peeps est neutralise sur le rendu principal ; CSS-Peeps reste utilise pour les tenues colorisables et les previews de tenues.
+- La zone personnage a ete encore agrandie en desktop/mobile.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.
-- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-15, y compris le retrait du rendu force sur poses, la correction CSS-Peeps des tenues de buste et la correction des contours noirs des bodies recolores.
-- `git diff --check` passe ; verification visuelle Playwright Chromium faite sur le vrai parcours onboarding/createur avec tenue primaire bleue et secondaire rose.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-20, y compris la popup personnage contrainte, le retrait des poses dans le setup, le rail de pastilles avec fleches, la preview agrandie, le rendu hybride corps CSS-Peeps + tete SVG, la couleur cheveux appliquee au rendu principal et la correction CSS-Peeps des tenues de buste.
+- `git diff --check` passe ; verification visuelle Chrome headless faite sur le vrai parcours onboarding/createur en desktop et mobile, plus test rapide de 41 coiffures normales sans remplissage noir parasite.
 - Serveur local verifie sur `http://127.0.0.1:5173/`, status HTTP 200.
-- Navigateur integre indisponible dans cette session (`agent.browsers.list()` retourne `[]`).
+- Navigateur integre indisponible dans cette session (`Browser is not available: iab`).
 - Note build : Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont inclus pour le createur complet.
 
 Garde-fous UX conserves :

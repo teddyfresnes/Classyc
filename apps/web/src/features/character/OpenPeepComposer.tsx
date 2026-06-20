@@ -24,7 +24,7 @@ interface SvgColorSemantics {
 
 interface CssPeepElementProps {
 	className?: string;
-	detailRecolor?: CssPeepDetailRecolor;
+	detailRecolors: CssPeepDetailRecolor[];
 	style: CSSProperties;
 	title?: string;
 	tokens: string;
@@ -166,17 +166,37 @@ export function OpenPeepComposer({
 	const viewBox = getComposerViewBox(layout, framing);
 
 	if (resolvedCustomization.postureMode === 'bust' && canRenderCssPeep(resolvedCustomization)) {
-		const cssPeep = createCssPeepRenderData(resolvedCustomization, framing);
+		if (framing === 'outfit') {
+			const cssPeep = createCssPeepRenderData(resolvedCustomization, 'outfit');
 
-		return (
-			<CssPeepElement
-				className={className}
-				detailRecolor={cssPeep.detailRecolor}
-				style={cssPeep.style}
-				title={title}
-				tokens={cssPeep.tokens}
-			/>
-		);
+			return (
+				<CssPeepElement
+					className={className}
+					detailRecolors={cssPeep.detailRecolors}
+					style={cssPeep.style}
+					title={title}
+					tokens={cssPeep.tokens}
+				/>
+			);
+		}
+
+		if (framing === 'full') {
+			const cssPeep = createCssPeepRenderData(resolvedCustomization, 'body');
+
+			return (
+				<OpenPeepHybridBust
+					accessoriesAsset={accessoriesAsset}
+					className={className}
+					cssPeep={cssPeep}
+					customization={resolvedCustomization}
+					faceAsset={faceAsset}
+					facialHairAsset={facialHairAsset}
+					headAsset={headAsset}
+					layout={layout}
+					title={title}
+				/>
+			);
+		}
 	}
 
 	return (
@@ -234,40 +254,122 @@ export function OpenPeepComposer({
 	);
 }
 
+function OpenPeepHybridBust({
+	accessoriesAsset,
+	className,
+	cssPeep,
+	customization,
+	faceAsset,
+	facialHairAsset,
+	headAsset,
+	layout,
+	title
+}: {
+	accessoriesAsset: OpenPeepAtomAsset;
+	className?: string;
+	cssPeep: ReturnType<typeof createCssPeepRenderData>;
+	customization: OpenPeepCustomization;
+	faceAsset: OpenPeepAtomAsset;
+	facialHairAsset: OpenPeepAtomAsset;
+	headAsset: OpenPeepAtomAsset;
+	layout: ComposerLayout;
+	title?: string;
+}) {
+	return (
+		<div
+			aria-hidden={title ? undefined : true}
+			aria-label={title}
+			className={['open-peep-hybrid-bust', className].filter(Boolean).join(' ')}
+			role={title ? 'img' : undefined}
+		>
+			<CssPeepElement
+				className="open-peep-hybrid-bust__body"
+				detailRecolors={cssPeep.detailRecolors}
+				style={cssPeep.style}
+				tokens={cssPeep.tokens}
+			/>
+			<svg
+				aria-hidden="true"
+				className="open-peep-hybrid-bust__head"
+				focusable="false"
+				viewBox={layout.viewBox}
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1" transform={`translate(${layout.head.x} ${layout.head.y})`}>
+					<OpenPeepSvgGroup asset={headAsset} category="head" customization={customization} />
+					<OpenPeepSvgGroup
+						asset={faceAsset}
+						category="face"
+						customization={customization}
+						transform={`translate(${layout.face.x} ${layout.face.y})`}
+					/>
+					<OpenPeepSvgGroup
+						asset={facialHairAsset}
+						category="facialHair"
+						customization={customization}
+						transform={`translate(${layout.facialHair.x} ${layout.facialHair.y})`}
+					/>
+					<OpenPeepSvgGroup
+						asset={accessoriesAsset}
+						category="accessories"
+						customization={customization}
+						transform={`translate(${layout.accessories.x} ${layout.accessories.y})`}
+					/>
+				</g>
+			</svg>
+		</div>
+	);
+}
+
 function CssPeepElement({
 	className,
-	detailRecolor,
+	detailRecolors,
 	style,
 	title,
 	tokens
 }: CssPeepElementProps) {
 	const elementRef = useRef<HTMLDivElement>(null);
-	const [bodyDetailOverride, setBodyDetailOverride] = useState<string | null>(null);
+	const [detailOverrides, setDetailOverrides] = useState<Record<string, string> | null>(null);
+	const detailRecolorKey = detailRecolors
+		.map((detailRecolor) => [
+			detailRecolor.outputVariable,
+			detailRecolor.sourceVariable,
+			detailRecolor.fillColor,
+			detailRecolor.strokeColor ?? '',
+			detailRecolor.strokeWidth ?? ''
+		].join(':'))
+		.join('|');
+	const stableDetailRecolors = useMemo(() => detailRecolors, [detailRecolorKey]);
 
 	useLayoutEffect(() => {
-		if (!detailRecolor || !elementRef.current) {
-			setBodyDetailOverride(null);
+		if (stableDetailRecolors.length === 0 || !elementRef.current) {
+			setDetailOverrides(null);
 			return;
 		}
 
-		const sourceDetail = getComputedStyle(elementRef.current)
-			.getPropertyValue(detailRecolor.sourceVariable)
-			.trim();
-		const recoloredDetail = createRecoloredCssPeepDetail(sourceDetail, detailRecolor);
+		const computedStyle = getComputedStyle(elementRef.current);
+		const nextOverrides = Object.fromEntries(stableDetailRecolors.flatMap((detailRecolor) => {
+			const sourceDetail = computedStyle
+				.getPropertyValue(detailRecolor.sourceVariable)
+				.trim();
+			const recoloredDetail = createRecoloredCssPeepDetail(sourceDetail, detailRecolor);
 
-		setBodyDetailOverride(recoloredDetail);
-	}, [detailRecolor?.fillColor, detailRecolor?.sourceVariable, detailRecolor?.strokeColor, detailRecolor?.strokeWidth]);
+			return recoloredDetail ? [[detailRecolor.outputVariable, recoloredDetail]] : [];
+		}));
+
+		setDetailOverrides(Object.keys(nextOverrides).length > 0 ? nextOverrides : null);
+	}, [detailRecolorKey, stableDetailRecolors]);
 
 	const mergedStyle = useMemo(() => {
-		if (!bodyDetailOverride) {
+		if (!detailOverrides) {
 			return style;
 		}
 
 		return {
 			...style,
-			'--peep-body-detail': bodyDetailOverride
+			...detailOverrides
 		} as CSSProperties;
-	}, [bodyDetailOverride, style]);
+	}, [detailOverrides, style]);
 
 	return (
 		<div
@@ -275,7 +377,7 @@ function CssPeepElement({
 			aria-label={title}
 			className={['open-peep-css-peep', className].filter(Boolean).join(' ')}
 			data-css-peeps={tokens}
-			data-recolored-body-detail={detailRecolor ? true : undefined}
+			data-recolored-detail={detailRecolors.length > 0 ? true : undefined}
 			ref={elementRef}
 			role={title ? 'img' : undefined}
 			style={mergedStyle}
@@ -290,10 +392,10 @@ function createRecoloredCssPeepDetail(sourceDetail: string, detailRecolor: CssPe
 		return null;
 	}
 
-	const recoloredSvg = svg.replace(
-		/<path fill="#000"/g,
-		`<path fill="${detailRecolor.fillColor}" stroke="${detailRecolor.strokeColor}" stroke-width="${detailRecolor.strokeWidth}" stroke-linecap="round" stroke-linejoin="round"`
-	);
+	const strokeAttributes = detailRecolor.strokeColor && detailRecolor.strokeWidth
+		? ` stroke="${detailRecolor.strokeColor}" stroke-width="${detailRecolor.strokeWidth}" stroke-linecap="round" stroke-linejoin="round"`
+		: '';
+	const recoloredSvg = svg.replace(/<path fill="#000"/g, `<path fill="${detailRecolor.fillColor}"${strokeAttributes}`);
 
 	return `url("data:image/svg+xml,${encodeURIComponent(recoloredSvg)}")`;
 }

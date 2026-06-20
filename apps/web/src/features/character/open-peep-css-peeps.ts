@@ -2,19 +2,20 @@ import type { CSSProperties } from 'react';
 import type { OpenPeepCustomization } from '@classyc/shared';
 import { fixedInkColor } from '@/features/character/open-peep-colors';
 
-type CssPeepFraming = 'full' | 'head' | 'outfit';
+type CssPeepFraming = 'full' | 'head' | 'outfit' | 'body';
 
 interface CssPeepRenderData {
-	detailRecolor?: CssPeepDetailRecolor;
+	detailRecolors: CssPeepDetailRecolor[];
 	tokens: string;
 	style: CSSProperties;
 }
 
 export interface CssPeepDetailRecolor {
 	fillColor: string;
+	outputVariable: string;
 	sourceVariable: string;
-	strokeColor: string;
-	strokeWidth: number;
+	strokeColor?: string;
+	strokeWidth?: number;
 }
 
 type OutfitColorSlot = 'outfit' | 'outfitSecondary';
@@ -269,21 +270,25 @@ export function hasSecondaryOutfitColor(bodyId: string) {
 
 export function createCssPeepRenderData(customization: OpenPeepCustomization, framing: CssPeepFraming): CssPeepRenderData {
 	const bodyRule = bodyRules[customization.bodyId];
+	const headToken = headTokens[customization.headId];
+	const shouldRenderHead = framing !== 'outfit' && framing !== 'body';
+	const bodyDetailRecolor: CssPeepDetailRecolor | undefined = bodyRule?.detailFill ? {
+		fillColor: customization.colors[bodyRule.detailFill],
+		outputVariable: '--peep-body-detail',
+		sourceVariable: `--peep_${bodyRule.token.replace(/-/g, '_')}_detail`,
+		strokeColor: fixedInkColor,
+		strokeWidth: bodyRule.strokeWidth ?? 10
+	} : undefined;
 	const tokens = [
 		bodyRule?.token,
-		framing === 'outfit' ? undefined : headTokens[customization.headId],
-		framing === 'outfit' ? undefined : faceTokens[customization.faceId],
-		framing === 'outfit' || customization.facialHairId === '_ None' ? undefined : facialHairTokens[customization.facialHairId],
-		framing === 'outfit' || customization.accessoryId === '_ None' ? undefined : accessoryTokens[customization.accessoryId]
+		shouldRenderHead ? headToken : undefined,
+		shouldRenderHead ? faceTokens[customization.faceId] : undefined,
+		shouldRenderHead && customization.facialHairId !== '_ None' ? facialHairTokens[customization.facialHairId] : undefined,
+		shouldRenderHead && customization.accessoryId !== '_ None' ? accessoryTokens[customization.accessoryId] : undefined
 	].filter((token): token is string => Boolean(token));
 
 	return {
-		detailRecolor: bodyRule?.detailFill ? {
-			fillColor: customization.colors[bodyRule.detailFill],
-			sourceVariable: `--peep_${bodyRule.token.replace(/-/g, '_')}_detail`,
-			strokeColor: fixedInkColor,
-			strokeWidth: bodyRule.strokeWidth ?? 10
-		} : undefined,
+		detailRecolors: [bodyDetailRecolor].filter((recolor): recolor is CssPeepDetailRecolor => Boolean(recolor)),
 		tokens: tokens.join(' '),
 		style: {
 			'--peep-accessory-color': customization.colors.accessory,
@@ -291,6 +296,8 @@ export function createCssPeepRenderData(customization: OpenPeepCustomization, fr
 			'--peep-facial-hair-color': customization.colors.hair,
 			'--peep-hair-color': customization.colors.hair,
 			'--peep-hat-color': fixedInkColor,
+			...(framing !== 'outfit' ? createCleanHeadStyle() : {}),
+			...(framing === 'body' ? createBodyOnlyStyle() : {}),
 			'--peep-object-color': '#F8FAFC',
 			...(bodyRule?.bodyPaint ? { '--peep-body-paint': bodyRule.bodyPaint } : {}),
 			'--peep-skin-color': customization.colors.skin,
@@ -298,6 +305,25 @@ export function createCssPeepRenderData(customization: OpenPeepCustomization, fr
 			...(framing === 'outfit' ? createOutfitFramingStyle() : {})
 		} as CSSProperties
 	};
+}
+
+function createCleanHeadStyle(): CSSProperties {
+	return {
+		'--peep-head-detail': transparentPeepPart
+	} as CSSProperties;
+}
+
+function createBodyOnlyStyle(): CSSProperties {
+	return {
+		'--peep-accessory-detail': transparentPeepPart,
+		'--peep-accessory-mask': transparentPeepPart,
+		'--peep-face-detail': transparentPeepPart,
+		'--peep-face-mask': transparentPeepPart,
+		'--peep-facial-hair-detail': transparentPeepPart,
+		'--peep-facial-hair-mask': transparentPeepPart,
+		'--peep-head-detail': transparentPeepPart,
+		'--peep-head-mask': transparentPeepPart
+	} as CSSProperties;
 }
 
 function createBodyRule(token: string, rule: Partial<Omit<BodyColorRule, 'token'>> = {}): BodyColorRule {

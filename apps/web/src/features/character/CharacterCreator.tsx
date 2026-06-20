@@ -1,16 +1,17 @@
 import { motion } from 'framer-motion';
 import {
+	ChevronLeft,
+	ChevronRight,
 	Glasses,
-	PersonStanding,
 	Scissors,
 	Shirt,
 	Smile,
 	UserRound
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
-import type { OpenPeepCustomization, OpenPeepCustomizationColors, OpenPeepPostureMode } from '@classyc/shared';
+import type { OpenPeepCustomization, OpenPeepCustomizationColors } from '@classyc/shared';
 import {
 	openPeepAtomAssets,
 	resolveOpenPeepCustomization
@@ -26,8 +27,9 @@ type CharacterCreatorCategory =
 	| 'head'
 	| 'face'
 	| 'facialHair'
-	| 'accessories'
-	| 'posture';
+	| 'accessories';
+
+type EditableOpenPeepAtomCategory = Exclude<OpenPeepAtomCategory, 'standingPose' | 'sittingPose'>;
 
 type CharacterColorKey = Exclude<keyof OpenPeepCustomizationColors, 'ink'>;
 
@@ -42,8 +44,7 @@ const categoryIcons: Record<CharacterCreatorCategory, LucideIcon> = {
 	head: UserRound,
 	face: Smile,
 	facialHair: Scissors,
-	accessories: Glasses,
-	posture: PersonStanding
+	accessories: Glasses
 };
 
 const creatorCategories: readonly CharacterCreatorCategory[] = [
@@ -51,11 +52,10 @@ const creatorCategories: readonly CharacterCreatorCategory[] = [
 	'face',
 	'facialHair',
 	'accessories',
-	'body',
-	'posture'
+	'body'
 ] as const;
 
-const assetCategoryByCreatorCategory: Partial<Record<CharacterCreatorCategory, OpenPeepAtomCategory>> = {
+const assetCategoryByCreatorCategory: Record<CharacterCreatorCategory, EditableOpenPeepAtomCategory> = {
 	body: 'body',
 	head: 'head',
 	face: 'face',
@@ -71,16 +71,18 @@ const colorPalettes: Record<CharacterColorKey, readonly string[]> = {
 	accessory: ['#111827', '#2563EB', '#0EA5E9', '#F59E0B', '#EF4444', '#A855F7', '#64748B', '#F8FAFC']
 };
 
-const postureModes: readonly OpenPeepPostureMode[] = ['bust', 'standing', 'sitting'] as const;
-
 export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProps) {
-	const customization = resolveOpenPeepCustomization(value);
+	const customization = {
+		...resolveOpenPeepCustomization(value),
+		postureMode: 'bust' as const
+	};
 	const [activeCategory, setActiveCategory] = useState<CharacterCreatorCategory>('body');
 
 	function patchCustomization(patch: Partial<OpenPeepCustomization>) {
 		onChange(resolveOpenPeepCustomization({
 			...customization,
-			...patch
+			...patch,
+			postureMode: 'bust'
 		}));
 	}
 
@@ -134,16 +136,12 @@ export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProp
 				</div>
 
 				<div className="character-editor-body" role="tabpanel">
-					{activeCategory === 'posture' ? (
-						<PosturePanel copy={copy} customization={customization} onChange={patchCustomization} />
-					) : (
-						<AssetPanel
-							category={assetCategoryByCreatorCategory[activeCategory]!}
-							copy={copy}
-							customization={customization}
-							onChange={patchCustomization}
-						/>
-					)}
+					<AssetPanel
+						category={assetCategoryByCreatorCategory[activeCategory]}
+						copy={copy}
+						customization={customization}
+						onChange={patchCustomization}
+					/>
 				</div>
 			</div>
 		</section>
@@ -156,7 +154,7 @@ function AssetPanel({
 	customization,
 	onChange
 }: {
-	category: OpenPeepAtomCategory;
+	category: EditableOpenPeepAtomCategory;
 	copy: CharacterCreatorCopy;
 	customization: OpenPeepCustomization;
 	onChange: (patch: Partial<OpenPeepCustomization>) => void;
@@ -207,7 +205,7 @@ function AssetPreview({
 	customization
 }: {
 	asset: OpenPeepAtomAsset;
-	category: OpenPeepAtomCategory;
+	category: EditableOpenPeepAtomCategory;
 	customization: OpenPeepCustomization;
 }) {
 	if (category === 'body') {
@@ -239,91 +237,112 @@ function InlineColorControls({
 	onChange: (patch: Partial<OpenPeepCustomizationColors>) => void;
 }) {
 	const activeColorKeys = getActiveColorKeys(activeCategory, customization);
+	const colorDockKey = activeColorKeys.join('|');
+	const scrollRef = useRef<HTMLDivElement>(null);
+	const [scrollState, setScrollState] = useState({
+		canScrollLeft: false,
+		canScrollRight: false
+	});
+	const updateScrollState = useCallback(() => {
+		const scrollElement = scrollRef.current;
+
+		if (!scrollElement) {
+			setScrollState({
+				canScrollLeft: false,
+				canScrollRight: false
+			});
+			return;
+		}
+
+		const maxScrollLeft = scrollElement.scrollWidth - scrollElement.clientWidth;
+
+		setScrollState({
+			canScrollLeft: scrollElement.scrollLeft > 1,
+			canScrollRight: scrollElement.scrollLeft < maxScrollLeft - 1
+		});
+	}, []);
+
+	useEffect(() => {
+		updateScrollState();
+
+		const scrollElement = scrollRef.current;
+
+		if (!scrollElement) {
+			return;
+		}
+
+		const resizeObserver = new ResizeObserver(updateScrollState);
+		resizeObserver.observe(scrollElement);
+		window.addEventListener('resize', updateScrollState);
+
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener('resize', updateScrollState);
+		};
+	}, [colorDockKey, updateScrollState]);
+
+	function scrollColors(direction: -1 | 1) {
+		const scrollElement = scrollRef.current;
+
+		if (!scrollElement) {
+			return;
+		}
+
+		scrollElement.scrollBy({
+			behavior: 'smooth',
+			left: direction * Math.max(112, scrollElement.clientWidth * 0.7)
+		});
+	}
 
 	return (
 		<div className="character-color-dock">
-			{activeColorKeys.map((colorKey) => (
-				<div className="character-color-group" key={colorKey}>
-					<label className="character-color-label" htmlFor={`character-color-${colorKey}`}>
-						{copy.colors[colorKey]}
-					</label>
-					<div className="character-swatches">
-						{colorPalettes[colorKey].map((color) => {
-							const isSelected = normalizeColor(customization.colors[colorKey]) === normalizeColor(color);
+			<button
+				aria-label="Couleurs precedentes"
+				className="character-color-arrow"
+				disabled={!scrollState.canScrollLeft}
+				onClick={() => scrollColors(-1)}
+				type="button"
+			>
+				<ChevronLeft aria-hidden="true" size={17} strokeWidth={2.5} />
+			</button>
+			<div className="character-color-scroll" onScroll={updateScrollState} ref={scrollRef}>
+				{activeColorKeys.map((colorKey) => (
+					<div aria-label={copy.colors[colorKey]} className="character-color-group" key={colorKey} role="group">
+						<div className="character-swatches">
+							{colorPalettes[colorKey].map((color) => {
+								const isSelected = normalizeColor(customization.colors[colorKey]) === normalizeColor(color);
 
-							return (
-								<button
-									aria-label={`${copy.colors[colorKey]} ${color}`}
-									className="character-swatch"
-									data-selected={isSelected}
-									key={color}
-									onClick={() => onChange({ [colorKey]: color })}
-									style={{ backgroundColor: color }}
-									type="button"
-								/>
-							);
-						})}
+								return (
+									<button
+										aria-label={`${copy.colors[colorKey]} ${color}`}
+										className="character-swatch"
+										data-selected={isSelected}
+										key={color}
+										onClick={() => onChange({ [colorKey]: color })}
+										style={{ backgroundColor: color }}
+										title={copy.colors[colorKey]}
+										type="button"
+									/>
+								);
+							})}
+						</div>
 					</div>
-					<input
-						aria-label={copy.colors[colorKey]}
-						className="character-color-input"
-						id={`character-color-${colorKey}`}
-						onChange={(event) => onChange({ [colorKey]: event.target.value })}
-						type="color"
-						value={customization.colors[colorKey]}
-					/>
-				</div>
-			))}
-		</div>
-	);
-}
-
-function PosturePanel({
-	copy,
-	customization,
-	onChange
-}: {
-	copy: CharacterCreatorCopy;
-	customization: OpenPeepCustomization;
-	onChange: (patch: Partial<OpenPeepCustomization>) => void;
-}) {
-	const postureAssetCategory = customization.postureMode === 'sitting' ? 'sittingPose' : 'standingPose';
-	const showPoseGrid = customization.postureMode !== 'bust';
-
-	return (
-		<div className="character-posture-panel">
-			<div className="character-posture-modes" role="group" aria-label={copy.categories.posture}>
-				{postureModes.map((mode) => {
-					const isSelected = customization.postureMode === mode;
-
-					return (
-						<button
-							aria-pressed={isSelected}
-							className="character-posture-button"
-							data-selected={isSelected}
-							key={mode}
-							onClick={() => onChange({ postureMode: mode })}
-							type="button"
-						>
-							{copy.posture[mode]}
-						</button>
-					);
-				})}
+				))}
 			</div>
-
-			{showPoseGrid ? (
-				<AssetPanel
-					category={postureAssetCategory}
-					copy={copy}
-					customization={customization}
-					onChange={onChange}
-				/>
-			) : null}
+			<button
+				aria-label="Couleurs suivantes"
+				className="character-color-arrow"
+				disabled={!scrollState.canScrollRight}
+				onClick={() => scrollColors(1)}
+				type="button"
+			>
+				<ChevronRight aria-hidden="true" size={17} strokeWidth={2.5} />
+			</button>
 		</div>
 	);
 }
 
-function getSelectedAssetId(category: OpenPeepAtomCategory, customization: OpenPeepCustomization) {
+function getSelectedAssetId(category: EditableOpenPeepAtomCategory, customization: OpenPeepCustomization) {
 	switch (category) {
 		case 'body':
 			return customization.bodyId;
@@ -335,14 +354,10 @@ function getSelectedAssetId(category: OpenPeepAtomCategory, customization: OpenP
 			return customization.facialHairId;
 		case 'accessories':
 			return customization.accessoryId;
-		case 'standingPose':
-			return customization.standingPoseId;
-		case 'sittingPose':
-			return customization.sittingPoseId;
 	}
 }
 
-function getAssetPatch(category: OpenPeepAtomCategory, assetId: string): Partial<OpenPeepCustomization> {
+function getAssetPatch(category: EditableOpenPeepAtomCategory, assetId: string): Partial<OpenPeepCustomization> {
 	switch (category) {
 		case 'body':
 			return { bodyId: assetId };
@@ -354,10 +369,6 @@ function getAssetPatch(category: OpenPeepAtomCategory, assetId: string): Partial
 			return { facialHairId: assetId };
 		case 'accessories':
 			return { accessoryId: assetId };
-		case 'standingPose':
-			return { standingPoseId: assetId };
-		case 'sittingPose':
-			return { sittingPoseId: assetId };
 	}
 }
 
@@ -377,12 +388,10 @@ function getActiveColorKeys(activeCategory: CharacterCreatorCategory, customizat
 			return ['accessory'];
 		case 'body':
 			return hasSecondaryOutfitColor(customization.bodyId) ? ['outfit', 'outfitSecondary'] : ['outfit'];
-		case 'posture':
-			return ['outfit'];
 	}
 }
 
-function getOptionPreviewStyle(category: OpenPeepAtomCategory, customization: OpenPeepCustomization): CSSProperties {
+function getOptionPreviewStyle(category: EditableOpenPeepAtomCategory, customization: OpenPeepCustomization): CSSProperties {
 	if (category === 'face') {
 		return {
 			'--character-option-preview-bg': createReadablePreviewColor(customization.colors.skin)

@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-15
+Date : 2026-06-20
 
 ## Statut court
 
@@ -96,15 +96,23 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Index SVG Open Peeps centralisé dans `apps/web/src/assets/open-peeps-atoms.ts`.
 - Modèle partagé `OpenPeepCustomization` pour sauvegarder corps/tenue, tête/cheveux, visage, pilosité, accessoires, posture et couleurs.
 - L'onboarding contient une étape personnage après le prénom, avec un créateur complet plutôt qu'une simple galerie.
-- Le créateur affiche un aperçu personnage, des onglets avec icônes, des grilles d'options, des pastilles contextuelles et des inputs couleur.
+- Le créateur affiche un aperçu personnage, des onglets avec icônes, des grilles d'options et des pastilles contextuelles.
 - Couleurs configurables : peau, cheveux, tenue et accessoire. Le trait/contour reste noir.
 - `OpenPeepComposer` compose les SVG pour les postures debout/assis et le cadrage tete fallback ; les bustes colorisables passent par CSS-Peeps.
 - `OpenPeepComposer` supporte aussi un cadrage `outfit` pour previsualiser les tenues de buste sans la tete dans les grilles.
 - Les tenues restent limitees au mode buste : choisir une tenue met a jour `bodyId`, sans forcer ni recomposer les poses debout/assises.
 - La colorisation des tenues de buste passe par CSS-Peeps, car les SVG `body` locaux sont trop aplatis pour separer proprement peau, vetement, objet et details noirs chemin par chemin.
 - La recolorisation Open Peeps est contextuelle : chapeaux/foulards en neutres sombres, cheveux/barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
-- Le créateur est organisé dans l'ordre : cheveux, visage, barbe, accessoires, tenues, poses.
-- Les pastilles de couleur rondes sont placées sous le personnage et changent selon la catégorie active.
+- Le createur est organise dans l'ordre : cheveux, visage, barbe, accessoires, tenues.
+- Correction feedback setup personnage : la popup garde la taille des etapes langues/prenom sur desktop, avec le buste a gauche et le panneau de categories/options a droite en scroll interne.
+- Les poses sont retirees de l'interface du createur pendant le setup ; la personnalisation reste forcee en mode `bust` pour garder les tenues coherentes avec le buste.
+- Les pastilles de couleur rondes sont placees sous le personnage, changent selon la categorie active, n'affichent plus de labels visibles ni d'input couleur custom, et restent en ligne horizontale scrollable.
+- Correction feedback cheveux 2026-06-20 : le rendu CSS-Peeps du personnage recolorise aussi le calque `--peep-head-detail` pour les coiffures normales, afin que la couleur cheveux appliquee dans les previews soit identique sur le personnage selectionne.
+- Les pastilles de couleur utilisent maintenant un rail horizontal sans scrollbar native, pilote par deux boutons fleches gauche/droite.
+- L'apercu personnage est agrandi dans sa zone desktop/mobile.
+- Correction feedback cheveux applique 2026-06-20 : l'apercu principal du buste utilise un rendu hybride, avec le corps/tenue en CSS-Peeps et la tete en SVG Open Peeps original, afin que la coupe appliquee corresponde aux previews sans formes noires parasites autour du crane.
+- Le calque `--peep-head-detail` CSS-Peeps est neutralise sur le rendu principal ; CSS-Peeps reste utilise pour les tenues colorisables et les previews de tenues.
+- La zone personnage a ete encore agrandie en desktop/mobile.
 - Le personnage personnalisé est sauvegardé dans le profil invité via `characterCustomization`.
 - Les anciens profils sans personnalisation complète gardent le fallback PNG `characterId`.
 - Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
@@ -222,6 +230,24 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `git diff --check` : OK.
 - Serveur local : OK sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Verification visuelle via Playwright Chromium temporaire sur le vrai parcours onboarding/createur, avec tenue primaire bleue et secondaire rose.
+
+## Verification du 2026-06-20
+
+- Correction feedback popup setup personnage : carte desktop ramenee a la taille standard du setup, buste compact a gauche, onglets categories fixes en haut du panneau de droite, options en scroll interne.
+- Retrait de l'onglet `Poses` dans `CharacterCreator` et sauvegarde forcee en `postureMode: 'bust'` pendant le setup.
+- Retrait des labels visibles de couleur et de l'input couleur custom ; les pastilles sont en overflow horizontal.
+- Verification headless Chrome sur le vrai parcours onboarding/createur : desktop et mobile atteints, 5 categories (`Cheveux`, `Visage`, `Barbe`, `Accessoires`, `Tenues`), aucune categorie `Poses`, aucun input couleur custom, aucun label couleur visible, scroll vertical des options OK.
+- Navigateur integre Browser retente : indisponible dans cette session (`Browser is not available: iab`) ; verification visuelle faite via Chrome headless local.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
+- `git diff --check` : OK avec avertissements CRLF connus sur les fichiers modifies.
+- Correction feedback cheveux/fleches/taille personnage : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK.
+- Verification Chrome headless sur le vrai parcours onboarding/createur : coiffure `Long` + cheveux `#7C3AED` appliquee au rendu principal via `--peep-head-detail`, rail couleurs en une ligne avec fleches, preview agrandie desktop/mobile.
+- Test rapide des coiffures normales : la couleur cheveux s'applique au rendu principal ; les entrees chapeau restent volontairement exclues de cette recolorisation.
+- Correction feedback rendu cheveux applique : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK.
+- Verification Chrome headless desktop/mobile : rendu hybride actif, corps CSS-Peeps + tete SVG Open Peeps, coiffure `Long` violette identique a la preview, aucun fill noir restant dans les cheveux appliques, preview plus grande et contenue dans sa zone.
+- Test rapide de 41 coiffures normales : aucune ne laisse de remplissage noir parasite dans la tete SVG appliquee.
 
 ## Reprise
 
