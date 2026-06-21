@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-20
+Date : 2026-06-21
 
 ## Statut court
 
@@ -248,6 +248,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Correction feedback rendu cheveux applique : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK.
 - Verification Chrome headless desktop/mobile : rendu hybride actif, corps CSS-Peeps + tete SVG Open Peeps, coiffure `Long` violette identique a la preview, aucun fill noir restant dans les cheveux appliques, preview plus grande et contenue dans sa zone.
 - Test rapide de 41 coiffures normales : aucune ne laisse de remplissage noir parasite dans la tete SVG appliquee.
+
+## Verification du 2026-06-21
+
+- Correction feedback alignement buste : la tete SVG du rendu hybride est descendue sur le corps CSS-Peeps pour retrouver un raccord tete/cou/buste naturel.
+- Correction feedback placement apercu : le personnage principal est legerement remonte dans la zone preview afin que les pastilles de couleur ne chevauchent plus le bas du buste.
+- Aucun asset source Open Peeps n'a ete modifie ; le correctif ajuste seulement l'offset de composition dans `OpenPeepComposer`.
+- Verification Edge headless : comparaison ciblee entre rendu hybride et rendu CSS-Peeps complet sur `Tee 1` + `Short 1`, puis sur `Whatever` + `Long` ; verification layout mobile du createur avec rail de couleurs sous le buste.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
+- `git diff --check` : OK, avec avertissements CRLF/LF attendus sur les fichiers modifies.
 
 ## Reprise
 

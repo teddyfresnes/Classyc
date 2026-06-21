@@ -68,6 +68,8 @@ Mise a jour contours : le stroke noir initial etait trop fin pour plusieurs bodi
 
 Mise a jour feedback cas par cas : un stroke global plus fort corrigeait les lignes colorees mais abimait certains details. Resolution : regler les largeurs par body dans `open-peep-css-peeps.ts` : specifique pour `Blazer Black Tee` et `Polka Dot Jacket`, intermediaire pour les bodies signales, plus leger pour `Sweater` afin de garder ses taches. Apres feedback, ces strokes ont ete reduits pour eviter des lignes noires trop epaisses. `Macbook` ajoute aussi une petite couche de peau dans `--peep-body-paint` sous l'objet pour corriger le bras visible, et `Paper` garde la meme structure avec un trait ajuste pour les poignets/manches.
 
+Mise a jour alignement buste hybride 2026-06-21 : le rendu principal combine un corps CSS-Peeps et une tete SVG Open Peeps originale. Les deux sources n'ont pas exactement la meme origine verticale, donc la tete SVG semblait flotter trop haut. Resolution : garder les assets originaux, mais ajouter un offset vertical unique dans `OpenPeepComposer` pour poser la tete sur le buste CSS-Peeps.
+
 Limites : les assets locaux restent trop aplatis pour etre recolorises proprement chemin par chemin. Les poses debout/assises ne sont pas recolorisees par tenue. La correction ne cree pas de nouvelle forme ; elle ne peut donc pas separer des sous-zones qui ne sont pas deja representees par le detail CSS-Peeps.
 
 ## 2026-06-13 - Libelle chinois degrade dans TypeScript

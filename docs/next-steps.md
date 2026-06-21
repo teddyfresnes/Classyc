@@ -40,12 +40,14 @@ Derniere etape appliquee :
 - L'apercu personnage est agrandi dans sa zone desktop/mobile.
 - Correction feedback cheveux applique 2026-06-20 : l'apercu principal du buste utilise maintenant un rendu hybride, avec corps/tenue CSS-Peeps et tete SVG Open Peeps original, pour que la coupe appliquee corresponde aux previews sans formes noires parasites autour du crane.
 - Le calque `--peep-head-detail` CSS-Peeps est neutralise sur le rendu principal ; CSS-Peeps reste utilise pour les tenues colorisables et les previews de tenues.
+- Correction feedback alignement buste 2026-06-21 : la tete SVG du rendu hybride est descendue sur le corps CSS-Peeps pour eviter qu'elle flotte trop haut au-dessus du buste.
+- Correction feedback placement apercu 2026-06-21 : le personnage principal est legerement remonte pour que le rail de pastilles couleur ne passe plus devant le bas du buste.
 - La zone personnage a ete encore agrandie en desktop/mobile.
 - Le profil invite sauvegarde la personnalisation complete dans `localStorage`.
 - La sidebar affiche le personnage personnalise via un SVG cadre sur la tete.
 - Les anciens profils sans `characterCustomization` gardent le fallback PNG existant.
-- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-20, y compris la popup personnage contrainte, le retrait des poses dans le setup, le rail de pastilles avec fleches, la preview agrandie, le rendu hybride corps CSS-Peeps + tete SVG, la couleur cheveux appliquee au rendu principal et la correction CSS-Peeps des tenues de buste.
-- `git diff --check` passe ; verification visuelle Chrome headless faite sur le vrai parcours onboarding/createur en desktop et mobile, plus test rapide de 41 coiffures normales sans remplissage noir parasite.
+- `npm run lint`, `npm run typecheck` et `npm run build` passent apres les corrections feedback du 2026-06-20 et du 2026-06-21, y compris la popup personnage contrainte, le retrait des poses dans le setup, le rail de pastilles avec fleches, la preview agrandie, le rendu hybride corps CSS-Peeps + tete SVG, la couleur cheveux appliquee au rendu principal, l'alignement de la tete sur le buste et la correction CSS-Peeps des tenues de buste.
+- `git diff --check` passe ; verification visuelle Chrome/Edge headless faite sur le vrai parcours onboarding/createur en desktop et mobile, test rapide de 41 coiffures normales sans remplissage noir parasite, comparaison ciblee de l'alignement du buste hybride, puis verification layout mobile du rail de couleurs sous le buste.
 - Serveur local verifie sur `http://127.0.0.1:5173/`, status HTTP 200.
 - Navigateur integre indisponible dans cette session (`Browser is not available: iab`).
 - Note build : Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont inclus pour le createur complet.

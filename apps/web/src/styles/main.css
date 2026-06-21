@@ -682,6 +682,7 @@ button {
 		height: auto;
 		max-height: 22rem;
 		filter: drop-shadow(0 12px 12px rgba(22, 32, 51, 0.12));
+		transform: translateY(-0.45rem);
 	}
 
 	.open-peep-css-peep {

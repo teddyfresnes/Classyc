@@ -147,6 +147,10 @@ const composerLayouts: Record<OpenPeepPostureMode, ComposerLayout> = {
 	}
 };
 
+// The hybrid bust pairs a CSS-Peeps body with the original SVG head atoms.
+// CSS-Peeps places the body slightly lower than the local Open Peeps bust template.
+const hybridBustHeadOffsetY = 96;
+
 export function OpenPeepComposer({
 	className,
 	customization,
@@ -295,7 +299,7 @@ function OpenPeepHybridBust({
 				viewBox={layout.viewBox}
 				xmlns="http://www.w3.org/2000/svg"
 			>
-				<g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1" transform={`translate(${layout.head.x} ${layout.head.y})`}>
+				<g fill="none" fillRule="evenodd" stroke="none" strokeWidth="1" transform={`translate(${layout.head.x} ${layout.head.y + hybridBustHeadOffsetY})`}>
 					<OpenPeepSvgGroup asset={headAsset} category="head" customization={customization} />
 					<OpenPeepSvgGroup
 						asset={faceAsset}
