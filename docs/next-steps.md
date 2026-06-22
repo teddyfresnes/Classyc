@@ -8,11 +8,21 @@
 
 ## Etape actuelle
 
-Etape 8 - Systeme de niveaux journaliers.
+Etape 9 - Moteur d'exercices.
 
 Statut : terminee.
 
 Derniere etape appliquee :
+
+- `packages/shared/src/index.ts` expose `LearningExercise`, `ExerciseAnswer`, `ExerciseEvaluation` et les types `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`.
+- `apps/web/src/features/exercises/exercise-engine.ts` centralise la correction mockee, le score, le feedback et les XP potentielles, sans modifier la progression reelle.
+- `apps/web/src/features/exercises/mock-exercises.ts` fournit une source mockee couvrant les quatre types d'exercices, sans contenu pedagogique final.
+- `apps/web/src/features/exercises/ExercisePreview.tsx` fournit une base UI responsive exportee par `apps/web/src/features/exercises/index.ts`.
+- L'UI d'exercice reste accessible depuis le code mais n'est pas branchee a la map, aux quetes journalieres, aux XP reels, au streak ou a la persistence.
+- Verification runtime ciblee du moteur : les reponses mockees correctes donnent les scores attendus, dont lecture `2/2`.
+- `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 8 :
 
 - `packages/shared/src/index.ts` expose `DailyLevel`, `DailyLevelDifficultyTier` et `DailyLevelReward`.
 - `apps/web/src/features/learning/daily-levels.ts` centralise les templates journaliers, la rotation locale par date, les helpers de reward et les previews de quetes.
@@ -112,30 +122,31 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 9 - Moteur d'exercices
+### Etape 10 - Premiers exercices francais
 
 Statut : prochaine.
 
-Objectif : creer une base commune pour plusieurs types d'exercices, sans livrer encore tout le contenu pedagogique.
+Objectif : livrer un premier contenu jouable en francais avec le moteur existant, sans brancher encore toute la progression.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Relire les decisions sur le contenu pedagogique et les garde-fous UX avant toute modification.
-- Definir un modele d'exercice extensible pour choix multiple, completer, vrai/faux et lecture + questions.
-- Preparer une petite source mockee d'exercices sans contenu pedagogique final.
-- Ajouter une base de correction/score/XP potentielle mockee, sans modifier la progression reelle.
-- Preparer un rendu UI d'exercice responsive minimal, accessible depuis le code mais sans lancer automatiquement depuis la map.
-- Garder les niveaux campagne/journaliers non cliquables tant que le lancement d'exercice n'est pas explicitement branche.
+- Relire les decisions sur le contenu pedagogique et les garde-fous UX avant toute modification de contenu.
+- Preparer une premiere source d'exercices francais dediee, reutilisant `LearningExercise`.
+- Couvrir les contenus initiaux prevus : `et` / `est`, `savoir` / `connaitre`, conjugaison simple, lecture courte + oui/non.
+- Garder le contenu court, local et facilement revisable.
+- Reutiliser le moteur de correction existant au lieu d'ajouter une seconde logique.
+- Ne pas brancher de XP reel, streak reel, serveur, social ou persistence de progression.
+- Ne pas rendre les niveaux campagne/journaliers cliquables sans parcours explicite.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- Les exercices ont des types partages et reutilisables.
-- Le moteur sait corriger au moins des reponses mockees pour les types prevus.
-- L'UI d'exercice existe comme base responsive, sans faux parcours complet.
+- Un premier lot d'exercices francais existe dans un module dedie.
+- Ces exercices utilisent le modele partage et le moteur de correction de l'Etape 9.
+- Les themes initiaux de la roadmap sont couverts au moins par des exemples courts.
 - Aucun XP reel, streak reel ou progression persistante n'est modifie.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.
@@ -143,6 +154,7 @@ Critere d'acceptation :
 Hors scope :
 
 - Diagnostic complet.
-- Contenu pedagogique final francais/anglais/chinois.
+- Parcours complet de lancement depuis la map ou les quetes.
+- Contenu anglais/chinois.
 - Serveur.
 - XP reel, streak reel, social, messagerie et mini-jeux.

@@ -40,6 +40,97 @@ export interface DailyLevel {
 	openMojiHexcode?: string;
 }
 
+export type ExerciseType = 'multipleChoice' | 'fillBlank' | 'trueFalse' | 'readingComprehension';
+
+export interface ExerciseOption {
+	id: string;
+	label: string;
+}
+
+export interface ExerciseBase {
+	id: string;
+	type: ExerciseType;
+	prompt: string;
+	instruction?: string;
+	potentialXp: number;
+	openMojiHexcode?: string;
+}
+
+export interface MultipleChoiceExercise extends ExerciseBase {
+	type: 'multipleChoice';
+	options: readonly ExerciseOption[];
+	correctOptionId: string;
+}
+
+export interface FillBlankExercise extends ExerciseBase {
+	type: 'fillBlank';
+	acceptedAnswers: readonly string[];
+	placeholder?: string;
+}
+
+export interface TrueFalseExercise extends ExerciseBase {
+	type: 'trueFalse';
+	statement: string;
+	correctAnswer: boolean;
+}
+
+export interface ReadingComprehensionQuestion {
+	id: string;
+	prompt: string;
+	options: readonly ExerciseOption[];
+	correctOptionId: string;
+}
+
+export interface ReadingComprehensionExercise extends ExerciseBase {
+	type: 'readingComprehension';
+	passageTitle?: string;
+	passage: string;
+	questions: readonly ReadingComprehensionQuestion[];
+}
+
+export type LearningExercise =
+	| MultipleChoiceExercise
+	| FillBlankExercise
+	| TrueFalseExercise
+	| ReadingComprehensionExercise;
+
+export type ExerciseAnswer =
+	| {
+		exerciseId: string;
+		type: 'multipleChoice';
+		optionId: string;
+	}
+	| {
+		exerciseId: string;
+		type: 'fillBlank';
+		value: string;
+	}
+	| {
+		exerciseId: string;
+		type: 'trueFalse';
+		value: boolean;
+	}
+	| {
+		exerciseId: string;
+		type: 'readingComprehension';
+		answers: readonly {
+			questionId: string;
+			optionId: string;
+		}[];
+	};
+
+export type ExerciseFeedbackState = 'correct' | 'partial' | 'incorrect';
+
+export interface ExerciseEvaluation {
+	exerciseId: string;
+	correct: boolean;
+	score: number;
+	maxScore: number;
+	potentialXp: number;
+	earnedPotentialXp: number;
+	feedback: ExerciseFeedbackState;
+}
+
 export type OpenPeepCharacterId =
 	| 'open-peep-bust-1'
 	| 'open-peep-bust-8'

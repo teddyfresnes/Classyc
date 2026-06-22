@@ -4,11 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 8 - Systeme de niveaux journaliers.
+Etape courante : Etape 9 - Moteur d'exercices.
 
 Etat : terminee.
 
-Depuis l'Etape 8, les quetes journalieres utilisent une source typee de niveaux journaliers avec difficulty tiers, rotation locale et bonus `1.5x` porte par un vrai niveau journalier.
+Depuis l'Etape 9, le projet contient une base de moteur d'exercices avec types partages, correction mockee, score, XP potentielle et composant UI responsive non branche a la map.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -136,13 +136,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Source journaliere dediee dans `apps/web/src/features/learning/daily-levels.ts`.
 - Les quetes journalieres de `Apprendre` sont derivees de niveaux journaliers typees, avec rotation locale par date et premier niveau du jour en bonus `1.5x`.
 - Les cartes de quetes restent informatives : pas de clic, pas de hover interactif, et le bonus visible vient uniquement de la propriete `reward`.
+- Modele partage d'exercice : `LearningExercise`, `ExerciseAnswer`, `ExerciseEvaluation`, types `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`.
+- Moteur de correction mocke dans `apps/web/src/features/exercises/exercise-engine.ts`, avec score, feedback et XP potentielle calculee sans modifier la progression reelle.
+- Source mockee `apps/web/src/features/exercises/mock-exercises.ts` couvrant les quatre types d'exercice, sans contenu pedagogique final.
+- Composant UI responsive `ExercisePreview` dans `apps/web/src/features/exercises/ExercisePreview.tsx`, exporte mais non branche au parcours principal.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
-- Moteur d'exercices.
 - Exercices branches aux niveaux.
+- Contenu pedagogique final.
 - XP, streak, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
 
@@ -313,7 +317,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Correction UX appliquee aux quetes : les cartes n'ont pas de hover jouable, le badge `1.5x` vient du reward et aucun exercice n'est lance.
 - Verification Etape 8 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 - Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, deux quetes journalieres detectees, un seul badge `1.5x`, curseur neutre, aucun niveau campagne `available`.
+- Etape 9 moteur d'exercices : ajout des types partages `LearningExercise`, `ExerciseAnswer` et `ExerciseEvaluation`, avec les variantes `multipleChoice`, `fillBlank`, `trueFalse` et `readingComprehension`.
+- Ajout de `apps/web/src/features/exercises/exercise-engine.ts` pour la correction mockee, le score, le feedback et les XP potentielles, sans effet sur la progression reelle.
+- Ajout de `apps/web/src/features/exercises/mock-exercises.ts` avec une source mockee couvrant les quatre types d'exercices, sans contenu pedagogique final.
+- Ajout de `ExercisePreview`, composant UI responsive exporte depuis `apps/web/src/features/exercises/index.ts`, mais non branche a la map, aux quetes ou au shell.
+- Verification runtime ciblee du moteur : les reponses mockees correctes donnent les scores attendus, dont lecture `2/2`.
+- Verification Etape 9 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 9 de [docs/next-steps.md](next-steps.md) : moteur d'exercices.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 10 de [docs/next-steps.md](next-steps.md) : premiers exercices francais.

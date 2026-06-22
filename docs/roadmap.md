@@ -146,7 +146,7 @@ Livrables prevus :
 
 ### Etape 9 - Moteur d'exercices
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : creer une base commune pour plusieurs types d'exercices.
 
@@ -157,6 +157,8 @@ Livrables prevus :
 - UI d'exercice responsive
 
 ### Etape 10 - Premiers exercices français
+
+Statut : prochaine.
 
 Objectif : livrer un premier contenu jouable en francais.
 

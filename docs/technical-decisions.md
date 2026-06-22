@@ -472,3 +472,27 @@ Regles retenues :
 - les quetes journalieres affichent deux niveaux mockes par jour ;
 - le bonus `1.5x` apparait uniquement si le niveau journalier expose une propriete `reward` ;
 - les cartes de quetes restent informatives tant que les exercices ne sont pas branches : pas de hover jouable, pas de curseur cliquable, pas de lancement d'exercice.
+
+## D034 - Moteur d'exercices
+
+Statut : retenue et implementee pour l'Etape 9.
+
+Le modele d'exercice vit dans `packages/shared/src/index.ts` pour pouvoir etre reutilise plus tard par le web, le serveur et les contenus pedagogiques :
+
+- `ExerciseType` couvre `multipleChoice`, `fillBlank`, `trueFalse` et `readingComprehension`.
+- `LearningExercise` est une union typee des variantes d'exercices.
+- `ExerciseAnswer` represente les reponses utilisateur par type d'exercice.
+- `ExerciseEvaluation` porte le score, le feedback, les XP potentielles et les XP potentielles gagnees.
+
+La logique de correction mockee vit dans `apps/web/src/features/exercises/exercise-engine.ts`. Elle reste volontairement locale et pure : evaluer une reponse ne modifie ni XP reel, ni streak, ni progression persistante.
+
+La source `apps/web/src/features/exercises/mock-exercises.ts` couvre les quatre types avec du contenu non final, uniquement pour valider le modele et le moteur.
+
+Le composant `ExercisePreview` fournit une base UI responsive et reutilisable. Il est exporte par `apps/web/src/features/exercises/index.ts`, mais n'est pas encore branche a la map, aux quetes journalieres ou a un parcours jouable.
+
+Regles retenues :
+
+- garder une seule logique de correction partagee par les futurs contenus ;
+- ne pas creer de seconde structure pour les exercices francais, anglais ou chinois ;
+- ne pas declencher de progression reelle tant que l'Etape XP/streak n'est pas traitee ;
+- garder les niveaux campagne et journaliers non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente.
