@@ -29,12 +29,34 @@ export function isOpenPeepCharacterId(value: unknown): value is OpenPeepCharacte
 
 export type OpenPeepPostureMode = 'bust' | 'standing' | 'sitting';
 
+export type OpenPeepBackgroundPatternId =
+	| 'plain'
+	| 'dots'
+	| 'grid'
+	| 'waves'
+	| 'rays'
+	| 'tiles';
+
+export const openPeepBackgroundPatternIds: readonly OpenPeepBackgroundPatternId[] = [
+	'plain',
+	'dots',
+	'grid',
+	'waves',
+	'rays',
+	'tiles'
+] as const;
+
+export interface OpenPeepCustomizationBackground {
+	patternId: OpenPeepBackgroundPatternId;
+}
+
 export interface OpenPeepCustomizationColors {
 	skin: string;
 	hair: string;
 	outfit: string;
 	outfitSecondary: string;
 	accessory: string;
+	background: string;
 	ink: string;
 }
 
@@ -47,6 +69,7 @@ export interface OpenPeepCustomization {
 	postureMode: OpenPeepPostureMode;
 	standingPoseId: string;
 	sittingPoseId: string;
+	background: OpenPeepCustomizationBackground;
 	colors: OpenPeepCustomizationColors;
 }
 
@@ -59,12 +82,16 @@ export const defaultOpenPeepCustomization: OpenPeepCustomization = {
 	postureMode: 'bust',
 	standingPoseId: 'crossed_arms-1',
 	sittingPoseId: 'crossed_legs',
+	background: {
+		patternId: 'plain'
+	},
 	colors: {
 		skin: '#F2C7A5',
 		hair: '#1F2937',
 		outfit: '#2563EB',
 		outfitSecondary: '#F8FAFC',
 		accessory: '#111827',
+		background: '#EAF1FF',
 		ink: '#111827'
 	}
 };
@@ -73,6 +100,10 @@ export const openPeepPostureModes: readonly OpenPeepPostureMode[] = ['bust', 'st
 
 export function isOpenPeepPostureMode(value: unknown): value is OpenPeepPostureMode {
 	return typeof value === 'string' && openPeepPostureModes.includes(value as OpenPeepPostureMode);
+}
+
+export function isOpenPeepBackgroundPatternId(value: unknown): value is OpenPeepBackgroundPatternId {
+	return typeof value === 'string' && openPeepBackgroundPatternIds.includes(value as OpenPeepBackgroundPatternId);
 }
 
 export function isHexColor(value: unknown): value is string {
@@ -85,6 +116,7 @@ export function isOpenPeepCustomization(value: unknown): value is OpenPeepCustom
 	}
 
 	const customization = value as Partial<OpenPeepCustomization>;
+	const background = customization.background as Partial<OpenPeepCustomizationBackground> | undefined;
 	const colors = customization.colors as Partial<OpenPeepCustomizationColors> | undefined;
 
 	return (
@@ -103,12 +135,14 @@ export function isOpenPeepCustomization(value: unknown): value is OpenPeepCustom
 		&& customization.standingPoseId.length > 0
 		&& typeof customization.sittingPoseId === 'string'
 		&& customization.sittingPoseId.length > 0
+		&& (background === undefined || isOpenPeepBackgroundPatternId(background.patternId))
 		&& Boolean(colors)
 		&& isHexColor(colors?.skin)
 		&& isHexColor(colors?.hair)
 		&& isHexColor(colors?.outfit)
 		&& (colors?.outfitSecondary === undefined || isHexColor(colors.outfitSecondary))
 		&& isHexColor(colors?.accessory)
+		&& (colors?.background === undefined || isHexColor(colors.background))
 		&& isHexColor(colors?.ink)
 	);
 }

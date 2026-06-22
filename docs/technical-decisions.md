@@ -415,6 +415,7 @@ Preparation technique du 2026-06-13 :
 Implementation Etape 5 :
 
 - `OpenPeepCustomization` est ajoute au package partage et sauvegarde le corps, les cheveux, le visage, la pilosite, les accessoires, la posture et les couleurs principales.
+- Correction feedback fond du 2026-06-22 : `OpenPeepCustomization` sauvegarde aussi un fond d'avatar (`patternId` + couleur `background`). Le fond est rendu par les panneaux UI via `character-backgrounds.ts`, pas injecte dans les SVG Open Peeps, afin de garder la composition du personnage et le decor separes.
 - `apps/web/src/assets/open-peeps-atoms.ts` centralise l'index SVG via `import.meta.glob` et filtre les fichiers metadata.
 - `OpenPeepComposer` compose les atomes en SVG pour le buste, les postures debout/assis et le cadrage tete de l'avatar.
 - `CharacterCreator` remplace la galerie PNG dans l'onboarding avec onglets, grilles d'options, pastilles contextuelles sous le personnage et inputs couleur.

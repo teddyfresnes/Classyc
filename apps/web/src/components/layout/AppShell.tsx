@@ -14,11 +14,13 @@ import type { ReactNode } from 'react';
 import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import type { GuestProfile } from '@classyc/shared';
 import { getOpenPeepCharacter } from '@/assets/open-peeps';
+import { resolveOpenPeepCustomization } from '@/assets/open-peeps-atoms';
 import type { ShellRouteId } from '@/domain/navigation';
 import { navigationItems } from '@/domain/navigation';
 import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
+import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	createDailyQuests,
@@ -127,7 +129,9 @@ function PageTransition({ children }: { children: ReactNode }) {
 
 function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>; profile: GuestProfile }) {
 	const character = getOpenPeepCharacter(profile.characterId);
-	const hasCustomCharacter = Boolean(profile.characterCustomization);
+	const customCharacter = profile.characterCustomization
+		? resolveOpenPeepCustomization(profile.characterCustomization)
+		: null;
 
 	return (
 		<aside className="desktop-sidebar">
@@ -154,11 +158,15 @@ function DesktopSidebar({ copy, profile }: { copy: ReturnType<typeof getUiCopy>;
 			<div className="sidebar-footer">
 				<div className="sidebar-profile-card">
 					<NavLink className="profile-link" to="/profile">
-						<div className="sidebar-character-avatar">
-							{hasCustomCharacter ? (
+						<div
+							className="sidebar-character-avatar"
+							data-background-pattern={customCharacter?.background.patternId}
+							style={customCharacter ? createCharacterBackgroundStyle(customCharacter) : undefined}
+						>
+							{customCharacter ? (
 								<OpenPeepComposer
 									className="sidebar-character-svg"
-									customization={profile.characterCustomization}
+									customization={customCharacter}
 									framing="head"
 								/>
 							) : (

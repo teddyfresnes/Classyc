@@ -3,6 +3,7 @@ import {
 	ChevronLeft,
 	ChevronRight,
 	Glasses,
+	Image as ImageIcon,
 	Scissors,
 	Shirt,
 	Smile,
@@ -19,6 +20,11 @@ import {
 import type { OpenPeepAtomAsset, OpenPeepAtomCategory } from '@/assets/open-peeps-atoms';
 import type { CharacterCreatorCopy } from '@/features/i18n/ui-copy';
 import { OpenPeepAtomPreview, OpenPeepComposer } from '@/features/character/OpenPeepComposer';
+import {
+	characterBackgroundPatterns,
+	createCharacterBackgroundStyle,
+	safeCharacterBackgroundColors
+} from '@/features/character/character-backgrounds';
 import { hasSecondaryOutfitColor } from '@/features/character/open-peep-css-peeps';
 import { createReadablePreviewColor } from '@/features/character/open-peep-colors';
 
@@ -27,7 +33,10 @@ type CharacterCreatorCategory =
 	| 'head'
 	| 'face'
 	| 'facialHair'
-	| 'accessories';
+	| 'accessories'
+	| 'background';
+
+type AssetCharacterCreatorCategory = Exclude<CharacterCreatorCategory, 'background'>;
 
 type EditableOpenPeepAtomCategory = Exclude<OpenPeepAtomCategory, 'standingPose' | 'sittingPose'>;
 
@@ -44,7 +53,8 @@ const categoryIcons: Record<CharacterCreatorCategory, LucideIcon> = {
 	head: UserRound,
 	face: Smile,
 	facialHair: Scissors,
-	accessories: Glasses
+	accessories: Glasses,
+	background: ImageIcon
 };
 
 const creatorCategories: readonly CharacterCreatorCategory[] = [
@@ -52,10 +62,11 @@ const creatorCategories: readonly CharacterCreatorCategory[] = [
 	'face',
 	'facialHair',
 	'accessories',
-	'body'
+	'body',
+	'background'
 ] as const;
 
-const assetCategoryByCreatorCategory: Record<CharacterCreatorCategory, EditableOpenPeepAtomCategory> = {
+const assetCategoryByCreatorCategory: Record<AssetCharacterCreatorCategory, EditableOpenPeepAtomCategory> = {
 	body: 'body',
 	head: 'head',
 	face: 'face',
@@ -68,7 +79,8 @@ const colorPalettes: Record<CharacterColorKey, readonly string[]> = {
 	hair: ['#111827', '#3B2418', '#6B3F2E', '#8B5E34', '#B77B45', '#D6D3D1', '#6B7280', '#7C3AED'],
 	outfit: ['#2563EB', '#14B8A6', '#22C55E', '#F97316', '#EF4444', '#A855F7', '#0F172A', '#F8FAFC'],
 	outfitSecondary: ['#F8FAFC', '#0F172A', '#94A3B8', '#FDE68A', '#FCA5A5', '#A7F3D0', '#BFDBFE', '#DDD6FE'],
-	accessory: ['#111827', '#2563EB', '#0EA5E9', '#F59E0B', '#EF4444', '#A855F7', '#64748B', '#F8FAFC']
+	accessory: ['#111827', '#2563EB', '#0EA5E9', '#F59E0B', '#EF4444', '#A855F7', '#64748B', '#F8FAFC'],
+	background: safeCharacterBackgroundColors
 };
 
 export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProps) {
@@ -76,14 +88,28 @@ export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProp
 		...resolveOpenPeepCustomization(value),
 		postureMode: 'bust' as const
 	};
-	const [activeCategory, setActiveCategory] = useState<CharacterCreatorCategory>('body');
+	const customizationRef = useRef<OpenPeepCustomization>(customization);
+	const [activeCategory, setActiveCategory] = useState<CharacterCreatorCategory>('head');
+	customizationRef.current = customization;
 
 	function patchCustomization(patch: Partial<OpenPeepCustomization>) {
-		onChange(resolveOpenPeepCustomization({
-			...customization,
+		const baseCustomization = customizationRef.current;
+		const nextCustomization = resolveOpenPeepCustomization({
+			...baseCustomization,
 			...patch,
+			background: {
+				...baseCustomization.background,
+				...(patch.background ?? {})
+			},
+			colors: {
+				...baseCustomization.colors,
+				...(patch.colors ?? {})
+			},
 			postureMode: 'bust'
-		}));
+		});
+
+		customizationRef.current = nextCustomization;
+		onChange(nextCustomization);
 	}
 
 	function patchColors(patch: Partial<OpenPeepCustomizationColors>) {
@@ -98,7 +124,11 @@ export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProp
 	return (
 		<section className="character-creator" aria-label={copy.categories.head}>
 			<div className="character-preview-panel">
-				<div className="character-preview-stage">
+				<div
+					className="character-preview-stage"
+					data-background-pattern={customization.background.patternId}
+					style={createCharacterBackgroundStyle(customization)}
+				>
 					<OpenPeepComposer className="character-preview-svg" customization={customization} title="Open Peeps" />
 				</div>
 				<InlineColorControls
@@ -136,15 +166,78 @@ export function CharacterCreator({ copy, onChange, value }: CharacterCreatorProp
 				</div>
 
 				<div className="character-editor-body" role="tabpanel">
-					<AssetPanel
-						category={assetCategoryByCreatorCategory[activeCategory]}
-						copy={copy}
-						customization={customization}
-						onChange={patchCustomization}
-					/>
+					{activeCategory === 'background' ? (
+						<BackgroundPanel
+							copy={copy}
+							customization={customization}
+							onChange={patchCustomization}
+						/>
+					) : (
+						<AssetPanel
+							category={assetCategoryByCreatorCategory[activeCategory]}
+							copy={copy}
+							customization={customization}
+							onChange={patchCustomization}
+						/>
+					)}
 				</div>
 			</div>
 		</section>
+	);
+}
+
+function BackgroundPanel({
+	copy,
+	customization,
+	onChange
+}: {
+	copy: CharacterCreatorCopy;
+	customization: OpenPeepCustomization;
+	onChange: (patch: Partial<OpenPeepCustomization>) => void;
+}) {
+	return (
+		<div className="character-option-grid">
+			{characterBackgroundPatterns.map((pattern, index) => {
+				const isSelected = customization.background.patternId === pattern.id;
+				const previewCustomization = {
+					...customization,
+					background: {
+						patternId: pattern.id
+					}
+				};
+
+				return (
+					<motion.button
+						animate={{ opacity: 1, y: 0 }}
+						aria-label={copy.backgroundPatterns[pattern.id]}
+						aria-pressed={isSelected}
+						className="character-option-card"
+						data-category="background"
+						data-selected={isSelected}
+						initial={{ opacity: 0, y: 6 }}
+						key={pattern.id}
+						onClick={() => onChange({
+							background: {
+								...customization.background,
+								patternId: pattern.id
+							}
+						})}
+						title={copy.backgroundPatterns[pattern.id]}
+						transition={{ delay: index * 0.02, duration: 0.16, ease: 'easeOut' }}
+						type="button"
+						whileHover={{ y: -2 }}
+						whileTap={{ scale: 0.98 }}
+					>
+						<span
+							className="character-background-preview"
+							data-background-pattern={pattern.id}
+							style={createCharacterBackgroundStyle(previewCustomization, { preferDefaultSurface: false })}
+						/>
+						<span className="character-option-label">{copy.backgroundPatterns[pattern.id]}</span>
+					</motion.button>
+				);
+			})}
+		</div>
 	);
 }
 
@@ -388,6 +481,8 @@ function getActiveColorKeys(activeCategory: CharacterCreatorCategory, customizat
 			return ['accessory'];
 		case 'body':
 			return hasSecondaryOutfitColor(customization.bodyId) ? ['outfit', 'outfitSecondary'] : ['outfit'];
+		case 'background':
+			return ['background'];
 	}
 }
 

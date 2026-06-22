@@ -405,11 +405,15 @@ button {
 		box-shadow: var(--shadow-soft), inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 54%, transparent);
 	}
 
-	.onboarding-card:has(.character-creator) {
-		width: min(100%, 41rem);
+	.onboarding-card[data-step="character"] {
+		width: min(100%, 58rem);
 		height: min(35.5rem, calc(100vh - 7rem));
 		min-height: 0;
 		overflow: hidden;
+	}
+
+	.onboarding-card[data-step="character"][data-character-phase="confirming"] {
+		width: min(100%, 41rem);
 	}
 
 	.onboarding-step {
@@ -471,13 +475,41 @@ button {
 		padding: 0.25rem 0 0.25rem;
 	}
 
-	.onboarding-step--character > .space-y-5:has(.character-creator) {
+	.onboarding-character-content {
+		display: flex;
+		min-height: 0;
+		flex: 1;
+		flex-direction: column;
+		gap: 1.25rem;
+		justify-content: space-between;
+	}
+
+	.onboarding-character-body {
 		display: flex;
 		min-height: 0;
 		flex: 1;
 		flex-direction: column;
 		gap: 1rem;
 		overflow: hidden;
+	}
+
+	.onboarding-character-expansion,
+	.onboarding-complete-state {
+		display: grid;
+		min-height: 0;
+		flex: 1;
+		place-items: center;
+	}
+
+	.onboarding-complete-state {
+		color: var(--accent);
+	}
+
+	.onboarding-complete-icon {
+		display: block;
+		width: 7rem;
+		height: 7rem;
+		filter: drop-shadow(0 12px 18px rgba(37, 99, 235, 0.16));
 	}
 
 	.onboarding-language-pair {
@@ -646,7 +678,7 @@ button {
 		display: grid;
 		min-height: 0;
 		flex: 1;
-		grid-template-columns: minmax(13rem, 0.9fr) minmax(0, 1.1fr);
+		grid-template-columns: minmax(13rem, 16rem) minmax(0, 1fr);
 		gap: 0.85rem;
 		overflow: hidden;
 	}
@@ -667,11 +699,13 @@ button {
 	}
 
 	.character-preview-stage {
+		--character-background-base: color-mix(in srgb, var(--accent-soft) 34%, var(--surface-1));
+		--character-background-accent: color-mix(in srgb, var(--accent) 16%, transparent);
 		display: grid;
 		min-height: 0;
 		flex: 1;
 		place-items: center;
-		background: color-mix(in srgb, var(--accent-soft) 34%, var(--surface-1));
+		background: var(--character-background-base);
 		padding: 0.55rem;
 		overflow: hidden;
 	}
@@ -740,7 +774,7 @@ button {
 		top: 0;
 		z-index: 1;
 		flex-shrink: 0;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: repeat(6, minmax(0, 1fr));
 		gap: 0.35rem;
 		border-radius: 8px;
 		background: var(--surface-2);
@@ -833,6 +867,66 @@ button {
 		border-radius: 8px;
 		background: var(--character-option-preview-bg, color-mix(in srgb, var(--surface-1) 82%, var(--accent-soft)));
 		overflow: hidden;
+	}
+
+	.character-background-preview {
+		--character-background-base: #eaf1ff;
+		--character-background-accent: #b9cffd;
+		display: block;
+		width: 100%;
+		height: 4.35rem;
+		border-radius: 8px;
+		background: var(--character-background-base);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 64%, transparent);
+		overflow: hidden;
+	}
+
+	.sidebar-character-avatar[data-background-pattern="plain"],
+	.character-preview-stage[data-background-pattern="plain"],
+	.character-background-preview[data-background-pattern="plain"] {
+		background: var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="dots"],
+	.character-preview-stage[data-background-pattern="dots"],
+	.character-background-preview[data-background-pattern="dots"] {
+		background:
+			radial-gradient(circle at 0.45rem 0.45rem, var(--character-background-accent) 0 0.11rem, transparent 0.12rem) 0 0 / 1.35rem 1.35rem,
+			var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="grid"],
+	.character-preview-stage[data-background-pattern="grid"],
+	.character-background-preview[data-background-pattern="grid"] {
+		background:
+			linear-gradient(var(--character-background-accent) 1px, transparent 1px) 0 0 / 1.4rem 1.4rem,
+			linear-gradient(90deg, var(--character-background-accent) 1px, transparent 1px) 0 0 / 1.4rem 1.4rem,
+			var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="waves"],
+	.character-preview-stage[data-background-pattern="waves"],
+	.character-background-preview[data-background-pattern="waves"] {
+		background:
+			repeating-radial-gradient(ellipse at 0 100%, transparent 0 0.8rem, var(--character-background-accent) 0.82rem 0.93rem, transparent 0.96rem 1.55rem),
+			var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="rays"],
+	.character-preview-stage[data-background-pattern="rays"],
+	.character-background-preview[data-background-pattern="rays"] {
+		background:
+			conic-gradient(from -20deg at 50% 105%, transparent 0deg 12deg, var(--character-background-accent) 12deg 17deg, transparent 17deg 30deg),
+			var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="tiles"],
+	.character-preview-stage[data-background-pattern="tiles"],
+	.character-background-preview[data-background-pattern="tiles"] {
+		background:
+			linear-gradient(45deg, var(--character-background-accent) 25%, transparent 25% 75%, var(--character-background-accent) 75%) 0 0 / 1.4rem 1.4rem,
+			linear-gradient(45deg, var(--character-background-accent) 25%, transparent 25% 75%, var(--character-background-accent) 75%) 0.7rem 0.7rem / 1.4rem 1.4rem,
+			var(--character-background-base);
 	}
 
 	.character-option-svg {
@@ -1077,13 +1171,15 @@ button {
 	}
 
 	.sidebar-character-avatar {
+		--character-background-base: color-mix(in srgb, var(--accent-soft) 78%, var(--surface-2));
+		--character-background-accent: color-mix(in srgb, var(--accent) 16%, transparent);
 		display: grid;
 		width: 2.5rem;
 		height: 2.5rem;
 		flex-shrink: 0;
 		place-items: start center;
 		border-radius: 8px;
-		background: color-mix(in srgb, var(--accent-soft) 78%, var(--surface-2));
+		background: var(--character-background-base);
 		overflow: hidden;
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 58%, transparent);
 	}
@@ -1358,7 +1454,7 @@ button {
 		justify-content: flex-end;
 	}
 
-	.onboarding-card:has(.character-creator) {
+	.onboarding-card[data-step="character"] {
 		height: auto;
 		min-height: auto;
 		overflow: visible;
@@ -1422,6 +1518,10 @@ button {
 	}
 
 	.character-option-preview {
+		height: 4rem;
+	}
+
+	.character-background-preview {
 		height: 4rem;
 	}
 

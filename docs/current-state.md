@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-21
+Date : 2026-06-22
 
 ## Statut court
 
@@ -103,13 +103,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les tenues restent limitees au mode buste : choisir une tenue met a jour `bodyId`, sans forcer ni recomposer les poses debout/assises.
 - La colorisation des tenues de buste passe par CSS-Peeps, car les SVG `body` locaux sont trop aplatis pour separer proprement peau, vetement, objet et details noirs chemin par chemin.
 - La recolorisation Open Peeps est contextuelle : chapeaux/foulards en neutres sombres, cheveux/barbe avec accent de contraste, visage avec ombre de peau, trait noir fixe.
-- Le createur est organise dans l'ordre : cheveux, visage, barbe, accessoires, tenues.
+- Le createur est organise dans l'ordre : cheveux, visage, barbe, accessoires, tenues, fond.
 - Correction feedback setup personnage : la popup garde la taille des etapes langues/prenom sur desktop, avec le buste a gauche et le panneau de categories/options a droite en scroll interne.
 - Les poses sont retirees de l'interface du createur pendant le setup ; la personnalisation reste forcee en mode `bust` pour garder les tenues coherentes avec le buste.
 - Les pastilles de couleur rondes sont placees sous le personnage, changent selon la categorie active, n'affichent plus de labels visibles ni d'input couleur custom, et restent en ligne horizontale scrollable.
 - Correction feedback cheveux 2026-06-20 : le rendu CSS-Peeps du personnage recolorise aussi le calque `--peep-head-detail` pour les coiffures normales, afin que la couleur cheveux appliquee dans les previews soit identique sur le personnage selectionne.
 - Les pastilles de couleur utilisent maintenant un rail horizontal sans scrollbar native, pilote par deux boutons fleches gauche/droite.
 - L'apercu personnage est agrandi dans sa zone desktop/mobile.
+- Le createur s'ouvre par defaut sur la categorie `Cheveux`.
+- La categorie `Fond` est ajoutee apres `Tenues`, avec motifs simples (`Simple`, `Pois`, `Grille`, `Vagues`, `Rayons`, `Carreaux`) et palette de couleurs claire pour limiter les mauvais contrastes avec le personnage.
+- Le fond choisi est sauvegarde dans `OpenPeepCustomization`, reste retrocompatible avec les anciens profils et est reutilise sur le petit avatar de sidebar.
+- L'etape personnage de l'onboarding s'agrandit lateralement pendant environ 1,25 s avant d'afficher le contenu ; au clic sur `Commencer`, la carte revient a la taille standard, affiche une animation de validation, puis ouvre le shell.
 - Correction feedback cheveux applique 2026-06-20 : l'apercu principal du buste utilise un rendu hybride, avec le corps/tenue en CSS-Peeps et la tete en SVG Open Peeps original, afin que la coupe appliquee corresponde aux previews sans formes noires parasites autour du crane.
 - Le calque `--peep-head-detail` CSS-Peeps est neutralise sur le rendu principal ; CSS-Peeps reste utilise pour les tenues colorisables et les previews de tenues.
 - La zone personnage a ete encore agrandie en desktop/mobile.
@@ -255,6 +259,22 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Correction feedback placement apercu : le personnage principal est legerement remonte dans la zone preview afin que les pastilles de couleur ne chevauchent plus le bas du buste.
 - Aucun asset source Open Peeps n'a ete modifie ; le correctif ajuste seulement l'offset de composition dans `OpenPeepComposer`.
 - Verification Edge headless : comparaison ciblee entre rendu hybride et rendu CSS-Peeps complet sur `Tee 1` + `Short 1`, puis sur `Whatever` + `Long` ; verification layout mobile du createur avec rail de couleurs sous le buste.
+- `npm run lint` : OK.
+- `npm run typecheck` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
+- `git diff --check` : OK, avec avertissements CRLF/LF attendus sur les fichiers modifies.
+
+## Verification du 2026-06-22
+
+- Correction feedback popup personnage : la categorie selectionnee par defaut est maintenant `Cheveux`, plus `Tenues`.
+- Ajout de la categorie `Fond` apres `Tenues`, avec motifs, palette de couleurs douce, sauvegarde dans `OpenPeepCustomization` et fallback retrocompatible pour les anciens profils.
+- Le fond du personnage reste porte par les panneaux d'apercu, pas par les SVG Open Peeps ; aucun asset source n'a ete modifie.
+- Ajout d'une animation d'entree de l'etape personnage : carte de setup elargie sur desktop, contenu affiche apres expansion, colonne apercu gardee a largeur stable et colonne editor agrandie.
+- Ajout de l'animation de validation au clic sur `Commencer` : retour a la largeur standard, check anime, puis ouverture du shell apres environ 2 s.
+- Correction d'un bug de clics rapides : choisir un motif puis une couleur de fond dans le meme tick ne perd plus le motif selectionne.
+- Verification Chrome headless via DevTools Protocol sur le vrai onboarding : desktop ouvert sur `Cheveux`, 6 categories dans l'ordre attendu, `Fond` avec 6 options, motif `Pois` + couleur `#FFF3D8` sauvegardes, check visible pendant la phase `confirming`, puis shell affiche avec profil local.
+- Verification mobile Chrome headless : createur atteint, categorie par defaut `Cheveux`, 6 categories visibles, layout en une colonne sans chevauchement detecte.
+- Navigateur integre Browser retente avant fallback : indisponible dans cette session a cause d'une erreur de runtime du plugin ; verification visuelle faite via Chrome headless local.
 - `npm run lint` : OK.
 - `npm run typecheck` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.

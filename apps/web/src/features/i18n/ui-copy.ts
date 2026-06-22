@@ -1,5 +1,5 @@
 import { getSupportedLanguage } from '@classyc/shared';
-import type { SupportedLanguageCode } from '@classyc/shared';
+import type { OpenPeepBackgroundPatternId, SupportedLanguageCode } from '@classyc/shared';
 import type { ShellRouteId } from '@/domain/navigation';
 
 interface NavigationCopy {
@@ -9,8 +9,10 @@ interface NavigationCopy {
 }
 
 export interface CharacterCreatorCopy {
+	backgroundPatterns: Record<OpenPeepBackgroundPatternId, string>;
 	categories: {
 		accessories: string;
+		background: string;
 		body: string;
 		face: string;
 		facialHair: string;
@@ -23,6 +25,7 @@ export interface CharacterCreatorCopy {
 		outfit: string;
 		outfitSecondary: string;
 		skin: string;
+		background: string;
 	};
 	none: string;
 	posture: {
@@ -79,8 +82,17 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		alreadyAccount: 'Déjà un compte',
 		back: 'Retour',
 		characterCreator: {
+			backgroundPatterns: {
+				plain: 'Simple',
+				dots: 'Pois',
+				grid: 'Grille',
+				waves: 'Vagues',
+				rays: 'Rayons',
+				tiles: 'Carreaux'
+			},
 			categories: {
 				accessories: 'Accessoires',
+				background: 'Fond',
 				body: 'Tenues',
 				face: 'Visage',
 				facialHair: 'Barbe',
@@ -92,7 +104,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				hair: 'Cheveux',
 				outfit: 'Tenue',
 				outfitSecondary: 'Secondaire',
-				skin: 'Peau'
+				skin: 'Peau',
+				background: 'Fond'
 			},
 			none: 'Aucun',
 			posture: {
@@ -181,8 +194,17 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		alreadyAccount: 'Already have an account',
 		back: 'Back',
 		characterCreator: {
+			backgroundPatterns: {
+				plain: 'Simple',
+				dots: 'Dots',
+				grid: 'Grid',
+				waves: 'Waves',
+				rays: 'Rays',
+				tiles: 'Tiles'
+			},
 			categories: {
 				accessories: 'Accessories',
+				background: 'Background',
 				body: 'Outfit',
 				face: 'Face',
 				facialHair: 'Beard',
@@ -194,7 +216,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				hair: 'Hair',
 				outfit: 'Outfit',
 				outfitSecondary: 'Secondary',
-				skin: 'Skin'
+				skin: 'Skin',
+				background: 'Background'
 			},
 			none: 'None',
 			posture: {
@@ -283,8 +306,17 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 		alreadyAccount: '已有账号',
 		back: '返回',
 		characterCreator: {
+			backgroundPatterns: {
+				plain: '\u7b80\u6d01',
+				dots: '\u5706\u70b9',
+				grid: '\u7f51\u683c',
+				waves: '\u6ce2\u7eb9',
+				rays: '\u5149\u7ebf',
+				tiles: '\u65b9\u5757'
+			},
 			categories: {
 				accessories: '配件',
+				background: '\u80cc\u666f',
 				body: '服装',
 				face: '表情',
 				facialHair: '胡子',
@@ -296,7 +328,8 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 				hair: '头发',
 				outfit: '服装',
 				outfitSecondary: '\u6b21\u8272',
-				skin: '肤色'
+				skin: '肤色',
+				background: '\u80cc\u666f'
 			},
 			none: '无',
 			posture: {

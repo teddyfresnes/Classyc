@@ -111,3 +111,11 @@ Résolution : abandonner les icônes de niveaux provisoires et le faux relief bl
 Mise à jour : le niveau 2 ne doit pas être sélectionné dans la preview et le bonus `1.5x` ne doit pas apparaître avant l'implémentation du vrai système de niveaux. Le texte actif de la sidebar reste blanc.
 
 Mise à jour 2 : les formes décoratives provisoires et le bouton `Suivant` du ruban ont aussi été retirés. Le scroll desktop de la map et des quêtes est séparé.
+
+## 2026-06-22 - Clics rapides motif/couleur de fond
+
+Probleme : dans le createur de personnage, choisir un motif de fond puis une couleur de fond tres rapidement pouvait perdre le motif. Les deux handlers React utilisaient la meme personnalisation du rendu courant ; le second patch de couleur pouvait donc repartir de l'ancien fond avant le rerender.
+
+Resolution : `CharacterCreator` garde une ref `customizationRef` du dernier etat resolu et la met a jour immediatement dans `patchCustomization`. Les patchs imbriques `background` et `colors` sont fusionnes avec cette ref avant d'appeler `onChange`, ce qui preserve les choix rapides faits dans le meme tick.
+
+Verification : Chrome headless via DevTools Protocol confirme que le motif `Pois` et la couleur `#FFF3D8` restent tous les deux appliques et sauvegardes dans `localStorage`.

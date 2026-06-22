@@ -1,7 +1,7 @@
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { ArrowLeft, ArrowRight, CheckCircle2, Lock, LogIn } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { defaultOpenPeepCharacterId, defaultOpenPeepCustomization, supportedLanguages } from '@classyc/shared';
 import type { GuestProfile, OpenPeepCustomization, SupportedLanguageCode } from '@classyc/shared';
 import { BrandLogo } from '@/components/ui/brand-logo';
@@ -10,6 +10,7 @@ import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import { createGuestProfile, saveGuestProfile } from '@/features/onboarding/guest-profile-storage';
 
 type SetupStep = 'languages' | 'name' | 'character';
+type CharacterPanelPhase = 'idle' | 'expanding' | 'ready' | 'confirming';
 
 const choiceCardVariants: Variants = {
 	hidden: {
@@ -34,17 +35,24 @@ const stepTransition = {
 	mass: 0.8
 } as const;
 
+const characterExpansionMs = 1250;
+const characterCompletionMs = 2000;
+
 interface OnboardingFlowProps {
 	onComplete: (profile: GuestProfile) => void;
 }
 
 export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
+	const prefersReducedMotion = useReducedMotion();
 	const [step, setStep] = useState<SetupStep>('languages');
 	const [nativeLanguage, setNativeLanguage] = useState<SupportedLanguageCode | null>(null);
 	const [targetLanguage, setTargetLanguage] = useState<SupportedLanguageCode | null>(null);
 	const [firstName, setFirstName] = useState('');
 	const [characterCustomization, setCharacterCustomization] = useState<OpenPeepCustomization>(defaultOpenPeepCustomization);
+	const [characterPanelPhase, setCharacterPanelPhase] = useState<CharacterPanelPhase>('idle');
 	const [showAccountNote, setShowAccountNote] = useState(false);
+	const characterExpansionTimerRef = useRef<number | null>(null);
+	const characterCompletionTimerRef = useRef<number | null>(null);
 	const copy = getUiCopy(nativeLanguage);
 	const trimmedName = firstName.trim();
 	const canContinueToName = Boolean(nativeLanguage && targetLanguage);
@@ -56,6 +64,37 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 	useEffect(() => {
 		document.documentElement.lang = nativeLanguage ?? 'fr';
 	}, [nativeLanguage]);
+
+	useEffect(() => {
+		if (characterExpansionTimerRef.current !== null) {
+			window.clearTimeout(characterExpansionTimerRef.current);
+			characterExpansionTimerRef.current = null;
+		}
+
+		if (step !== 'character') {
+			setCharacterPanelPhase('idle');
+			return;
+		}
+
+		setCharacterPanelPhase('expanding');
+		characterExpansionTimerRef.current = window.setTimeout(() => {
+			setCharacterPanelPhase('ready');
+			characterExpansionTimerRef.current = null;
+		}, prefersReducedMotion ? 80 : characterExpansionMs);
+
+		return () => {
+			if (characterExpansionTimerRef.current !== null) {
+				window.clearTimeout(characterExpansionTimerRef.current);
+				characterExpansionTimerRef.current = null;
+			}
+		};
+	}, [prefersReducedMotion, step]);
+
+	useEffect(() => () => {
+		if (characterCompletionTimerRef.current !== null) {
+			window.clearTimeout(characterCompletionTimerRef.current);
+		}
+	}, []);
 
 	function selectNativeLanguage(language: SupportedLanguageCode) {
 		setNativeLanguage(language);
@@ -83,6 +122,18 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 		onComplete(profile);
 	}
 
+	function beginOnboardingCompletion() {
+		if (!canStart || characterPanelPhase === 'confirming') {
+			return;
+		}
+
+		setCharacterPanelPhase('confirming');
+		characterCompletionTimerRef.current = window.setTimeout(() => {
+			characterCompletionTimerRef.current = null;
+			completeOnboarding();
+		}, prefersReducedMotion ? 360 : characterCompletionMs);
+	}
+
 	return (
 		<div className="onboarding-page">
 			<header className="onboarding-header">
@@ -93,6 +144,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 				<motion.form
 					animate={{ opacity: 1, y: 0 }}
 					className="onboarding-card"
+					data-character-phase={step === 'character' ? characterPanelPhase : undefined}
+					data-step={step}
 					initial={{ opacity: 0, y: 8 }}
 					layout
 					onSubmit={(event) => {
@@ -106,11 +159,18 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 							setStep('character');
 						}
 
-						if (step === 'character' && canStart) {
-							completeOnboarding();
+						if (step === 'character' && canStart && characterPanelPhase === 'ready') {
+							beginOnboardingCompletion();
 						}
 					}}
-					transition={{ duration: 0.28, ease: 'easeOut' }}
+					transition={{
+						layout: {
+							duration: prefersReducedMotion ? 0 : characterPanelPhase === 'expanding' ? 1.2 : 0.42,
+							ease: [0.22, 1, 0.36, 1]
+						},
+						opacity: { duration: 0.28, ease: 'easeOut' },
+						y: { duration: 0.28, ease: 'easeOut' }
+					}}
 				>
 					<AnimatePresence mode="wait">
 						{step === 'languages' && (
@@ -235,46 +295,117 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 								key="character"
 								transition={stepTransition}
 							>
-								<div className="space-y-5">
-									<motion.div
-										animate={{ opacity: 1, y: 0 }}
-										className="onboarding-character-intro"
-										initial={{ opacity: 0, y: 10 }}
-										transition={{ delay: 0.08, duration: 0.22, ease: 'easeOut' }}
-									>
-										<p className="onboarding-title">{copy.characterIntroTitle}</p>
-										{nativeOption && targetOption ? (
-											<div className="onboarding-language-pair" title={`${nativeOption.label} -> ${targetOption.label}`}>
-												<span aria-hidden="true">{nativeOption.flag}</span>
-												<ArrowRight aria-hidden="true" size={16} strokeWidth={2.35} />
-												<span aria-hidden="true">{targetOption.flag}</span>
+								<AnimatePresence mode="wait">
+									{characterPanelPhase === 'confirming' ? (
+										<OnboardingCompletionMark key="completion" />
+									) : characterPanelPhase === 'ready' ? (
+										<motion.div
+											animate={{ opacity: 1, scale: 1 }}
+											className="onboarding-character-content"
+											exit={{ opacity: 0, scale: 0.98 }}
+											initial={{ opacity: 0, scale: 0.985 }}
+											key="creator"
+											transition={{ duration: 0.22, ease: 'easeOut' }}
+										>
+											<div className="onboarding-character-body">
+												<motion.div
+													animate={{ opacity: 1, y: 0 }}
+													className="onboarding-character-intro"
+													initial={{ opacity: 0, y: 10 }}
+													transition={{ delay: 0.08, duration: 0.22, ease: 'easeOut' }}
+												>
+													<p className="onboarding-title">{copy.characterIntroTitle}</p>
+													{nativeOption && targetOption ? (
+														<div className="onboarding-language-pair" title={`${nativeOption.label} -> ${targetOption.label}`}>
+															<span aria-hidden="true">{nativeOption.flag}</span>
+															<ArrowRight aria-hidden="true" size={16} strokeWidth={2.35} />
+															<span aria-hidden="true">{targetOption.flag}</span>
+														</div>
+													) : null}
+												</motion.div>
+
+												<CharacterCreator
+													copy={copy.characterCreator}
+													onChange={setCharacterCustomization}
+													value={characterCustomization}
+												/>
 											</div>
-										) : null}
-									</motion.div>
 
-									<CharacterCreator
-										copy={copy.characterCreator}
-										onChange={setCharacterCustomization}
-										value={characterCustomization}
-									/>
-								</div>
-
-								<div className="onboarding-actions">
-									<motion.button className="secondary-action" onClick={() => setStep('name')} type="button" whileTap={{ scale: 0.98 }}>
-										<ArrowLeft aria-hidden="true" size={18} strokeWidth={2.35} />
-										<span>{copy.back}</span>
-									</motion.button>
-									<motion.button className="primary-action" disabled={!canStart} type="submit" whileTap={{ scale: 0.98 }}>
-										<span>{copy.start}</span>
-										<CheckCircle2 aria-hidden="true" size={18} strokeWidth={2.35} />
-									</motion.button>
-								</div>
+											<div className="onboarding-actions">
+												<motion.button className="secondary-action" onClick={() => setStep('name')} type="button" whileTap={{ scale: 0.98 }}>
+													<ArrowLeft aria-hidden="true" size={18} strokeWidth={2.35} />
+													<span>{copy.back}</span>
+												</motion.button>
+												<motion.button className="primary-action" disabled={!canStart} type="submit" whileTap={{ scale: 0.98 }}>
+													<span>{copy.start}</span>
+													<CheckCircle2 aria-hidden="true" size={18} strokeWidth={2.35} />
+												</motion.button>
+											</div>
+										</motion.div>
+									) : (
+										<motion.div
+											animate={{ opacity: 1 }}
+											aria-hidden="true"
+											className="onboarding-character-expansion"
+											exit={{ opacity: 0 }}
+											initial={{ opacity: 0 }}
+											key="expansion"
+											transition={{ duration: 0.18, ease: 'easeOut' }}
+										/>
+									)}
+								</AnimatePresence>
 							</motion.div>
 						)}
 					</AnimatePresence>
 				</motion.form>
 			</main>
 		</div>
+	);
+}
+
+function OnboardingCompletionMark() {
+	return (
+		<motion.div
+			animate={{ opacity: 1, scale: 1 }}
+			aria-label="Validation en cours"
+			className="onboarding-complete-state"
+			exit={{ opacity: 0, scale: 0.96 }}
+			initial={{ opacity: 0, scale: 0.92 }}
+			key="completion"
+			role="status"
+			transition={{ duration: 0.22, ease: 'easeOut' }}
+		>
+			<motion.svg
+				aria-hidden="true"
+				className="onboarding-complete-icon"
+				focusable="false"
+				viewBox="0 0 96 96"
+			>
+				<motion.circle
+					animate={{ pathLength: 1 }}
+					cx="48"
+					cy="48"
+					fill="none"
+					initial={{ pathLength: 0 }}
+					r="34"
+					stroke="currentColor"
+					strokeLinecap="round"
+					strokeWidth="7"
+					transition={{ duration: 0.62, ease: 'easeOut' }}
+				/>
+				<motion.path
+					animate={{ pathLength: 1 }}
+					d="M32 49.5 43.2 60.5 65 36.5"
+					fill="none"
+					initial={{ pathLength: 0 }}
+					stroke="currentColor"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+					strokeWidth="8"
+					transition={{ delay: 0.36, duration: 0.46, ease: 'easeOut' }}
+				/>
+			</motion.svg>
+		</motion.div>
 	);
 }
 

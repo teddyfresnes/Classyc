@@ -1,5 +1,6 @@
 import {
 	defaultOpenPeepCustomization,
+	isOpenPeepBackgroundPatternId,
 	openPeepPostureModes
 } from '@classyc/shared';
 import type { OpenPeepCustomization, OpenPeepPostureMode } from '@classyc/shared';
@@ -113,6 +114,9 @@ export function getOpenPeepAtom(category: OpenPeepAtomCategory, id: string): Ope
 export function resolveOpenPeepCustomization(customization: OpenPeepCustomization | undefined): OpenPeepCustomization {
 	const base = customization ?? defaultOpenPeepCustomization;
 	const postureMode = isKnownPostureMode(base.postureMode) ? base.postureMode : defaultOpenPeepCustomization.postureMode;
+	const backgroundPatternId = isOpenPeepBackgroundPatternId(base.background?.patternId)
+		? base.background.patternId
+		: defaultOpenPeepCustomization.background.patternId;
 
 	return {
 		...defaultOpenPeepCustomization,
@@ -124,6 +128,11 @@ export function resolveOpenPeepCustomization(customization: OpenPeepCustomizatio
 		accessoryId: getOpenPeepAtom('accessories', base.accessoryId).id,
 		standingPoseId: getOpenPeepAtom('standingPose', base.standingPoseId).id,
 		sittingPoseId: getOpenPeepAtom('sittingPose', base.sittingPoseId).id,
+		background: {
+			...defaultOpenPeepCustomization.background,
+			...base.background,
+			patternId: backgroundPatternId
+		},
 		postureMode,
 		colors: {
 			...defaultOpenPeepCustomization.colors,
