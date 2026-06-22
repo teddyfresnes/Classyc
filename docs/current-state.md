@@ -8,7 +8,7 @@ Etape courante : Etape 12 - Premiers exercices chinois et prononciation.
 
 Etat : terminee.
 
-Depuis l'Etape 12, le niveau 1 de la map lance les premiers exercices de la langue apprise, avec contenus francais, anglais et chinois/pinyin, sans XP reel, streak reel ou progression persistante.
+Depuis la correction feedback de l'Etape 12, le niveau 1 de la map lance une vraie premiere lecon de bases simples pour la langue apprise, dans un shell d'exercice minimal sans sidebar ni navigation lourde. Les quetes journalieres lancent aussi de courts decks de revision avec difficulte visible, sans XP reel, streak reel ou progression persistante.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -134,17 +134,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les etats visibles actuels de la campagne sont : niveau 1 `completed`, niveaux 2 a 7 `locked`. Le niveau suivant ne reçoit pas de style distinct tant qu'il n'est pas réellement accessible.
 - Modele partage `DailyLevel` avec difficulty tiers `warmup`, `standard`, `challenge`, progression mockee et reward optionnel.
 - Source journaliere dediee dans `apps/web/src/features/learning/daily-levels.ts`.
-- Les quetes journalieres de `Apprendre` sont derivees de niveaux journaliers typees, avec rotation locale par date et premier niveau du jour en bonus `1.5x`.
-- Les cartes de quetes restent informatives : pas de clic, pas de hover interactif, et le bonus visible vient uniquement de la propriete `reward`.
-- Modele partage d'exercice : `LearningExercise`, `ExerciseAnswer`, `ExerciseEvaluation`, types `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`.
+- Les quetes journalieres de `Apprendre` sont derivees de niveaux journaliers typees, avec rotation locale par date, difficulte visible (`Facile`, `Moyen`, `Difficile`) et premier niveau du jour en bonus `1.5x`.
+- Les cartes de quetes journalieres lancent de vrais mini-decks via `/daily/{dailyLevelId}` ; elles servent a reviser ou renforcer des points plus avances que la premiere lecon campagne.
+- Modele partage d'exercice : `LearningExercise`, `ExerciseAnswer`, `ExerciseEvaluation`, types `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`, `matching`, `imageChoice`, `wordOrder`.
 - Moteur de correction mocke dans `apps/web/src/features/exercises/exercise-engine.ts`, avec score, feedback et XP potentielle calculee sans modifier la progression reelle.
 - Source mockee `apps/web/src/features/exercises/mock-exercises.ts` couvrant les quatre types d'exercice, sans contenu pedagogique final.
-- Composant UI responsive `ExercisePreview` dans `apps/web/src/features/exercises/ExercisePreview.tsx`, exporte mais non branche au parcours principal.
-- Premier contenu francais dans `apps/web/src/features/exercises/french-exercises.ts` : `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, lecture courte + oui/non.
-- Premier contenu anglais dans `apps/web/src/features/exercises/english-exercises.ts` : vocabulaire courant, grammaire simple, comprehension de phrase, phrases a completer.
-- Premier contenu chinois dans `apps/web/src/features/exercises/chinese-exercises.ts` : caracteres simples, pinyin, reconnaissance caractere/sens, lecture courte.
-- Deck jouable generique `ExerciseDeck` avec score et XP potentielle, sans modifier la progression reelle.
-- Le niveau 1 et le bouton `Jouer` du ruban ouvrent `/exercises/{langue cible}` ; les autres niveaux restent verrouilles et non interactifs.
+- Composant UI responsive `ExercisePreview` dans `apps/web/src/features/exercises/ExercisePreview.tsx`, branche au parcours campagne et aux quetes journalieres.
+- Premiere lecon campagne francais/anglais/chinois reprise depuis zero : salutations, merci, au revoir, oui/non, `je m'appelle` / `my name is` / `我叫`, repetition par image, association, ordre des mots, traduction et mini phrase.
+- Les points plus avances (`et`/`est`/`es`, conjugaison, grammaire, pinyin/revision ciblee) sont deplaces dans `apps/web/src/features/exercises/daily-exercises.ts`.
+- Deck jouable generique `ExerciseDeck` avec progression minimale, validation locale et ecran de fin, sans afficher les XP potentielles dans l'experience.
+- Les routes `/exercises/fr`, `/exercises/en`, `/exercises/zh` et `/daily/{dailyLevelId}` utilisent un shell d'exercice minimal avec logo Classyc, progression, exercice et actions, sans sidebar ni navigation mobile.
+- Le niveau 1 et le bouton `Jouer` du ruban ouvrent `/exercises/{langue cible}` ; le niveau 1 est `available`, les autres niveaux restent verrouilles et non interactifs.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
@@ -342,6 +342,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification runtime ciblee des contenus francais/anglais/chinois : 15 exercices corriges avec les reponses attendues, dont lectures `2/2`.
 - Verification Chrome headless via DevTools Protocol : desktop 1365x900 OK, bouton `Jouer` vers `/exercises/en`, clic niveau 1 vers `/exercises/en`, 1 noeud interactif, 6 niveaux verrouilles ; route `/exercises/zh` affiche le pinyin ; mobile 390x844 sans overflow horizontal.
 - Verification Etapes 11 et 12 : `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Correction feedback UX exercices du 2026-06-22 : shell complet retire des routes `/exercises/*` et `/daily/*`, progression minimale ajoutee, labels techniques et XP potentielles retires de l'ecran d'exercice.
+- Premiere lecon campagne reprise depuis zero avec 8 exercices par langue autour de salutations, merci, au revoir, oui/non et presentation simple, en reutilisant OpenMoji pour les illustrations.
+- Moteur d'exercices et modele partage etendus avec `matching`, `imageChoice` et `wordOrder`; `ExercisePreview` rend les nouveaux types et n'affiche le feedback qu'apres validation.
+- Quetes journalieres rendues jouables via `/daily/{dailyLevelId}` avec difficulte visible en bas de carte ; les contenus plus avances ou de revision y sont places.
+- Campagne remise a zero visuellement : niveau 1 `available`, aucun niveau `completed`, autres niveaux verrouilles.
+- Verification correction feedback exercices : `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Verification Chrome headless via DevTools Protocol : niveau 1 ouvre `/exercises/en`, pas de sidebar ni navigation mobile en exercice, progression `1/8`, aucun label de type/XP, illustration OpenMoji presente, matching au second exercice, quete journaliere vers `/daily/daily-sounds-2026-06-22`, mobile 390x844 sans overflow horizontal.
 
 ## Reprise
 

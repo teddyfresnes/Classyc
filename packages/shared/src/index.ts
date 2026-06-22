@@ -40,7 +40,14 @@ export interface DailyLevel {
 	openMojiHexcode?: string;
 }
 
-export type ExerciseType = 'multipleChoice' | 'fillBlank' | 'trueFalse' | 'readingComprehension';
+export type ExerciseType =
+	| 'multipleChoice'
+	| 'fillBlank'
+	| 'trueFalse'
+	| 'readingComprehension'
+	| 'matching'
+	| 'imageChoice'
+	| 'wordOrder';
 
 export interface ExercisePronunciationHint {
 	pinyin: string;
@@ -50,6 +57,7 @@ export interface ExercisePronunciationHint {
 export interface ExerciseOption {
 	id: string;
 	label: string;
+	openMojiHexcode?: string;
 	pronunciationHint?: ExercisePronunciationHint;
 }
 
@@ -96,11 +104,52 @@ export interface ReadingComprehensionExercise extends ExerciseBase {
 	questions: readonly ReadingComprehensionQuestion[];
 }
 
+export interface ExerciseMatchItem {
+	id: string;
+	label: string;
+	openMojiHexcode?: string;
+	pronunciationHint?: ExercisePronunciationHint;
+}
+
+export interface ExerciseMatchPair {
+	id: string;
+	left: ExerciseMatchItem;
+	right: ExerciseMatchItem;
+}
+
+export interface MatchingExercise extends ExerciseBase {
+	type: 'matching';
+	pairs: readonly ExerciseMatchPair[];
+}
+
+export interface ImageChoiceExercise extends ExerciseBase {
+	type: 'imageChoice';
+	imageOpenMojiHexcode: string;
+	imageAlt: string;
+	options: readonly ExerciseOption[];
+	correctOptionId: string;
+}
+
+export interface WordOrderToken {
+	id: string;
+	label: string;
+	pronunciationHint?: ExercisePronunciationHint;
+}
+
+export interface WordOrderExercise extends ExerciseBase {
+	type: 'wordOrder';
+	tokens: readonly WordOrderToken[];
+	correctTokenIds: readonly string[];
+}
+
 export type LearningExercise =
 	| MultipleChoiceExercise
 	| FillBlankExercise
 	| TrueFalseExercise
-	| ReadingComprehensionExercise;
+	| ReadingComprehensionExercise
+	| MatchingExercise
+	| ImageChoiceExercise
+	| WordOrderExercise;
 
 export type ExerciseAnswer =
 	| {
@@ -125,6 +174,24 @@ export type ExerciseAnswer =
 			questionId: string;
 			optionId: string;
 		}[];
+	}
+	| {
+		exerciseId: string;
+		type: 'matching';
+		matches: readonly {
+			leftId: string;
+			rightId: string;
+		}[];
+	}
+	| {
+		exerciseId: string;
+		type: 'imageChoice';
+		optionId: string;
+	}
+	| {
+		exerciseId: string;
+		type: 'wordOrder';
+		tokenIds: readonly string[];
 	};
 
 export type ExerciseFeedbackState = 'correct' | 'partial' | 'incorrect';

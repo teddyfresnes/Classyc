@@ -459,6 +459,7 @@ Regles retenues :
 - preparer les hexcodes OpenMoji dans le modele sans afficher d'icones sur la map tant que cela surchargerait l'interface ;
 - ne pas donner un style distinct ou un curseur cliquable a un niveau tant qu'il ne lance pas une vraie action ;
 - depuis le feedback apres l'Etape 10, le niveau 1 peut lancer les exercices de la langue cible, car une vraie action existe ;
+- depuis la correction feedback de l'Etape 12, la campagne part de zero visuellement : niveau 1 `available`, aucun niveau `completed` tant qu'il n'y a pas de vraie progression ;
 - ne pas brancher d'exercices, XP reel ou progression persistante avant les etapes dediees.
 
 ## D033 - Niveaux journaliers
@@ -476,9 +477,10 @@ La source mockee vit dans `apps/web/src/features/learning/daily-levels.ts`.
 Regles retenues :
 
 - la rotation journaliere est locale et deterministe par date, sans serveur ;
-- les quetes journalieres affichent deux niveaux mockes par jour ;
+- les quetes journalieres affichent deux niveaux mockes par jour avec difficulte visible ;
 - le bonus `1.5x` apparait uniquement si le niveau journalier expose une propriete `reward` ;
-- les cartes de quetes restent informatives tant que les exercices ne sont pas branches : pas de hover jouable, pas de curseur cliquable, pas de lancement d'exercice.
+- depuis la correction feedback de l'Etape 12, les cartes de quetes journalieres ouvrent de vrais mini-decks via `/daily/{dailyLevelId}` ;
+- les contenus journaliers peuvent porter les revisions et points plus avances qui ne doivent pas apparaitre dans la premiere lecon campagne.
 
 ## D034 - Moteur d'exercices
 
@@ -486,7 +488,7 @@ Statut : retenue et implementee pour l'Etape 9.
 
 Le modele d'exercice vit dans `packages/shared/src/index.ts` pour pouvoir etre reutilise plus tard par le web, le serveur et les contenus pedagogiques :
 
-- `ExerciseType` couvre `multipleChoice`, `fillBlank`, `trueFalse` et `readingComprehension`.
+- `ExerciseType` couvre `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`, `matching`, `imageChoice` et `wordOrder`.
 - `LearningExercise` est une union typee des variantes d'exercices.
 - `ExerciseAnswer` represente les reponses utilisateur par type d'exercice.
 - `ExerciseEvaluation` porte le score, le feedback, les XP potentielles et les XP potentielles gagnees.
@@ -495,14 +497,14 @@ La logique de correction mockee vit dans `apps/web/src/features/exercises/exerci
 
 La source `apps/web/src/features/exercises/mock-exercises.ts` couvre les quatre types avec du contenu non final, uniquement pour valider le modele et le moteur.
 
-Le composant `ExercisePreview` fournit une base UI responsive et reutilisable. Il est exporte par `apps/web/src/features/exercises/index.ts`, mais n'est pas encore branche a la map, aux quetes journalieres ou a un parcours jouable.
+Le composant `ExercisePreview` fournit une UI responsive et reutilisable pour les decks campagne et journaliers.
 
 Regles retenues :
 
 - garder une seule logique de correction partagee par les futurs contenus ;
 - ne pas creer de seconde structure pour les exercices francais, anglais ou chinois ;
 - ne pas declencher de progression reelle tant que l'Etape XP/streak n'est pas traitee ;
-- garder les niveaux campagne et journaliers non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente ; le niveau 1 est l'exception depuis le branchement vers `/exercises/{langue cible}`.
+- garder les niveaux campagne 2+ non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente ; le niveau 1 et les quetes journalieres ont maintenant une vraie action.
 
 ## D035 - Premiers exercices francais
 
@@ -510,16 +512,18 @@ Statut : retenue et implementee pour l'Etape 10.
 
 Le premier contenu francais vit dans `apps/web/src/features/exercises/french-exercises.ts`. Il reutilise directement `LearningExercise` et `ExerciseAnswer` au lieu de creer une structure parallele.
 
-Contenus couverts :
+Contenus actuels apres correction feedback de l'Etape 12 :
 
-- `et` / `est` via choix multiple ;
-- `savoir` / `connaitre` via phrase a completer et vrai/faux ;
-- conjugaison simple de `etre` via phrase a completer ;
-- lecture courte avec questions oui/non.
+- salutations et mots sociaux : `Bonjour`, `Salut`, `Merci`, `Au revoir` ;
+- oui/non et reponse simple a `Ca va ?` ;
+- presentation simple avec `Je m'appelle` ;
+- repetition par choix image, associations mot/traduction, associations mot/image, ordre des mots et mini phrase.
 
-Le deck `FrenchExerciseDeck` rend ce lot jouable avec l'`ExercisePreview` existant, le moteur de correction de l'Etape 9, un score local et des XP potentielles.
+Le deck francais reutilise `ExerciseDeck`, `ExercisePreview` et le moteur de correction de l'Etape 9, sans afficher d'XP potentielle dans l'experience.
 
 La route `/exercises/fr` existe pour verifier le rendu et l'interaction. Depuis le feedback utilisateur suivant l'Etape 10, le niveau 1 et le bouton `Jouer` du ruban lancent le deck de la langue apprise via `/exercises/{langue cible}`. Cela ne modifie pas le profil invite, les XP reels, le streak ou la progression persistante.
+
+Les anciens points `et` / `est`, `savoir` / `connaitre` et conjugaison simple sont desormais deplaces vers les quetes journalieres/revisions.
 
 Regles retenues :
 
@@ -533,10 +537,11 @@ Statut : retenue et implementee pour les Etapes 11 et 12.
 
 Les premiers contenus anglais et chinois reutilisent le modele `LearningExercise`, le moteur de correction existant et le deck generique :
 
-- `apps/web/src/features/exercises/english-exercises.ts` : vocabulaire courant, grammaire simple, comprehension de phrase et phrases a completer.
-- `apps/web/src/features/exercises/chinese-exercises.ts` : caracteres simples, pinyin, reconnaissance caractere/sens et lecture courte.
+- `apps/web/src/features/exercises/english-exercises.ts` : premiere lecon depuis zero avec `Hello`, `Hi`, `Thank you`, `Goodbye`, `Yes/No`, `My name is`.
+- `apps/web/src/features/exercises/chinese-exercises.ts` : premiere lecon depuis zero avec `你好`, `谢谢`, `再见`, `是` / `不是`, `我叫`, avec pinyin.
 - `apps/web/src/features/exercises/ExerciseDeck.tsx` : deck jouable generique pour tous les contenus.
 - `apps/web/src/features/exercises/exercise-content.ts` : registre `fr` / `en` / `zh`.
+- `apps/web/src/features/exercises/daily-exercises.ts` : mini-decks journaliers pour revisions et points plus avances.
 
 La route `/exercises/:languageCode` choisit le contenu par langue. Sur la map, le niveau 1 ouvre `/exercises/{profile.targetLanguage}`.
 
@@ -544,5 +549,20 @@ Regles retenues :
 
 - un seul noeud campagne est interactif pour le moment : le niveau 1 ;
 - les niveaux verrouilles restent visuellement grises et non cliquables ;
-- les quetes journalieres restent informatives ;
+- les quetes journalieres ouvrent des mini-decks de revision avec difficulte visible ;
 - aucune validation d'exercice ne donne encore d'XP reel, de streak reel ou de progression persistante.
+
+## D037 - Experience d'exercice minimale
+
+Statut : retenue apres correction feedback de l'Etape 12.
+
+Les routes d'exercice doivent sortir du shell complet :
+
+- `/exercises/:languageCode` et `/daily/:dailyLevelId` affichent un shell minimal dedie.
+- Le shell minimal garde seulement le logo Classyc, une action de retour discrete, la progression du deck, l'exercice et les actions.
+- Pas de sidebar desktop, pas de header de progression XP/streak, pas de navigation mobile dans une lecon.
+- Ne pas afficher de labels techniques visibles comme le type d'exercice ou des XP potentielles dans l'experience.
+- Le feedback de correction apparait uniquement apres validation, pas au moment de selectionner une reponse.
+- La premiere lecon campagne doit commencer par des bases simples et repetitives, pas par grammaire/conjugaison.
+- Les quetes journalieres peuvent porter des revisions, pieges ou points plus avances, avec difficulte visible.
+- Aucune progression reelle, XP reel ou streak reel ne doit etre ajoute tant que l'UX d'exercice n'est pas propre.

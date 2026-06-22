@@ -40,12 +40,38 @@ export function evaluateExerciseAnswer(exercise: LearningExercise, answer: Exerc
 				countCorrectReadingAnswers(exercise, answer.answers),
 				getExerciseMaxScore(exercise)
 			);
+		case 'matching':
+			if (answer.type !== 'matching') {
+				return createExerciseEvaluation(exercise, 0, getExerciseMaxScore(exercise));
+			}
+
+			return createExerciseEvaluation(
+				exercise,
+				countCorrectMatches(exercise, answer.matches),
+				getExerciseMaxScore(exercise)
+			);
+		case 'imageChoice':
+			if (answer.type !== 'imageChoice') {
+				return createExerciseEvaluation(exercise, 0, 1);
+			}
+
+			return createExerciseEvaluation(exercise, answer.optionId === exercise.correctOptionId ? 1 : 0, 1);
+		case 'wordOrder':
+			if (answer.type !== 'wordOrder') {
+				return createExerciseEvaluation(exercise, 0, 1);
+			}
+
+			return createExerciseEvaluation(exercise, areTokenIdsEqual(answer.tokenIds, exercise.correctTokenIds) ? 1 : 0, 1);
 	}
 }
 
 export function getExerciseMaxScore(exercise: LearningExercise) {
 	if (exercise.type === 'readingComprehension') {
 		return Math.max(1, exercise.questions.length);
+	}
+
+	if (exercise.type === 'matching') {
+		return Math.max(1, exercise.pairs.length);
 	}
 
 	return 1;
@@ -92,6 +118,20 @@ function countCorrectReadingAnswers(
 	const answersByQuestionId = Object.fromEntries(answers.map((answer) => [answer.questionId, answer.optionId]));
 
 	return exercise.questions.filter((question) => answersByQuestionId[question.id] === question.correctOptionId).length;
+}
+
+function countCorrectMatches(
+	exercise: Extract<LearningExercise, { type: 'matching' }>,
+	matches: Extract<ExerciseAnswer, { type: 'matching' }>['matches']
+) {
+	const rightIdsByLeftId = Object.fromEntries(matches.map((match) => [match.leftId, match.rightId]));
+
+	return exercise.pairs.filter((pair) => rightIdsByLeftId[pair.left.id] === pair.right.id).length;
+}
+
+function areTokenIdsEqual(answerTokenIds: readonly string[], correctTokenIds: readonly string[]) {
+	return answerTokenIds.length === correctTokenIds.length
+		&& answerTokenIds.every((tokenId, index) => tokenId === correctTokenIds[index]);
 }
 
 function normalizeTextAnswer(value: string) {

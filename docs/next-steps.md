@@ -14,16 +14,15 @@ Statut : terminee.
 
 Derniere etape appliquee :
 
-- Feedback acces exercices corrige : le niveau 1 de la map ouvre maintenant le deck de la langue apprise, et le ruban affiche un bouton `Jouer`.
-- `apps/web/src/features/exercises/english-exercises.ts` ajoute 5 exercices anglais couvrant vocabulaire courant, grammaire simple, comprehension de phrase et phrases a completer.
-- `apps/web/src/features/exercises/chinese-exercises.ts` ajoute 5 exercices chinois couvrant caracteres simples, pinyin, reconnaissance caractere/sens et lecture courte.
-- `packages/shared/src/index.ts` ajoute `ExercisePronunciationHint` pour porter pinyin et sens optionnel dans le modele.
-- `ExercisePreview` affiche les indices de prononciation et les expose sur les options via titre/label accessible.
-- `ExerciseDeck` factorise le deck jouable ; `exercise-content.ts` choisit le contenu selon `fr`, `en` ou `zh`.
-- Les routes `/exercises/fr`, `/exercises/en` et `/exercises/zh` existent ; `/` lance automatiquement `/exercises/{langue cible}` via le niveau 1.
-- Les autres niveaux campagne restent verrouilles et non interactifs ; aucun XP reel, streak reel, serveur ou progression persistante n'est modifie.
-- Verification Chrome headless desktop/mobile : bouton `Jouer`, clic niveau 1 vers `/exercises/en`, 1 noeud interactif, 6 niveaux verrouilles, route `/exercises/zh` avec pinyin, aucun overflow horizontal.
-- Verification runtime ciblee des contenus : les 15 reponses attendues corrigent les 15 exercices, dont lectures `2/2`.
+- Correction feedback UX exercices appliquee : les routes `/exercises/*` et `/daily/*` utilisent un shell minimal sans sidebar, sans header lourd et sans navigation mobile.
+- `packages/shared/src/index.ts` et `exercise-engine.ts` ajoutent les types jouables `matching`, `imageChoice` et `wordOrder`, en plus des types existants.
+- `ExercisePreview` rend les illustrations OpenMoji, les associations, les choix image, l'ordre des mots et la lecture ; les labels techniques et XP potentielles ne sont plus visibles dans l'exercice.
+- `ExerciseDeck` affiche une progression minimale, valide localement, puis montre un ecran de fin sans modifier XP reel, streak reel ou progression persistante.
+- La premiere lecon campagne francais/anglais/chinois part de zero : salutations, merci, au revoir, oui/non, presentation simple, repetition par plusieurs formes.
+- Les contenus plus avances ou de revision (`et`/`est`/`es`, conjugaison, grammaire, pinyin/revision ciblee) sont deplaces dans de vrais decks journaliers via `daily-exercises.ts`.
+- Les quetes journalieres sont cliquables, ouvrent `/daily/{dailyLevelId}` et affichent leur difficulte (`Facile`, `Moyen`, `Difficile`) en bas de carte.
+- La campagne repart de zero visuellement : niveau 1 `available`, aucun niveau `completed`, niveaux 2 a 7 verrouilles.
+- Verification Chrome headless desktop/mobile : clic niveau 1 vers `/exercises/en`, aucun shell lourd en exercice, `1/8`, aucun label type/XP, OpenMoji rendu, matching au second exercice, quete journaliere vers `/daily/daily-sounds-2026-06-22`, mobile 390x844 sans overflow horizontal.
 - `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 
 Historique utile conserve de l'Etape 10 :

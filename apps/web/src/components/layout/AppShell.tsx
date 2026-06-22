@@ -6,6 +6,7 @@ import {
 	MessageCircle,
 	Settings,
 	Trophy,
+	X,
 	UserRound,
 	UsersRound
 } from 'lucide-react';
@@ -13,6 +14,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { KeyboardEvent, ReactNode } from 'react';
 import { Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
 import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
+import { resolveOpenMojiIconSrc } from '@/assets/openmoji';
 import { getOpenPeepCharacter } from '@/assets/open-peeps';
 import { resolveOpenPeepCustomization } from '@/assets/open-peeps-atoms';
 import type { ShellRouteId } from '@/domain/navigation';
@@ -21,7 +23,7 @@ import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
-import { ExerciseDeck, getExerciseDeckContent } from '@/features/exercises';
+import { ExerciseDeck, getDailyExerciseDeckContent, getExerciseDeckContent } from '@/features/exercises';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	campaignLevelRoadPath,
@@ -61,6 +63,11 @@ function navigationClassName({ isActive }: { isActive: boolean }) {
 
 export function AppShell({ profile }: { profile: GuestProfile }) {
 	const location = useLocation();
+
+	if (isExerciseShellPath(location.pathname)) {
+		return <ExerciseShell profile={profile} />;
+	}
+
 	const copy = getUiCopy(profile.nativeLanguage);
 	const shellSections = createShellSections(profile.nativeLanguage);
 
@@ -122,15 +129,65 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 	);
 }
 
+function isExerciseShellPath(pathname: string) {
+	return pathname.startsWith('/exercises/') || pathname.startsWith('/daily/');
+}
+
+function ExerciseShell({ profile }: { profile: GuestProfile }) {
+	const location = useLocation();
+
+	return (
+		<div className="exercise-shell">
+			<header className="exercise-shell__top">
+				<BrandLogo />
+				<Link className="icon-action icon-action--flat" to="/" aria-label="Retour à la carte" title="Retour à la carte">
+					<X aria-hidden="true" size={21} strokeWidth={2.4} />
+				</Link>
+			</header>
+			<main className="exercise-shell__main">
+				<AnimatePresence mode="wait">
+					<Routes key={location.pathname} location={location}>
+						<Route
+							element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+							path="/exercises/:languageCode"
+						/>
+						<Route
+							element={<PageTransition><DailyExerciseRoute profile={profile} /></PageTransition>}
+							path="/daily/:dailyLevelId"
+						/>
+						<Route
+							element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+							path="*"
+						/>
+					</Routes>
+				</AnimatePresence>
+			</main>
+		</div>
+	);
+}
+
 function ExerciseRoute({ profile }: { profile: GuestProfile }) {
 	const { languageCode } = useParams();
 	const language = isExerciseLanguageCode(languageCode) ? languageCode : profile.targetLanguage;
 	const content = getExerciseDeckContent(language);
 
 	return (
-		<div className="mx-auto max-w-3xl">
+		<div className="exercise-route-frame">
 			<ExerciseDeck
-				eyebrow={content.eyebrow}
+				exercises={content.exercises}
+				title={content.title}
+			/>
+		</div>
+	);
+}
+
+function DailyExerciseRoute({ profile }: { profile: GuestProfile }) {
+	const { dailyLevelId } = useParams();
+	const content = getDailyExerciseDeckContent(dailyLevelId, profile.targetLanguage);
+
+	return (
+		<div className="exercise-route-frame">
+			<ExerciseDeck
 				exercises={content.exercises}
 				title={content.title}
 			/>
@@ -390,21 +447,27 @@ function DailyQuestCard({ index, quest }: { index: number; quest: DailyQuestPrev
 		<motion.article
 			aria-label={quest.accessibleLabel}
 			animate={{ opacity: 1, x: 0 }}
-			className="daily-quest"
+			className="daily-quest-frame"
 			initial={{ opacity: 0, x: 10 }}
 			transition={{ delay: index * 0.04, duration: 0.2, ease: 'easeOut' }}
 		>
-			<span className={`daily-quest__dot daily-quest__dot--${quest.state}`} aria-hidden="true" />
-			<div className="min-w-0 flex-1">
-				<p className="truncate text-sm font-black">{quest.label}</p>
-				<div className="mt-2 h-2 rounded-full bg-[var(--surface-3)]">
-					<div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${quest.progressPercent}%` }} />
+			<Link className="daily-quest" to={quest.exercisePath}>
+				<img
+					alt=""
+					className="daily-quest__icon"
+					draggable={false}
+					src={resolveOpenMojiIconSrc(quest.openMojiHexcode)}
+				/>
+				<div className="daily-quest__content">
+					<div className="daily-quest__top">
+						<p className="truncate text-sm font-black">{quest.label}</p>
+						{quest.rewardLabel ? <span className="daily-quest__reward">{quest.rewardLabel}</span> : null}
+					</div>
+					<div className="daily-quest__bottom">
+						<span className="daily-quest__difficulty">{quest.difficultyLabel}</span>
+					</div>
 				</div>
-			</div>
-			<div className="daily-quest__badges">
-				{quest.rewardLabel ? <span className="daily-quest__reward">{quest.rewardLabel}</span> : null}
-				<span className="daily-quest__value">{quest.value}</span>
-			</div>
+			</Link>
 		</motion.article>
 	);
 }

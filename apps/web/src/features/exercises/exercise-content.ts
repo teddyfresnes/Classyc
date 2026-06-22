@@ -13,20 +13,20 @@ export interface ExerciseDeckContent {
 export const exerciseDeckContentByLanguage: Record<SupportedLanguageCode, ExerciseDeckContent> = {
 	en: {
 		language: 'en',
-		eyebrow: 'English',
-		title: 'First exercises',
+		eyebrow: '',
+		title: 'Lesson 1',
 		exercises: englishStarterExercises
 	},
 	fr: {
 		language: 'fr',
-		eyebrow: 'Français',
-		title: 'Premiers exercices',
+		eyebrow: '',
+		title: 'Leçon 1',
 		exercises: frenchStarterExercises
 	},
 	zh: {
 		language: 'zh',
-		eyebrow: '中文',
-		title: 'Premiers exercices chinois',
+		eyebrow: '',
+		title: '第 1 课',
 		exercises: chineseStarterExercises
 	}
 };

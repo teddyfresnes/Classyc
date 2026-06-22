@@ -2,6 +2,7 @@ export { ExerciseDeck } from './ExerciseDeck';
 export { ExercisePreview } from './ExercisePreview';
 export { FrenchExerciseDeck } from './FrenchExerciseDeck';
 export { chineseStarterExerciseAnswers, chineseStarterExercises } from './chinese-exercises';
+export { getDailyExerciseAnswers, getDailyExerciseDeckContent } from './daily-exercises';
 export { englishStarterExerciseAnswers, englishStarterExercises } from './english-exercises';
 export { exerciseDeckContentByLanguage, getExerciseDeckContent } from './exercise-content';
 export { evaluateExerciseAnswer, getExerciseMaxScore } from './exercise-engine';

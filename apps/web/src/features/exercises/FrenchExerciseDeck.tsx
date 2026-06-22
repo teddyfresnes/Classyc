@@ -7,5 +7,5 @@ interface FrenchExerciseDeckProps {
 }
 
 export function FrenchExerciseDeck({ exercises = frenchStarterExercises }: FrenchExerciseDeckProps) {
-	return <ExerciseDeck eyebrow="Français" exercises={exercises} title="Premiers exercices" />;
+	return <ExerciseDeck exercises={exercises} title="Leçon 1" />;
 }

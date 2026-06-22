@@ -1,22 +1,26 @@
-import { ArrowRight, Check, RotateCcw } from 'lucide-react';
+import { ArrowRight, Check, Home, RotateCcw } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { ExerciseAnswer, ExerciseEvaluation, LearningExercise } from '@classyc/shared';
 import { evaluateExerciseAnswer, getExerciseMaxScore } from './exercise-engine';
 import { ExercisePreview } from './ExercisePreview';
 
 interface ExerciseDeckProps {
-	eyebrow: string;
+	eyebrow?: string;
 	title: string;
 	exercises: readonly LearningExercise[];
+	exitPath?: string;
 }
 
 type AnswerByExerciseId = Record<string, ExerciseAnswer | undefined>;
 type EvaluationByExerciseId = Record<string, ExerciseEvaluation | undefined>;
 
-export function ExerciseDeck({ eyebrow, exercises, title }: ExerciseDeckProps) {
+export function ExerciseDeck({ exitPath = '/', exercises, title }: ExerciseDeckProps) {
+	const navigate = useNavigate();
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [answers, setAnswers] = useState<AnswerByExerciseId>({});
 	const [evaluations, setEvaluations] = useState<EvaluationByExerciseId>({});
+	const [isComplete, setIsComplete] = useState(false);
 	const exercise = exercises[currentIndex];
 	const answer = exercise ? answers[exercise.id] : undefined;
 	const evaluation = exercise ? evaluations[exercise.id] : undefined;
@@ -52,7 +56,7 @@ export function ExerciseDeck({ eyebrow, exercises, title }: ExerciseDeckProps) {
 
 	function goNext() {
 		if (isLastExercise) {
-			restart();
+			setIsComplete(true);
 			return;
 		}
 
@@ -63,14 +67,40 @@ export function ExerciseDeck({ eyebrow, exercises, title }: ExerciseDeckProps) {
 		setAnswers({});
 		setEvaluations({});
 		setCurrentIndex(0);
+		setIsComplete(false);
+	}
+
+	if (isComplete) {
+		return (
+			<section className="exercise-deck exercise-deck--complete" aria-label={title}>
+				<div className="exercise-complete-card">
+					<div className="exercise-complete-card__mark">
+						<Check aria-hidden="true" size={34} strokeWidth={2.6} />
+					</div>
+					<div className="min-w-0">
+						<h1>Leçon terminée</h1>
+						<p>{score.score}/{score.maxScore}</p>
+					</div>
+					<div className="exercise-deck__actions">
+						<button className="secondary-action" onClick={restart} type="button">
+							<RotateCcw aria-hidden="true" size={18} strokeWidth={2.35} />
+							Rejouer
+						</button>
+						<button className="primary-action" onClick={() => navigate(exitPath)} type="button">
+							<Home aria-hidden="true" size={18} strokeWidth={2.35} />
+							Carte
+						</button>
+					</div>
+				</div>
+			</section>
+		);
 	}
 
 	return (
 		<div className="exercise-deck" aria-label={title}>
 			<header className="exercise-deck__header">
-				<div className="min-w-0">
-					<p className="exercise-deck__eyebrow">{eyebrow}</p>
-					<h1 className="exercise-deck__title">{title}</h1>
+				<div className="exercise-deck__bar" aria-hidden="true">
+					<span style={{ width: `${Math.round(((currentIndex + 1) / exercises.length) * 100)}%` }} />
 				</div>
 				<span className="exercise-deck__progress">
 					{currentIndex + 1}/{exercises.length}
@@ -85,10 +115,6 @@ export function ExerciseDeck({ eyebrow, exercises, title }: ExerciseDeckProps) {
 			/>
 
 			<footer className="exercise-deck__footer">
-				<div className="exercise-deck__stats" aria-label="Score">
-					<span>{score.score}/{score.maxScore}</span>
-					<span>{score.earnedPotentialXp}/{score.potentialXp} XP</span>
-				</div>
 				<div className="exercise-deck__actions">
 					<button className="secondary-action" onClick={restart} type="button">
 						<RotateCcw aria-hidden="true" size={18} strokeWidth={2.35} />
@@ -101,7 +127,7 @@ export function ExerciseDeck({ eyebrow, exercises, title }: ExerciseDeckProps) {
 							) : (
 								<ArrowRight aria-hidden="true" size={18} strokeWidth={2.35} />
 							)}
-							{isLastExercise ? 'Rejouer' : 'Suivant'}
+							{isLastExercise ? 'Terminer' : 'Suivant'}
 						</button>
 					) : (
 						<button className="primary-action" disabled={!canValidate} onClick={validateAnswer} type="button">
@@ -156,5 +182,14 @@ function isExerciseAnswerComplete(exercise: LearningExercise, answer: ExerciseAn
 				&& exercise.questions.every((question) => (
 					answer.answers.some((item) => item.questionId === question.id && item.optionId.length > 0)
 				));
+		case 'matching':
+			return exercise.type === 'matching'
+				&& exercise.pairs.every((pair) => (
+					answer.matches.some((match) => match.leftId === pair.left.id && match.rightId.length > 0)
+				));
+		case 'imageChoice':
+			return Boolean(answer.optionId);
+		case 'wordOrder':
+			return exercise.type === 'wordOrder' && answer.tokenIds.length === exercise.tokens.length;
 	}
 }

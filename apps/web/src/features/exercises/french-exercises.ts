@@ -2,96 +2,243 @@ import type { ExerciseAnswer, LearningExercise } from '@classyc/shared';
 
 export const frenchStarterExercises: readonly LearningExercise[] = [
 	{
-		id: 'fr-et-est-choice',
-		type: 'multipleChoice',
-		prompt: 'Choisis la phrase correcte.',
-		instruction: '`est` vient du verbe être. `et` relie deux éléments.',
-		potentialXp: 8,
-		openMojiHexcode: '2705',
+		id: 'fr-hello-image',
+		type: 'imageChoice',
+		prompt: 'Que dit-on ici ?',
+		potentialXp: 6,
+		openMojiHexcode: '1F44B',
+		imageOpenMojiHexcode: '1F44B',
+		imageAlt: 'Main qui salue',
 		options: [
 			{
-				id: 'et',
-				label: 'Il et content.'
+				id: 'bonjour',
+				label: 'Bonjour'
 			},
 			{
-				id: 'est',
-				label: 'Il est content.'
+				id: 'merci',
+				label: 'Merci'
 			},
 			{
-				id: 'es',
-				label: 'Il es content.'
+				id: 'non',
+				label: 'Non'
 			}
 		],
-		correctOptionId: 'est'
+		correctOptionId: 'bonjour'
 	},
 	{
-		id: 'fr-connaitre-fill',
-		type: 'fillBlank',
-		prompt: 'Je ___ cette ville.',
-		instruction: 'On utilise `connaître` pour une personne, un lieu ou une chose connue.',
+		id: 'fr-basic-match',
+		type: 'matching',
+		prompt: 'Relie chaque mot.',
 		potentialXp: 10,
-		openMojiHexcode: '1F4DD',
-		placeholder: 'connais',
-		acceptedAnswers: ['connais']
-	},
-	{
-		id: 'fr-savoir-true-false',
-		type: 'trueFalse',
-		prompt: 'Observe la phrase.',
-		statement: '`Je sais nager` est correct pour parler d une capacité.',
-		potentialXp: 6,
-		openMojiHexcode: '1F3AF',
-		correctAnswer: true
-	},
-	{
-		id: 'fr-etre-conjugation',
-		type: 'fillBlank',
-		prompt: 'Nous ___ prêts.',
-		instruction: 'Complète avec le verbe être au présent.',
-		potentialXp: 10,
-		openMojiHexcode: '270D',
-		placeholder: 'sommes',
-		acceptedAnswers: ['sommes']
-	},
-	{
-		id: 'fr-reading-oui-non',
-		type: 'readingComprehension',
-		prompt: 'Lis le texte puis reponds.',
-		instruction: 'Choisis oui ou non.',
-		potentialXp: 12,
-		openMojiHexcode: '1F4D6',
-		passageTitle: 'Le sac de Lina',
-		passage: 'Le matin, Lina prépare son sac. Elle prend un livre et sort à huit heures.',
-		questions: [
+		openMojiHexcode: '1F4AC',
+		pairs: [
 			{
-				id: 'book',
-				prompt: 'Lina prend-elle un livre ?',
-				options: [
-					{
-						id: 'yes',
-						label: 'Oui'
-					},
-					{
-						id: 'no',
-						label: 'Non'
-					}
-				],
-				correctOptionId: 'yes'
+				id: 'bonjour',
+				left: {
+					id: 'bonjour',
+					label: 'Bonjour'
+				},
+				right: {
+					id: 'hello',
+					label: 'Hello'
+				}
 			},
 			{
-				id: 'noon',
-				prompt: 'Lina sort-elle à midi ?',
+				id: 'merci',
+				left: {
+					id: 'merci',
+					label: 'Merci'
+				},
+				right: {
+					id: 'thanks',
+					label: 'Thank you'
+				}
+			},
+			{
+				id: 'au-revoir',
+				left: {
+					id: 'au-revoir',
+					label: 'Au revoir'
+				},
+				right: {
+					id: 'goodbye',
+					label: 'Goodbye'
+				}
+			}
+		]
+	},
+	{
+		id: 'fr-thanks-image',
+		type: 'imageChoice',
+		prompt: 'Choisis le mot.',
+		potentialXp: 6,
+		openMojiHexcode: '1F64F',
+		imageOpenMojiHexcode: '1F64F',
+		imageAlt: 'Geste de remerciement',
+		options: [
+			{
+				id: 'salut',
+				label: 'Salut'
+			},
+			{
+				id: 'merci',
+				label: 'Merci'
+			},
+			{
+				id: 'au-revoir',
+				label: 'Au revoir'
+			}
+		],
+		correctOptionId: 'merci'
+	},
+	{
+		id: 'fr-yes-no-image-match',
+		type: 'matching',
+		prompt: 'Associe le mot et l’image.',
+		potentialXp: 10,
+		openMojiHexcode: '2705',
+		pairs: [
+			{
+				id: 'oui',
+				left: {
+					id: 'oui',
+					label: 'Oui'
+				},
+				right: {
+					id: 'yes-icon',
+					label: 'Oui',
+					openMojiHexcode: '2705'
+				}
+			},
+			{
+				id: 'non',
+				left: {
+					id: 'non',
+					label: 'Non'
+				},
+				right: {
+					id: 'no-icon',
+					label: 'Non',
+					openMojiHexcode: '274C'
+				}
+			},
+			{
+				id: 'salut',
+				left: {
+					id: 'salut',
+					label: 'Salut'
+				},
+				right: {
+					id: 'wave-icon',
+					label: 'Salut',
+					openMojiHexcode: '1F44B'
+				}
+			}
+		]
+	},
+	{
+		id: 'fr-name-order',
+		type: 'wordOrder',
+		prompt: 'Remets les mots.',
+		potentialXp: 8,
+		openMojiHexcode: '1F464',
+		tokens: [
+			{
+				id: 'je',
+				label: 'Je'
+			},
+			{
+				id: 'mappelle',
+				label: 'm’appelle'
+			},
+			{
+				id: 'lina',
+				label: 'Lina'
+			}
+		],
+		correctTokenIds: ['je', 'mappelle', 'lina']
+	},
+	{
+		id: 'fr-ca-va-choice',
+		type: 'multipleChoice',
+		prompt: 'Ça va ?',
+		potentialXp: 6,
+		openMojiHexcode: '1F642',
+		options: [
+			{
+				id: 'yes',
+				label: 'Oui, ça va.'
+			},
+			{
+				id: 'bye',
+				label: 'Au revoir.'
+			},
+			{
+				id: 'name',
+				label: 'Je m’appelle.'
+			}
+		],
+		correctOptionId: 'yes'
+	},
+	{
+		id: 'fr-goodbye-order',
+		type: 'wordOrder',
+		prompt: 'Remets les mots.',
+		potentialXp: 8,
+		openMojiHexcode: '1F44B',
+		tokens: [
+			{
+				id: 'au',
+				label: 'Au'
+			},
+			{
+				id: 'revoir',
+				label: 'revoir'
+			},
+			{
+				id: 'lina',
+				label: 'Lina'
+			}
+		],
+		correctTokenIds: ['au', 'revoir', 'lina']
+	},
+	{
+		id: 'fr-mini-phrase',
+		type: 'readingComprehension',
+		prompt: 'Lis.',
+		potentialXp: 10,
+		openMojiHexcode: '1F4D6',
+		passage: 'Bonjour ! Je m’appelle Lina. Ça va ?',
+		questions: [
+			{
+				id: 'name',
+				prompt: 'Comment elle s’appelle ?',
 				options: [
 					{
-						id: 'yes',
-						label: 'Oui'
+						id: 'lina',
+						label: 'Lina'
 					},
 					{
-						id: 'no',
+						id: 'merci',
+						label: 'Merci'
+					}
+				],
+				correctOptionId: 'lina'
+			},
+			{
+				id: 'hello',
+				prompt: 'Quel mot salue ?',
+				options: [
+					{
+						id: 'bonjour',
+						label: 'Bonjour'
+					},
+					{
+						id: 'non',
 						label: 'Non'
 					}
 				],
-				correctOptionId: 'no'
+				correctOptionId: 'bonjour'
 			}
 		]
 	}
@@ -99,36 +246,77 @@ export const frenchStarterExercises: readonly LearningExercise[] = [
 
 export const frenchStarterExerciseAnswers: readonly ExerciseAnswer[] = [
 	{
-		exerciseId: 'fr-et-est-choice',
+		exerciseId: 'fr-hello-image',
+		type: 'imageChoice',
+		optionId: 'bonjour'
+	},
+	{
+		exerciseId: 'fr-basic-match',
+		type: 'matching',
+		matches: [
+			{
+				leftId: 'bonjour',
+				rightId: 'hello'
+			},
+			{
+				leftId: 'merci',
+				rightId: 'thanks'
+			},
+			{
+				leftId: 'au-revoir',
+				rightId: 'goodbye'
+			}
+		]
+	},
+	{
+		exerciseId: 'fr-thanks-image',
+		type: 'imageChoice',
+		optionId: 'merci'
+	},
+	{
+		exerciseId: 'fr-yes-no-image-match',
+		type: 'matching',
+		matches: [
+			{
+				leftId: 'oui',
+				rightId: 'yes-icon'
+			},
+			{
+				leftId: 'non',
+				rightId: 'no-icon'
+			},
+			{
+				leftId: 'salut',
+				rightId: 'wave-icon'
+			}
+		]
+	},
+	{
+		exerciseId: 'fr-name-order',
+		type: 'wordOrder',
+		tokenIds: ['je', 'mappelle', 'lina']
+	},
+	{
+		exerciseId: 'fr-ca-va-choice',
 		type: 'multipleChoice',
-		optionId: 'est'
+		optionId: 'yes'
 	},
 	{
-		exerciseId: 'fr-connaitre-fill',
-		type: 'fillBlank',
-		value: 'connais'
+		exerciseId: 'fr-goodbye-order',
+		type: 'wordOrder',
+		tokenIds: ['au', 'revoir', 'lina']
 	},
 	{
-		exerciseId: 'fr-savoir-true-false',
-		type: 'trueFalse',
-		value: true
-	},
-	{
-		exerciseId: 'fr-etre-conjugation',
-		type: 'fillBlank',
-		value: 'sommes'
-	},
-	{
-		exerciseId: 'fr-reading-oui-non',
+		exerciseId: 'fr-mini-phrase',
 		type: 'readingComprehension',
 		answers: [
 			{
-				questionId: 'book',
-				optionId: 'yes'
+				questionId: 'name',
+				optionId: 'lina'
 			},
 			{
-				questionId: 'noon',
-				optionId: 'no'
+				questionId: 'hello',
+				optionId: 'bonjour'
 			}
 		]
 	}

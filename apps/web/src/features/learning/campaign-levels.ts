@@ -21,10 +21,10 @@ export const campaignLevels: readonly CampaignLevelMapNode[] = [
 		id: 'campaign-intro',
 		order: 1,
 		label: '1',
-		title: 'Premiers pas',
+		title: 'Premiers mots',
 		x: 180,
 		y: 72,
-		state: 'completed',
+		state: 'available',
 		reward: createXpMultiplierReward(1.5),
 		openMojiHexcode: '1F3AF'
 	},

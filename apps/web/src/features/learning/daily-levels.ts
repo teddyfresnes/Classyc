@@ -12,6 +12,9 @@ export interface DailyQuestPreview {
 	state: 'bonus' | 'empty';
 	progressPercent: number;
 	rewardLabel?: string;
+	difficultyLabel: string;
+	exercisePath: string;
+	openMojiHexcode: string;
 	accessibleLabel: string;
 }
 
@@ -28,11 +31,11 @@ const dailyLevelTemplates: readonly DailyLevelTemplate[] = [
 		id: 'daily-routine',
 		difficulty: 'warmup',
 		targetCount: 1,
-		openMojiHexcode: '1F3AF',
+		openMojiHexcode: '1F44B',
 		titles: {
-			fr: 'Routine express',
-			en: 'Express routine',
-			zh: 'Daily routine'
+			fr: 'Bases rapides',
+			en: 'Quick basics',
+			zh: 'Quick basics'
 		}
 	},
 	{
@@ -41,9 +44,9 @@ const dailyLevelTemplates: readonly DailyLevelTemplate[] = [
 		targetCount: 3,
 		openMojiHexcode: '1F4DD',
 		titles: {
-			fr: 'Memoire active',
-			en: 'Active recall',
-			zh: 'Active recall'
+			fr: 'Révision ciblée',
+			en: 'Focused review',
+			zh: 'Focused review'
 		}
 	},
 	{
@@ -63,7 +66,7 @@ const dailyLevelTemplates: readonly DailyLevelTemplate[] = [
 		targetCount: 1,
 		openMojiHexcode: '2B50',
 		titles: {
-			fr: 'Defi court',
+			fr: 'Défi court',
 			en: 'Short challenge',
 			zh: 'Short challenge'
 		}
@@ -111,7 +114,7 @@ function createDailyQuestPreview(level: DailyLevel): DailyQuestPreview {
 	const accessibleParts = [
 		level.title,
 		`${level.completedCount}/${level.targetCount}`,
-		level.difficulty
+		getDailyDifficultyLabel(level.difficulty)
 	];
 
 	if (level.reward) {
@@ -125,8 +128,21 @@ function createDailyQuestPreview(level: DailyLevel): DailyQuestPreview {
 		state: rewardLabel ? 'bonus' : 'empty',
 		progressPercent,
 		rewardLabel,
+		difficultyLabel: getDailyDifficultyLabel(level.difficulty),
+		exercisePath: `/daily/${level.id}`,
+		openMojiHexcode: level.openMojiHexcode ?? '1F3AF',
 		accessibleLabel: accessibleParts.join(' - ')
 	};
+}
+
+function getDailyDifficultyLabel(difficulty: DailyLevelDifficultyTier) {
+	const labels: Record<DailyLevelDifficultyTier, string> = {
+		challenge: 'Difficile',
+		standard: 'Moyen',
+		warmup: 'Facile'
+	};
+
+	return labels[difficulty];
 }
 
 function createDailyXpMultiplierReward(multiplier: number): DailyLevelReward {

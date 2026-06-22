@@ -2,12 +2,221 @@ import type { ExerciseAnswer, LearningExercise } from '@classyc/shared';
 
 export const chineseStarterExercises: readonly LearningExercise[] = [
 	{
-		id: 'zh-nihao-meaning',
-		type: 'multipleChoice',
-		prompt: 'Que veut dire 你好 ?',
-		instruction: 'Associe le mot chinois a son sens.',
-		potentialXp: 8,
+		id: 'zh-hello-image',
+		type: 'imageChoice',
+		prompt: 'On dit quoi ici ?',
+		potentialXp: 6,
 		openMojiHexcode: '1F44B',
+		imageOpenMojiHexcode: '1F44B',
+		imageAlt: 'Main qui salue',
+		options: [
+			{
+				id: 'nihao',
+				label: '你好',
+				pronunciationHint: {
+					pinyin: 'nǐ hǎo',
+					meaning: 'bonjour'
+				}
+			},
+			{
+				id: 'xiexie',
+				label: '谢谢',
+				pronunciationHint: {
+					pinyin: 'xiè xie',
+					meaning: 'merci'
+				}
+			},
+			{
+				id: 'bushi',
+				label: '不是',
+				pronunciationHint: {
+					pinyin: 'bú shì',
+					meaning: 'non / ce n’est pas'
+				}
+			}
+		],
+		correctOptionId: 'nihao'
+	},
+	{
+		id: 'zh-basic-match',
+		type: 'matching',
+		prompt: 'Relie chaque mot.',
+		potentialXp: 10,
+		openMojiHexcode: '1F4AC',
+		pairs: [
+			{
+				id: 'nihao',
+				left: {
+					id: 'nihao',
+					label: '你好',
+					pronunciationHint: {
+						pinyin: 'nǐ hǎo'
+					}
+				},
+				right: {
+					id: 'hello',
+					label: 'Bonjour'
+				}
+			},
+			{
+				id: 'xiexie',
+				left: {
+					id: 'xiexie',
+					label: '谢谢',
+					pronunciationHint: {
+						pinyin: 'xiè xie'
+					}
+				},
+				right: {
+					id: 'thanks',
+					label: 'Merci'
+				}
+			},
+			{
+				id: 'zaijian',
+				left: {
+					id: 'zaijian',
+					label: '再见',
+					pronunciationHint: {
+						pinyin: 'zài jiàn'
+					}
+				},
+				right: {
+					id: 'goodbye',
+					label: 'Au revoir'
+				}
+			}
+		]
+	},
+	{
+		id: 'zh-thanks-image',
+		type: 'imageChoice',
+		prompt: 'Choisis le mot.',
+		potentialXp: 6,
+		openMojiHexcode: '1F64F',
+		imageOpenMojiHexcode: '1F64F',
+		imageAlt: 'Geste de remerciement',
+		options: [
+			{
+				id: 'nihao',
+				label: '你好',
+				pronunciationHint: {
+					pinyin: 'nǐ hǎo',
+					meaning: 'bonjour'
+				}
+			},
+			{
+				id: 'xiexie',
+				label: '谢谢',
+				pronunciationHint: {
+					pinyin: 'xiè xie',
+					meaning: 'merci'
+				}
+			},
+			{
+				id: 'zaijian',
+				label: '再见',
+				pronunciationHint: {
+					pinyin: 'zài jiàn',
+					meaning: 'au revoir'
+				}
+			}
+		],
+		correctOptionId: 'xiexie'
+	},
+	{
+		id: 'zh-yes-no-image-match',
+		type: 'matching',
+		prompt: 'Associe le mot et l’image.',
+		potentialXp: 10,
+		openMojiHexcode: '2705',
+		pairs: [
+			{
+				id: 'shi',
+				left: {
+					id: 'shi',
+					label: '是',
+					pronunciationHint: {
+						pinyin: 'shì',
+						meaning: 'oui / c’est'
+					}
+				},
+				right: {
+					id: 'yes-icon',
+					label: 'Oui',
+					openMojiHexcode: '2705'
+				}
+			},
+			{
+				id: 'bushi',
+				left: {
+					id: 'bushi',
+					label: '不是',
+					pronunciationHint: {
+						pinyin: 'bú shì',
+						meaning: 'non / ce n’est pas'
+					}
+				},
+				right: {
+					id: 'no-icon',
+					label: 'Non',
+					openMojiHexcode: '274C'
+				}
+			},
+			{
+				id: 'nihao',
+				left: {
+					id: 'nihao',
+					label: '你好',
+					pronunciationHint: {
+						pinyin: 'nǐ hǎo',
+						meaning: 'bonjour'
+					}
+				},
+				right: {
+					id: 'wave-icon',
+					label: 'Salut',
+					openMojiHexcode: '1F44B'
+				}
+			}
+		]
+	},
+	{
+		id: 'zh-name-order',
+		type: 'wordOrder',
+		prompt: 'Remets les mots.',
+		potentialXp: 8,
+		openMojiHexcode: '1F464',
+		tokens: [
+			{
+				id: 'wo',
+				label: '我',
+				pronunciationHint: {
+					pinyin: 'wǒ',
+					meaning: 'je'
+				}
+			},
+			{
+				id: 'jiao',
+				label: '叫',
+				pronunciationHint: {
+					pinyin: 'jiào',
+					meaning: 's’appeler'
+				}
+			},
+			{
+				id: 'lina',
+				label: 'Lina'
+			}
+		],
+		correctTokenIds: ['wo', 'jiao', 'lina']
+	},
+	{
+		id: 'zh-nihao-choice-repeat',
+		type: 'multipleChoice',
+		prompt: '你好',
+		potentialXp: 6,
+		openMojiHexcode: '1F642',
 		pronunciationHint: {
 			pinyin: 'nǐ hǎo',
 			meaning: 'bonjour'
@@ -22,141 +231,97 @@ export const chineseStarterExercises: readonly LearningExercise[] = [
 				label: 'Merci'
 			},
 			{
-				id: 'water',
-				label: 'Eau'
+				id: 'bye',
+				label: 'Au revoir'
 			}
 		],
 		correctOptionId: 'hello'
 	},
 	{
-		id: 'zh-nihao-fill',
-		type: 'fillBlank',
-		prompt: '你 ___',
-		instruction: 'Complete le mot 你好.',
-		potentialXp: 10,
-		openMojiHexcode: '270D',
-		placeholder: '好',
-		pronunciationHint: {
-			pinyin: 'nǐ hǎo',
-			meaning: 'bonjour'
-		},
-		acceptedAnswers: ['好', 'hao', 'hǎo']
-	},
-	{
-		id: 'zh-xiexie-true-false',
-		type: 'trueFalse',
-		prompt: 'Observe 谢谢.',
-		statement: '`谢谢` veut dire merci.',
-		potentialXp: 6,
-		openMojiHexcode: '2705',
-		pronunciationHint: {
-			pinyin: 'xiè xie',
-			meaning: 'merci'
-		},
-		correctAnswer: true
-	},
-	{
-		id: 'zh-water-character',
-		type: 'multipleChoice',
-		prompt: 'Choisis le caractere pour eau.',
-		instruction: 'Utilise le sens et le pinyin pour reconnaitre le caractere.',
-		potentialXp: 10,
-		openMojiHexcode: '1F4A7',
-		options: [
+		id: 'zh-goodbye-order',
+		type: 'wordOrder',
+		prompt: 'Remets les mots.',
+		potentialXp: 8,
+		openMojiHexcode: '1F44B',
+		tokens: [
 			{
-				id: 'water',
-				label: '水',
+				id: 'zai',
+				label: '再',
 				pronunciationHint: {
-					pinyin: 'shuǐ',
-					meaning: 'eau'
+					pinyin: 'zài'
 				}
 			},
 			{
-				id: 'fire',
-				label: '火',
+				id: 'jian',
+				label: '见',
 				pronunciationHint: {
-					pinyin: 'huǒ',
-					meaning: 'feu'
+					pinyin: 'jiàn'
 				}
 			},
 			{
-				id: 'person',
-				label: '人',
-				pronunciationHint: {
-					pinyin: 'rén',
-					meaning: 'personne'
-				}
+				id: 'lina',
+				label: 'Lina'
 			}
 		],
-		correctOptionId: 'water'
+		correctTokenIds: ['zai', 'jian', 'lina']
 	},
 	{
-		id: 'zh-reading-short',
+		id: 'zh-mini-phrase',
 		type: 'readingComprehension',
-		prompt: 'Lis le texte court.',
-		instruction: 'Reponds avec 是 ou 不是.',
-		potentialXp: 12,
+		prompt: 'Lis.',
+		potentialXp: 10,
 		openMojiHexcode: '1F4D6',
-		passageTitle: '小明的书',
-		passage: '小明有一本书。他喜欢书。',
+		passage: '你好！我叫 Lina。谢谢。再见！',
 		pronunciationHint: {
-			pinyin: 'Xiǎo Míng yǒu yì běn shū. Tā xǐ huān shū.',
-			meaning: 'Xiao Ming a un livre. Il aime les livres.'
+			pinyin: 'Nǐ hǎo! Wǒ jiào Lina. Xiè xie. Zài jiàn!',
+			meaning: 'Bonjour ! Je m’appelle Lina. Merci. Au revoir !'
 		},
 		questions: [
 			{
-				id: 'has-book',
-				prompt: '小明有书吗？',
+				id: 'name',
+				prompt: '她叫什么？',
 				pronunciationHint: {
-					pinyin: 'Xiǎo Míng yǒu shū ma?',
-					meaning: 'Xiao Ming a-t-il un livre ?'
+					pinyin: 'Tā jiào shénme?',
+					meaning: 'Comment elle s’appelle ?'
 				},
 				options: [
 					{
-						id: 'yes',
-						label: '是',
-						pronunciationHint: {
-							pinyin: 'shì',
-							meaning: 'oui / c est'
-						}
+						id: 'lina',
+						label: 'Lina'
 					},
 					{
-						id: 'no',
-						label: '不是',
+						id: 'xiexie',
+						label: '谢谢',
 						pronunciationHint: {
-							pinyin: 'bú shì',
-							meaning: 'non / ce n est pas'
+							pinyin: 'xiè xie'
 						}
 					}
 				],
-				correctOptionId: 'yes'
+				correctOptionId: 'lina'
 			},
 			{
-				id: 'likes-water',
-				prompt: '他喜欢水吗？',
+				id: 'thanks',
+				prompt: '哪个词表示 merci ?',
 				pronunciationHint: {
-					pinyin: 'Tā xǐ huān shuǐ ma?',
-					meaning: 'Aime-t-il l eau ?'
+					pinyin: 'Nǎ ge cí biǎoshì merci?'
 				},
 				options: [
 					{
-						id: 'yes',
-						label: '是',
+						id: 'xiexie',
+						label: '谢谢',
 						pronunciationHint: {
-							pinyin: 'shì',
-							meaning: 'oui / c est'
+							pinyin: 'xiè xie'
 						}
 					},
 					{
-						id: 'no',
+						id: 'bushi',
 						label: '不是',
 						pronunciationHint: {
-							pinyin: 'bú shì',
-							meaning: 'non / ce n est pas'
+							pinyin: 'bú shì'
 						}
 					}
 				],
-				correctOptionId: 'no'
+				correctOptionId: 'xiexie'
 			}
 		]
 	}
@@ -164,36 +329,77 @@ export const chineseStarterExercises: readonly LearningExercise[] = [
 
 export const chineseStarterExerciseAnswers: readonly ExerciseAnswer[] = [
 	{
-		exerciseId: 'zh-nihao-meaning',
+		exerciseId: 'zh-hello-image',
+		type: 'imageChoice',
+		optionId: 'nihao'
+	},
+	{
+		exerciseId: 'zh-basic-match',
+		type: 'matching',
+		matches: [
+			{
+				leftId: 'nihao',
+				rightId: 'hello'
+			},
+			{
+				leftId: 'xiexie',
+				rightId: 'thanks'
+			},
+			{
+				leftId: 'zaijian',
+				rightId: 'goodbye'
+			}
+		]
+	},
+	{
+		exerciseId: 'zh-thanks-image',
+		type: 'imageChoice',
+		optionId: 'xiexie'
+	},
+	{
+		exerciseId: 'zh-yes-no-image-match',
+		type: 'matching',
+		matches: [
+			{
+				leftId: 'shi',
+				rightId: 'yes-icon'
+			},
+			{
+				leftId: 'bushi',
+				rightId: 'no-icon'
+			},
+			{
+				leftId: 'nihao',
+				rightId: 'wave-icon'
+			}
+		]
+	},
+	{
+		exerciseId: 'zh-name-order',
+		type: 'wordOrder',
+		tokenIds: ['wo', 'jiao', 'lina']
+	},
+	{
+		exerciseId: 'zh-nihao-choice-repeat',
 		type: 'multipleChoice',
 		optionId: 'hello'
 	},
 	{
-		exerciseId: 'zh-nihao-fill',
-		type: 'fillBlank',
-		value: '好'
+		exerciseId: 'zh-goodbye-order',
+		type: 'wordOrder',
+		tokenIds: ['zai', 'jian', 'lina']
 	},
 	{
-		exerciseId: 'zh-xiexie-true-false',
-		type: 'trueFalse',
-		value: true
-	},
-	{
-		exerciseId: 'zh-water-character',
-		type: 'multipleChoice',
-		optionId: 'water'
-	},
-	{
-		exerciseId: 'zh-reading-short',
+		exerciseId: 'zh-mini-phrase',
 		type: 'readingComprehension',
 		answers: [
 			{
-				questionId: 'has-book',
-				optionId: 'yes'
+				questionId: 'name',
+				optionId: 'lina'
 			},
 			{
-				questionId: 'likes-water',
-				optionId: 'no'
+				questionId: 'thanks',
+				optionId: 'xiexie'
 			}
 		]
 	}
