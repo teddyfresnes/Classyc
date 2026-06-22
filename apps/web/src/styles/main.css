@@ -1283,8 +1283,12 @@ button {
 	}
 
 	.map-node {
-		cursor: pointer;
+		cursor: default;
 		outline: none;
+	}
+
+	.map-node--available {
+		cursor: pointer;
 	}
 
 	.map-node__ring {
@@ -1307,20 +1311,28 @@ button {
 		pointer-events: none;
 	}
 
-	.map-node--ready .map-node__disc,
-	.map-node--next .map-node__disc {
+	.map-node--completed .map-node__disc {
 		fill: var(--nav-active);
 	}
 
-	.map-node--ready .map-node__number,
-	.map-node--next .map-node__number {
+	.map-node--completed .map-node__number {
 		fill: var(--nav-active-contrast);
 	}
 
-	.map-node--next .map-node__ring {
+	.map-node--available .map-node__ring {
 		fill: var(--accent-soft);
 		stroke: color-mix(in srgb, var(--accent) 28%, transparent);
 		stroke-width: 2.5;
+	}
+
+	.map-node--available .map-node__disc {
+		fill: var(--surface-2);
+		stroke: var(--accent);
+	}
+
+	.map-node--available .map-node__number {
+		fill: var(--accent-strong);
+		font-weight: 750;
 	}
 
 	.map-node__reward rect {

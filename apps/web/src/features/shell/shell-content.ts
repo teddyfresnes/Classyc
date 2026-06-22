@@ -2,15 +2,6 @@ import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import type { ShellRouteId } from '@/domain/navigation';
 import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
 
-export interface LevelNodePreview {
-	id: string;
-	label: string;
-	x: number;
-	y: number;
-	state: 'ready' | 'next' | 'locked';
-	reward?: string;
-}
-
 export interface DailyQuestPreview {
 	id: string;
 	label: string;
@@ -45,58 +36,6 @@ export function getLearningSummary(profile: GuestProfile) {
 		next: copy.learn.next
 	};
 }
-
-export const levelNodes: readonly LevelNodePreview[] = [
-	{
-		id: 'start',
-		label: '1',
-		x: 180,
-		y: 72,
-		state: 'ready'
-	},
-	{
-		id: 'step-2',
-		label: '2',
-		x: 238,
-		y: 176,
-		state: 'locked'
-	},
-	{
-		id: 'step-3',
-		label: '3',
-		x: 180,
-		y: 280,
-		state: 'locked'
-	},
-	{
-		id: 'step-4',
-		label: '4',
-		x: 122,
-		y: 384,
-		state: 'locked'
-	},
-	{
-		id: 'step-5',
-		label: '5',
-		x: 180,
-		y: 488,
-		state: 'locked'
-	},
-	{
-		id: 'step-6',
-		label: '6',
-		x: 238,
-		y: 592,
-		state: 'locked'
-	},
-	{
-		id: 'step-7',
-		label: '7',
-		x: 180,
-		y: 682,
-		state: 'locked'
-	}
-];
 
 export function createDailyQuests(language: SupportedLanguageCode): readonly DailyQuestPreview[] {
 	const copy = getUiCopy(language);

@@ -4,11 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 6 - Integration OpenMoji et recherche d'icones.
+Etape courante : Etape 7 - Systeme de niveaux campagne.
 
 Etat : terminee.
 
-Depuis l'Etape 6, le projet contient aussi un index OpenMoji centralise avec recherche d'icones et resolution des PNG locaux.
+Depuis l'Etape 7, la page `Apprendre` utilise une source typee de niveaux campagne avec etats `completed`, `available`, `locked` et un bonus `1.5x` porte par un vrai niveau.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -128,13 +128,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Helper `resolveOpenMojiIconSrc(hexcode)` pour resoudre les PNG `Openmoji/icons/{hexcode}.png`.
 - Resultat OpenMoji stable expose : `hexcode`, `label`, `tags`, `src`.
 - Exemples OpenMoji exportes pour niveaux, exercices et UI via `openMojiUseCaseExamples`, sans implementation des niveaux.
+- Modele partage `CampaignLevel` avec etats `locked`, `available`, `completed`, reward `xpMultiplier` et champ optionnel `openMojiHexcode`.
+- Source campagne dediee dans `apps/web/src/features/learning/campaign-levels.ts`.
+- La map `Apprendre` utilise les niveaux campagne typees, garde le SVG unique route + pastilles et affiche un bonus `1.5x` uniquement depuis la propriete `reward` du niveau 1.
+- Les etats visibles actuels de la campagne sont : niveau 1 `completed`, niveaux 2 a 7 `locked`. Le niveau suivant ne reçoit pas de style distinct tant qu'il n'est pas réellement accessible.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
-- Systeme de niveaux.
-- Exercices.
+- Niveaux journaliers.
+- Exercices branches aux niveaux.
 - XP, streak, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
 
@@ -291,7 +295,15 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Ajout de `apps/web/src/assets/openmoji.ts` avec index centralise, recherche normalisee, resolution PNG par hexcode et exemples d'utilisation pour niveaux/exercices/UI.
 - Verification ciblee via serveur Vite SSR : `openMojiIcons.length === 4495`, recherches `fire`, `target`, `bell` et `1f600` OK, sources PNG resolues.
 - Verification Etape 6 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Etape 7 niveaux campagne : ajout de `CampaignLevel` dans `packages/shared/src/index.ts`, source dediee `apps/web/src/features/learning/campaign-levels.ts`, remplacement des donnees preview de map par 7 niveaux typees.
+- Le niveau 1 porte le reward `xpMultiplier` `1.5`, affiche le badge `1.5x` et expose le libelle accessible `1.5x d'XP gagne en plus`.
+- La map conserve un SVG unique pour route + pastilles ; niveau 1 `completed`, niveaux 2 a 7 `locked`, sans mise en avant du prochain niveau tant qu'aucune action réelle n'existe.
+- Preparation OpenMoji : les niveaux portent des `openMojiHexcode` optionnels, sans afficher d'icones sur la map pour eviter la surcharge.
+- Verification Etape 7 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, 7 noeuds detectes, badge `1.5x`, niveau 1 `completed`, niveaux 2 a 7 `locked`, captures visuelles sans chevauchement.
+- Correction feedback Etape 7 : le niveau 2 est grise comme les niveaux verrouilles et les pastilles n'utilisent plus de curseur cliquable par defaut. Le type `available` reste disponible dans le modele pour une future action reelle.
+- Navigateur integre Browser retente : indisponible dans cette session a cause d'une erreur de runtime du plugin ; verification visuelle faite via Chrome headless local.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 7 de [docs/next-steps.md](next-steps.md) : systeme de niveaux campagne.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 8 de [docs/next-steps.md](next-steps.md) : systeme de niveaux journaliers.

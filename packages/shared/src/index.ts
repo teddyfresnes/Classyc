@@ -4,6 +4,22 @@ export type ThemePreference = 'light' | 'dark';
 
 export type LearningMode = 'campaign' | 'daily' | 'diagnostic';
 
+export type CampaignLevelState = 'locked' | 'available' | 'completed';
+
+export interface CampaignLevelReward {
+	type: 'xpMultiplier';
+	multiplier: number;
+}
+
+export interface CampaignLevel {
+	id: string;
+	order: number;
+	title: string;
+	state: CampaignLevelState;
+	reward?: CampaignLevelReward;
+	openMojiHexcode?: string;
+}
+
 export type OpenPeepCharacterId =
 	| 'open-peep-bust-1'
 	| 'open-peep-bust-8'

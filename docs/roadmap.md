@@ -119,7 +119,7 @@ Livrables prevus :
 
 ### Etape 7 - Systeme de niveaux campagne
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : creer une carte de progression campagne extensible.
 
@@ -132,6 +132,8 @@ Livrables prevus :
 - preparation du streak/flamme
 
 ### Etape 8 - Systeme de niveaux journaliers
+
+Statut : prochaine.
 
 Objectif : ajouter des niveaux quotidiens variables.
 

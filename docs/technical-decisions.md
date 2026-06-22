@@ -433,3 +433,23 @@ Implementation Etape 5 :
 - Correction feedback tenues secondaires du 2026-06-14 : `OpenPeepCustomizationColors` ajoute `outfitSecondary` avec fallback retrocompatible. `open-peep-css-peeps.ts` declare par body si la couche noire CSS-Peeps doit etre recoloree en couleur principale ou secondaire. `OpenPeepComposer` recolore le SVG de detail CSS-Peeps existant a l'execution et ajoute un stroke noir sur le meme path ; aucune forme SVG supplementaire n'est ajoutee. Les pastilles secondaires ne s'affichent que pour les bodies qui ont deux zones personnalisables.
 - Correction feedback contours du 2026-06-14 : le stroke noir ajoute aux details CSS-Peeps recolores est renforce et arrondi pour rester visible sur les contours des bodies. `Sweater` est mappe avec `outfit` comme masse principale et `outfitSecondary` pour les taches.
 - Le build Vite signale un bundle volumineux car les SVG bruts et CSS-Peeps sont embarques pour rendre le createur complet disponible immediatement. A optimiser plus tard si le poids devient prioritaire.
+
+## D032 - Niveaux campagne
+
+Statut : retenue et implementee pour l'Etape 7.
+
+Le modele de base des niveaux campagne vit dans `packages/shared/src/index.ts` :
+
+- `CampaignLevelState` : `locked`, `available`, `completed`.
+- `CampaignLevelReward` : reward `xpMultiplier` pour porter un bonus comme `1.5x`.
+- `CampaignLevel` : identifiant, ordre, titre, etat, reward optionnel et `openMojiHexcode` optionnel.
+
+La source de demo campagne vit cote web dans `apps/web/src/features/learning/campaign-levels.ts`, car elle contient aussi les coordonnees de rendu SVG de la map actuelle.
+
+Regles retenues :
+
+- garder le SVG unique route + pastilles pour eviter les decalages de map ;
+- afficher le bonus `1.5x` uniquement si un niveau expose une propriete `reward` ;
+- preparer les hexcodes OpenMoji dans le modele sans afficher d'icones sur la map tant que cela surchargerait l'interface ;
+- ne pas donner un style distinct ou un curseur cliquable au prochain niveau tant qu'il ne lance pas une vraie action ;
+- ne pas brancher d'exercices, XP reel ou progression persistante avant les etapes dediees.

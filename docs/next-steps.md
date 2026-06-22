@@ -8,11 +8,24 @@
 
 ## Etape actuelle
 
-Etape 6 - Integration OpenMoji et recherche d'icones.
+Etape 7 - Systeme de niveaux campagne.
 
 Statut : terminee.
 
 Derniere etape appliquee :
+
+- `packages/shared/src/index.ts` expose `CampaignLevel`, `CampaignLevelState`, `CampaignLevelReward` avec etats `locked`, `available`, `completed`.
+- `apps/web/src/features/learning/campaign-levels.ts` centralise la source de 7 niveaux campagne, leurs coordonnees SVG, le chemin de route et les helpers de libelle/progression.
+- La map `Apprendre` utilise les niveaux campagne au lieu des anciennes donnees preview de `shell-content.ts`.
+- Le bonus `1.5x` est porte par le reward `xpMultiplier` du niveau 1 et expose le libelle/tooltip `1.5x d'XP gagne en plus`.
+- Les etats visibles sont : niveau 1 `completed`, niveaux 2 a 7 `locked`; le niveau suivant n'est pas mis en avant tant qu'il n'est pas réellement accessible.
+- Les niveaux preparent des `openMojiHexcode` optionnels sans afficher d'icones sur la map.
+- Le SVG unique route + pastilles est conserve ; la route de progression ne met pas en avant le niveau 2 tant qu'aucune action reelle n'existe.
+- Correction feedback Etape 7 : les pastilles n'utilisent plus de curseur cliquable par defaut ; seul un futur etat vraiment accessible pourra le remettre.
+- Verification Chrome headless desktop/mobile : 7 noeuds, etats attendus, badge `1.5x`, captures visuelles OK.
+- `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 6 :
 
 - `apps/web/src/assets/openmoji.ts` centralise l'index OpenMoji depuis `Openmoji/openmoji.json`.
 - Les chemins PNG sont resolus via `resolveOpenMojiIconSrc(hexcode)` vers `Openmoji/icons/{hexcode}.png`.
@@ -78,7 +91,7 @@ Garde-fous UX conserves :
 - Sidebar desktop fixee a la hauteur ecran ; overflow reserve au contenu central.
 - Profil bas de sidebar neutre sur `/profile` : pas d'etat selected interieur.
 - Learn path : route courbe et pastilles dans un SVG unique, sans icones de niveaux ni faux socle bleu.
-- Le bonus `1.5x` ne doit pas apparaitre dans la preview actuelle ; le reintroduire seulement avec le vrai systeme de niveaux.
+- Le bonus `1.5x` peut apparaitre uniquement comme propriete `reward` d'un vrai niveau campagne ou journalier ; ne pas l'ajouter comme decoration libre.
 - Les items selected de sidebar gardent le texte blanc.
 - Ne pas remettre le bouton `Suivant` dans le ruban tant qu'il n'a pas de vraie action.
 - Sur desktop, garder le scroll de la colonne map separe du scroll des quetes.
@@ -88,37 +101,38 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 7 - Systeme de niveaux campagne
+### Etape 8 - Systeme de niveaux journaliers
 
 Statut : prochaine.
 
-Objectif : creer une carte de progression campagne extensible sans implementer les exercices.
+Objectif : ajouter une base de niveaux quotidiens variables sans implementer les exercices.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Relire les garde-fous UX du learn path avant toute modification.
-- Definir un modele de niveau campagne extensible avec etats `locked`, `available`, `completed`.
-- Remplacer les donnees preview de la map par une petite source de niveaux campagne typee.
-- Reintroduire le bonus `1.5x` uniquement sur un vrai niveau campagne, avec libelle/tooltip/tap prevu.
-- Preparer l'usage d'icones OpenMoji depuis l'index centralise si cela aide le modele, sans surcharger la map.
-- Garder le SVG unique route + pastilles pour eviter les decalages.
+- Relire les garde-fous UX du learn path et des quetes journalieres avant toute modification.
+- Definir un modele de niveau journalier extensible avec difficulty tiers.
+- Creer une petite source locale de niveaux journaliers mockes.
+- Ajouter un premier niveau journalier avec bonus `1.5x` porte par une propriete `reward`.
+- Preparer une rotation locale simple du contenu mocke, sans serveur.
+- Brancher les quetes journalieres sur cette source sans ajouter d'exercices jouables.
+- Garder l'interface calme, responsive, et sans textes explicatifs inutiles.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- Les niveaux campagne sont modelises dans un module dedie et reutilisable.
-- La map utilise ces niveaux au lieu de donnees purement decoratives.
-- Les etats verrouille/disponible/termine sont presents et lisibles.
-- Le bonus `1.5x` reapparait seulement comme vraie propriete de niveau campagne.
+- Les niveaux journaliers sont modelises dans un module dedie et reutilisable.
+- Les quetes journalieres utilisent une source typee plutot que des placeholders libres.
+- Les difficulty tiers existent dans le modele.
+- Le bonus `1.5x` apparait seulement comme propriete d'un vrai niveau journalier.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Exercices.
+- Exercices jouables.
 - Diagnostic complet.
 - Serveur.
 - XP reel, streak reel, social, messagerie et mini-jeux.

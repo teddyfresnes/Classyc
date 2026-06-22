@@ -23,12 +23,19 @@ import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
+	campaignLevelRoadPath,
+	campaignLevels,
+	getCampaignLevelAccessibleLabel,
+	getCampaignLevelRewardLabel,
+	getCampaignMapProgressPercent
+} from '@/features/learning/campaign-levels';
+import type { CampaignLevelMapNode } from '@/features/learning/campaign-levels';
+import {
 	createDailyQuests,
 	createShellSections,
-	getLearningSummary,
-	levelNodes
+	getLearningSummary
 } from '@/features/shell/shell-content';
-import type { DailyQuestPreview, LevelNodePreview, ShellSectionPreview } from '@/features/shell/shell-content';
+import type { DailyQuestPreview, ShellSectionPreview } from '@/features/shell/shell-content';
 
 const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	learn: BookOpenCheck,
@@ -39,16 +46,6 @@ const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	settings: Settings,
 	profile: UserRound
 };
-
-const levelRoadPath = [
-	'M180 72',
-	'C226 100 258 132 238 176',
-	'C218 222 182 236 180 280',
-	'C178 324 128 338 122 384',
-	'C116 430 164 448 180 488',
-	'C196 528 238 548 238 592',
-	'C238 632 206 656 180 682'
-].join(' ');
 
 function navigationClassName({ isActive }: { isActive: boolean }) {
 	return `nav-link${isActive ? ' active' : ''}`;
@@ -241,6 +238,7 @@ function StreakMark() {
 function LearningHome({ profile }: { profile: GuestProfile }) {
 	const summary = getLearningSummary(profile);
 	const quests = createDailyQuests(profile.nativeLanguage);
+	const campaignProgress = getCampaignMapProgressPercent(campaignLevels);
 
 	return (
 		<div className="learn-grid">
@@ -259,9 +257,14 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 
 				<div className="level-map" aria-label={summary.title}>
 					<svg className="level-map__canvas" viewBox="0 0 360 740" role="img" aria-label={summary.title}>
-						<path className="level-road level-road--base" d={levelRoadPath} pathLength={100} />
-						<path className="level-road level-road--progress" d={levelRoadPath} pathLength={100} />
-						{levelNodes.map((node, index) => (
+						<path className="level-road level-road--base" d={campaignLevelRoadPath} pathLength={100} />
+						<path
+							className="level-road level-road--progress"
+							d={campaignLevelRoadPath}
+							pathLength={100}
+							style={{ strokeDasharray: `${campaignProgress} 100` }}
+						/>
+						{campaignLevels.map((node, index) => (
 							<LevelNodeCard index={index} key={node.id} node={node} />
 						))}
 					</svg>
@@ -280,25 +283,32 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 	);
 }
 
-function LevelNodeCard({ index, node }: { index: number; node: LevelNodePreview }) {
+function LevelNodeCard({ index, node }: { index: number; node: CampaignLevelMapNode }) {
+	const accessibleLabel = getCampaignLevelAccessibleLabel(node);
+	const rewardLabel = node.reward ? getCampaignLevelRewardLabel(node.reward) : null;
+
 	return (
-		<g className={`map-node map-node--${node.state}`} transform={`translate(${node.x} ${node.y})`}>
+		<g
+			aria-label={accessibleLabel}
+			className={`map-node map-node--${node.state}`}
+			transform={`translate(${node.x} ${node.y})`}
+		>
 			<motion.g
 				animate={{ opacity: 1, scale: 1 }}
 				initial={{ opacity: 0, scale: 0.92 }}
 				style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
 				transition={{ delay: index * 0.045, duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
 			>
-				<title>{node.reward ? `Niveau ${node.label} - 1.5x d'XP gagné en plus` : `Niveau ${node.label}`}</title>
+				<title>{accessibleLabel}</title>
 				<circle className="map-node__ring" r="38" />
 				<circle className="map-node__disc" r="29" />
 				<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
 					{node.label}
 				</text>
-				{node.reward ? (
+				{rewardLabel ? (
 					<g className="map-node__reward" transform="translate(31 -27)">
 						<rect height="24" rx="12" width="46" x="-23" y="-12" />
-						<text dominantBaseline="central" textAnchor="middle">1.5x</text>
+						<text dominantBaseline="central" textAnchor="middle">{rewardLabel}</text>
 					</g>
 				) : null}
 			</motion.g>
