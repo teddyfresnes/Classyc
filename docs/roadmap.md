@@ -158,7 +158,7 @@ Livrables prevus :
 
 ### Etape 10 - Premiers exercices français
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : livrer un premier contenu jouable en francais.
 
@@ -170,6 +170,8 @@ Contenus initiaux :
 - lecture courte + oui/non
 
 ### Etape 11 - Premiers exercices anglais
+
+Statut : prochaine.
 
 Objectif : livrer un premier contenu jouable en anglais.
 

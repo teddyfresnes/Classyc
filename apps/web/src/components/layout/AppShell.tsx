@@ -21,6 +21,7 @@ import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
+import { FrenchExerciseDeck } from '@/features/exercises';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	campaignLevelRoadPath,
@@ -73,6 +74,10 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 									path="/"
 								/>
 								<Route
+									element={<PageTransition><ExerciseRoute /></PageTransition>}
+									path="/exercises/fr"
+								/>
+								<Route
 									element={<PageTransition><ShellSection section={shellSections.stats} /></PageTransition>}
 									path="/stats"
 								/>
@@ -107,6 +112,14 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 			</div>
 
 			<MobileNavigation copy={copy} />
+		</div>
+	);
+}
+
+function ExerciseRoute() {
+	return (
+		<div className="mx-auto max-w-3xl">
+			<FrenchExerciseDeck />
 		</div>
 	);
 }

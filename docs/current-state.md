@@ -4,11 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 9 - Moteur d'exercices.
+Etape courante : Etape 10 - Premiers exercices francais.
 
 Etat : terminee.
 
-Depuis l'Etape 9, le projet contient une base de moteur d'exercices avec types partages, correction mockee, score, XP potentielle et composant UI responsive non branche a la map.
+Depuis l'Etape 10, le projet contient un premier lot d'exercices francais jouables via une route directe, sans branchement a la map, aux quetes, aux XP reels ou au streak.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -140,13 +140,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Moteur de correction mocke dans `apps/web/src/features/exercises/exercise-engine.ts`, avec score, feedback et XP potentielle calculee sans modifier la progression reelle.
 - Source mockee `apps/web/src/features/exercises/mock-exercises.ts` couvrant les quatre types d'exercice, sans contenu pedagogique final.
 - Composant UI responsive `ExercisePreview` dans `apps/web/src/features/exercises/ExercisePreview.tsx`, exporte mais non branche au parcours principal.
+- Premier contenu francais dans `apps/web/src/features/exercises/french-exercises.ts` : `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, lecture courte + oui/non.
+- Deck jouable `FrenchExerciseDeck` avec score et XP potentielle, sans modifier la progression reelle.
+- Route directe `/exercises/fr` pour verifier les exercices francais ; elle n'est pas ajoutee a la navigation principale, ni branchee a la map ou aux quetes.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
 - Exercices branches aux niveaux.
-- Contenu pedagogique final.
+- Contenu pedagogique complet anglais/chinois.
+- Parcours complet de lancement des exercices.
 - XP, streak, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
 
@@ -323,7 +327,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Ajout de `ExercisePreview`, composant UI responsive exporte depuis `apps/web/src/features/exercises/index.ts`, mais non branche a la map, aux quetes ou au shell.
 - Verification runtime ciblee du moteur : les reponses mockees correctes donnent les scores attendus, dont lecture `2/2`.
 - Verification Etape 9 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Etape 10 premiers exercices francais : ajout de `french-exercises.ts` avec 5 exercices couvrant `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, lecture courte + oui/non.
+- Ajout de `FrenchExerciseDeck` avec validation locale, score et XP potentielle, sans ecriture dans le profil invite ni progression reelle.
+- Route directe `/exercises/fr` ajoutee pour verifier les exercices, sans entree de navigation principale et sans branchement aux niveaux campagne/journaliers.
+- Verification runtime ciblee du contenu francais : les reponses attendues corrigent les 5 exercices, dont lecture `2/2`.
+- Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, route `/exercises/fr`, deck `1/5`, validation du premier exercice correcte, aucun overflow horizontal.
+- Verification Etape 10 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 10 de [docs/next-steps.md](next-steps.md) : premiers exercices francais.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 11 de [docs/next-steps.md](next-steps.md) : premiers exercices anglais.

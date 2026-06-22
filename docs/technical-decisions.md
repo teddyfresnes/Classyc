@@ -496,3 +496,26 @@ Regles retenues :
 - ne pas creer de seconde structure pour les exercices francais, anglais ou chinois ;
 - ne pas declencher de progression reelle tant que l'Etape XP/streak n'est pas traitee ;
 - garder les niveaux campagne et journaliers non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente.
+
+## D035 - Premiers exercices francais
+
+Statut : retenue et implementee pour l'Etape 10.
+
+Le premier contenu francais vit dans `apps/web/src/features/exercises/french-exercises.ts`. Il reutilise directement `LearningExercise` et `ExerciseAnswer` au lieu de creer une structure parallele.
+
+Contenus couverts :
+
+- `et` / `est` via choix multiple ;
+- `savoir` / `connaitre` via phrase a completer et vrai/faux ;
+- conjugaison simple de `etre` via phrase a completer ;
+- lecture courte avec questions oui/non.
+
+Le deck `FrenchExerciseDeck` rend ce lot jouable avec l'`ExercisePreview` existant, le moteur de correction de l'Etape 9, un score local et des XP potentielles.
+
+La route directe `/exercises/fr` existe pour verifier le rendu et l'interaction, mais elle reste volontairement hors navigation principale. Elle ne rend pas les niveaux campagne ou journaliers cliquables et ne modifie pas le profil invite, les XP reels, le streak ou la progression persistante.
+
+Regles retenues :
+
+- les prochains lots de contenu doivent reutiliser le meme modele et le meme moteur ;
+- garder les contenus courts et facilement revisables tant qu'il n'y a pas de validation pedagogique plus complete ;
+- ne pas confondre XP potentielle affichee dans un exercice avec XP reel utilisateur.

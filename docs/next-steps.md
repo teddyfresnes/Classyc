@@ -8,11 +8,22 @@
 
 ## Etape actuelle
 
-Etape 9 - Moteur d'exercices.
+Etape 10 - Premiers exercices francais.
 
 Statut : terminee.
 
 Derniere etape appliquee :
+
+- `apps/web/src/features/exercises/french-exercises.ts` ajoute un premier lot de 5 exercices francais.
+- Les contenus couvrent `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, et lecture courte avec questions oui/non.
+- `apps/web/src/features/exercises/FrenchExerciseDeck.tsx` rend ces exercices jouables avec score et XP potentielle, sans toucher aux XP reels, au streak ou a la progression persistante.
+- La route directe `/exercises/fr` permet de verifier le deck, mais elle n'est pas ajoutee a la navigation principale, a la map ou aux quetes journalieres.
+- Les niveaux campagne et journaliers restent non cliquables.
+- Verification Chrome headless desktop/mobile : route `/exercises/fr` OK, deck `1/5`, premier exercice jouable, validation correcte, aucun overflow horizontal.
+- Verification runtime ciblee du contenu francais : les reponses attendues corrigent les 5 exercices, dont lecture `2/2`.
+- `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 9 :
 
 - `packages/shared/src/index.ts` expose `LearningExercise`, `ExerciseAnswer`, `ExerciseEvaluation` et les types `multipleChoice`, `fillBlank`, `trueFalse`, `readingComprehension`.
 - `apps/web/src/features/exercises/exercise-engine.ts` centralise la correction mockee, le score, le feedback et les XP potentielles, sans modifier la progression reelle.
@@ -122,19 +133,19 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 10 - Premiers exercices francais
+### Etape 11 - Premiers exercices anglais
 
 Statut : prochaine.
 
-Objectif : livrer un premier contenu jouable en francais avec le moteur existant, sans brancher encore toute la progression.
+Objectif : livrer un premier contenu jouable en anglais avec le moteur existant, sans brancher encore toute la progression.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
 - Relire les decisions sur le contenu pedagogique et les garde-fous UX avant toute modification de contenu.
-- Preparer une premiere source d'exercices francais dediee, reutilisant `LearningExercise`.
-- Couvrir les contenus initiaux prevus : `et` / `est`, `savoir` / `connaitre`, conjugaison simple, lecture courte + oui/non.
+- Preparer une premiere source d'exercices anglais dediee, reutilisant `LearningExercise`.
+- Couvrir les contenus initiaux prevus : vocabulaire courant, grammaire simple, comprehension de phrase, phrases a completer.
 - Garder le contenu court, local et facilement revisable.
 - Reutiliser le moteur de correction existant au lieu d'ajouter une seconde logique.
 - Ne pas brancher de XP reel, streak reel, serveur, social ou persistence de progression.
@@ -144,7 +155,7 @@ Taches prevues :
 
 Critere d'acceptation :
 
-- Un premier lot d'exercices francais existe dans un module dedie.
+- Un premier lot d'exercices anglais existe dans un module dedie.
 - Ces exercices utilisent le modele partage et le moteur de correction de l'Etape 9.
 - Les themes initiaux de la roadmap sont couverts au moins par des exemples courts.
 - Aucun XP reel, streak reel ou progression persistante n'est modifie.
@@ -155,6 +166,6 @@ Hors scope :
 
 - Diagnostic complet.
 - Parcours complet de lancement depuis la map ou les quetes.
-- Contenu anglais/chinois.
+- Contenu chinois.
 - Serveur.
 - XP reel, streak reel, social, messagerie et mini-jeux.
