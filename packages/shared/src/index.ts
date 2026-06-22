@@ -42,9 +42,15 @@ export interface DailyLevel {
 
 export type ExerciseType = 'multipleChoice' | 'fillBlank' | 'trueFalse' | 'readingComprehension';
 
+export interface ExercisePronunciationHint {
+	pinyin: string;
+	meaning?: string;
+}
+
 export interface ExerciseOption {
 	id: string;
 	label: string;
+	pronunciationHint?: ExercisePronunciationHint;
 }
 
 export interface ExerciseBase {
@@ -54,6 +60,7 @@ export interface ExerciseBase {
 	instruction?: string;
 	potentialXp: number;
 	openMojiHexcode?: string;
+	pronunciationHint?: ExercisePronunciationHint;
 }
 
 export interface MultipleChoiceExercise extends ExerciseBase {
@@ -79,6 +86,7 @@ export interface ReadingComprehensionQuestion {
 	prompt: string;
 	options: readonly ExerciseOption[];
 	correctOptionId: string;
+	pronunciationHint?: ExercisePronunciationHint;
 }
 
 export interface ReadingComprehensionExercise extends ExerciseBase {

@@ -119,3 +119,11 @@ Probleme : dans le createur de personnage, choisir un motif de fond puis une cou
 Resolution : `CharacterCreator` garde une ref `customizationRef` du dernier etat resolu et la met a jour immediatement dans `patchCustomization`. Les patchs imbriques `background` et `colors` sont fusionnes avec cette ref avant d'appeler `onChange`, ce qui preserve les choix rapides faits dans le meme tick.
 
 Verification : Chrome headless via DevTools Protocol confirme que le motif `Pois` et la couleur `#FFF3D8` restent tous les deux appliques et sauvegardes dans `localStorage`.
+
+## 2026-06-22 - Exercices accessibles seulement par route cachee
+
+Probleme : apres l'ajout des premiers exercices francais, le deck etait accessible via `/exercises/fr`, mais la map restait purement informative. Cliquer sur le niveau 1 ne faisait rien, ce qui rendait la fonctionnalite invisible dans l'experience normale.
+
+Resolution : brancher le niveau 1 et le bouton `Jouer` du ruban vers `/exercises/{langue cible}`. Les niveaux 2+ restent verrouilles et non interactifs. Le deck est factorise par langue pour reutiliser le meme lancement avec les contenus francais, anglais et chinois.
+
+Verification : Chrome headless confirme un seul noeud interactif, six niveaux verrouilles, un clic niveau 1 vers `/exercises/en` pour un profil apprenant l'anglais, et aucun overflow horizontal desktop/mobile.

@@ -171,7 +171,7 @@ Contenus initiaux :
 
 ### Etape 11 - Premiers exercices anglais
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : livrer un premier contenu jouable en anglais.
 
@@ -184,6 +184,8 @@ Contenus initiaux :
 
 ### Etape 12 - Premiers exercices chinois et prononciation
 
+Statut : terminee.
+
 Objectif : poser les bases chinois avec support pinyin.
 
 Livrables prevus :
@@ -194,6 +196,8 @@ Livrables prevus :
 - pronunciation hint au hover et tap long
 
 ### Etape 13 - XP, progression et streak
+
+Statut : prochaine.
 
 Objectif : rendre la progression motivante et coherente.
 

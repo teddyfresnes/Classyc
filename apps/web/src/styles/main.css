@@ -1235,12 +1235,41 @@ button {
 	.unit-ribbon {
 		display: flex;
 		align-items: center;
-		justify-content: flex-start;
+		justify-content: space-between;
 		gap: 1rem;
 		border-radius: 8px;
 		background: var(--accent);
 		padding: clamp(1rem, 0.85rem + 1vw, 1.45rem);
 		box-shadow: var(--shadow-soft);
+	}
+
+	.unit-ribbon__action {
+		display: inline-flex;
+		min-height: 2.55rem;
+		flex-shrink: 0;
+		align-items: center;
+		justify-content: center;
+		border-radius: 8px;
+		background: #ffffff;
+		padding: 0.65rem 0.95rem;
+		color: #1744b5;
+		font-size: 0.95rem;
+		font-weight: 900;
+		line-height: 1;
+		box-shadow: 0 6px 0 rgba(23, 68, 181, 0.35);
+		transition:
+			transform 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.unit-ribbon__action:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 7px 0 rgba(23, 68, 181, 0.35);
+	}
+
+	.unit-ribbon__action:focus-visible {
+		outline: 2px solid #ffffff;
+		outline-offset: 3px;
 	}
 
 	.level-map {
@@ -1288,6 +1317,15 @@ button {
 	.map-node {
 		cursor: default;
 		outline: none;
+	}
+
+	.map-node--interactive {
+		cursor: pointer;
+	}
+
+	.map-node--interactive:focus-visible .map-node__ring {
+		stroke: var(--focus);
+		stroke-width: 4;
 	}
 
 	.map-node--available {
@@ -1514,6 +1552,23 @@ button {
 		line-height: 1.5;
 	}
 
+	.exercise-pronunciation {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+		margin-top: 0.5rem;
+		color: var(--text-muted);
+		font-size: 0.86rem;
+		font-weight: 850;
+		line-height: 1.4;
+	}
+
+	.exercise-pronunciation span {
+		border-radius: 6px;
+		background: var(--surface-3);
+		padding: 0.22rem 0.45rem;
+	}
+
 	.exercise-preview__xp {
 		flex-shrink: 0;
 		border-radius: 6px;
@@ -1553,6 +1608,18 @@ button {
 		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--border-soft) 70%, transparent);
 	}
 
+	.exercise-option__content {
+		display: grid;
+		gap: 0.18rem;
+	}
+
+	.exercise-option__hint {
+		color: var(--text-muted);
+		font-size: 0.78rem;
+		font-weight: 750;
+		line-height: 1.2;
+	}
+
 	.exercise-option:not(:disabled):hover,
 	.exercise-option[data-selected="true"] {
 		background: var(--accent-soft);
@@ -1561,6 +1628,10 @@ button {
 
 	.exercise-option[data-selected="true"] {
 		box-shadow: inset 0 0 0 2px var(--accent);
+	}
+
+	.exercise-option[data-selected="true"] .exercise-option__hint {
+		color: var(--accent-strong);
 	}
 
 	.exercise-option:disabled {
@@ -1891,6 +1962,10 @@ button {
 	.unit-ribbon {
 		align-items: flex-start;
 		flex-direction: column;
+	}
+
+	.unit-ribbon__action {
+		width: 100%;
 	}
 
 	.settings-row {

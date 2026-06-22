@@ -1,6 +1,7 @@
 import type {
 	ExerciseAnswer,
 	ExerciseEvaluation,
+	ExercisePronunciationHint,
 	LearningExercise,
 	ReadingComprehensionExercise,
 	ReadingComprehensionQuestion
@@ -24,6 +25,7 @@ export function ExercisePreview({ answer, evaluation, exercise, onAnswerChange }
 					<p className="exercise-preview__type">{formatExerciseType(exercise.type)}</p>
 					<h2 className="exercise-preview__prompt">{exercise.prompt}</h2>
 					{exercise.instruction ? <p className="exercise-preview__instruction">{exercise.instruction}</p> : null}
+					{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
 				</div>
 				<span className="exercise-preview__xp">{exercise.potentialXp} XP</span>
 			</header>
@@ -53,15 +55,17 @@ function renderExerciseBody(
 				<div className="exercise-option-list">
 					{exercise.options.map((option) => (
 						<button
+							aria-label={formatOptionAccessibleLabel(option.label, option.pronunciationHint)}
 							aria-pressed={answer?.type === 'multipleChoice' && answer.optionId === option.id}
 							className="exercise-option"
 							data-selected={answer?.type === 'multipleChoice' && answer.optionId === option.id}
 							disabled={!onAnswerChange}
 							key={option.id}
 							onClick={() => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId: option.id })}
+							title={formatPronunciationTitle(option.pronunciationHint)}
 							type="button"
 						>
-							{option.label}
+							<OptionLabel label={option.label} pronunciationHint={option.pronunciationHint} />
 						</button>
 					))}
 				</div>
@@ -152,21 +156,24 @@ function ReadingQuestionCard({
 	return (
 		<section className="exercise-reading__question">
 			<p>{question.prompt}</p>
+			{question.pronunciationHint ? <PronunciationHint hint={question.pronunciationHint} /> : null}
 			<div className="exercise-option-list">
 				{question.options.map((option) => (
 					<button
-						aria-pressed={selectedOptionId === option.id}
-						className="exercise-option"
-						data-selected={selectedOptionId === option.id}
-						disabled={!onAnswerChange}
-						key={option.id}
-						onClick={() => onAnswerChange?.(createReadingAnswer(answer, exerciseId, question.id, option.id))}
-						type="button"
-					>
-						{option.label}
-					</button>
-				))}
-			</div>
+							aria-pressed={selectedOptionId === option.id}
+							aria-label={formatOptionAccessibleLabel(option.label, option.pronunciationHint)}
+							className="exercise-option"
+							data-selected={selectedOptionId === option.id}
+							disabled={!onAnswerChange}
+							key={option.id}
+							onClick={() => onAnswerChange?.(createReadingAnswer(answer, exerciseId, question.id, option.id))}
+							title={formatPronunciationTitle(option.pronunciationHint)}
+							type="button"
+						>
+							<OptionLabel label={option.label} pronunciationHint={option.pronunciationHint} />
+						</button>
+					))}
+				</div>
 		</section>
 	);
 }
@@ -188,6 +195,48 @@ function createReadingAnswer(
 		type: 'readingComprehension',
 		answers
 	};
+}
+
+function PronunciationHint({ hint }: { hint: ExercisePronunciationHint }) {
+	return (
+		<p className="exercise-pronunciation" title={formatPronunciationTitle(hint)}>
+			<span>{hint.pinyin}</span>
+			{hint.meaning ? <span>{hint.meaning}</span> : null}
+		</p>
+	);
+}
+
+function OptionLabel({
+	label,
+	pronunciationHint
+}: {
+	label: string;
+	pronunciationHint?: ExercisePronunciationHint;
+}) {
+	return (
+		<span className="exercise-option__content">
+			<span>{label}</span>
+			{pronunciationHint ? (
+				<span className="exercise-option__hint" aria-hidden="true">
+					{pronunciationHint.pinyin}
+				</span>
+			) : null}
+		</span>
+	);
+}
+
+function formatPronunciationTitle(hint: ExercisePronunciationHint | undefined) {
+	if (!hint) {
+		return undefined;
+	}
+
+	return hint.meaning ? `${hint.pinyin} - ${hint.meaning}` : hint.pinyin;
+}
+
+function formatOptionAccessibleLabel(label: string, hint: ExercisePronunciationHint | undefined) {
+	const hintLabel = formatPronunciationTitle(hint);
+
+	return hintLabel ? `${label} - ${hintLabel}` : label;
 }
 
 function formatExerciseType(type: LearningExercise['type']) {

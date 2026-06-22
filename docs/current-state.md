@@ -4,11 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 10 - Premiers exercices francais.
+Etape courante : Etape 12 - Premiers exercices chinois et prononciation.
 
 Etat : terminee.
 
-Depuis l'Etape 10, le projet contient un premier lot d'exercices francais jouables via une route directe, sans branchement a la map, aux quetes, aux XP reels ou au streak.
+Depuis l'Etape 12, le niveau 1 de la map lance les premiers exercices de la langue apprise, avec contenus francais, anglais et chinois/pinyin, sans XP reel, streak reel ou progression persistante.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -141,16 +141,17 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Source mockee `apps/web/src/features/exercises/mock-exercises.ts` couvrant les quatre types d'exercice, sans contenu pedagogique final.
 - Composant UI responsive `ExercisePreview` dans `apps/web/src/features/exercises/ExercisePreview.tsx`, exporte mais non branche au parcours principal.
 - Premier contenu francais dans `apps/web/src/features/exercises/french-exercises.ts` : `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, lecture courte + oui/non.
-- Deck jouable `FrenchExerciseDeck` avec score et XP potentielle, sans modifier la progression reelle.
-- Route directe `/exercises/fr` pour verifier les exercices francais ; elle n'est pas ajoutee a la navigation principale, ni branchee a la map ou aux quetes.
+- Premier contenu anglais dans `apps/web/src/features/exercises/english-exercises.ts` : vocabulaire courant, grammaire simple, comprehension de phrase, phrases a completer.
+- Premier contenu chinois dans `apps/web/src/features/exercises/chinese-exercises.ts` : caracteres simples, pinyin, reconnaissance caractere/sens, lecture courte.
+- Deck jouable generique `ExerciseDeck` avec score et XP potentielle, sans modifier la progression reelle.
+- Le niveau 1 et le bouton `Jouer` du ruban ouvrent `/exercises/{langue cible}` ; les autres niveaux restent verrouilles et non interactifs.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
-- Exercices branches aux niveaux.
-- Contenu pedagogique complet anglais/chinois.
-- Parcours complet de lancement des exercices.
+- Exercices branches a tous les niveaux.
+- Progression persistante apres exercice.
 - XP, streak, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
 
@@ -333,7 +334,15 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification runtime ciblee du contenu francais : les reponses attendues corrigent les 5 exercices, dont lecture `2/2`.
 - Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, route `/exercises/fr`, deck `1/5`, validation du premier exercice correcte, aucun overflow horizontal.
 - Verification Etape 10 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Correction acces exercices apres feedback : le niveau 1 n'est plus un noeud purement informatif, il ouvre le deck de la langue apprise. Le ruban affiche aussi un bouton `Jouer`.
+- Etape 11 premiers exercices anglais : ajout de `english-exercises.ts` avec 5 exercices couvrant vocabulaire courant, grammaire simple, comprehension de phrase et phrases a completer.
+- Etape 12 premiers exercices chinois : ajout de `chinese-exercises.ts` avec 5 exercices couvrant caracteres simples, pinyin, reconnaissance caractere/sens et lecture courte.
+- Le modele partage ajoute `ExercisePronunciationHint` avec pinyin et sens optionnel ; `ExercisePreview` affiche ces indices et les expose aussi via le titre/label des options.
+- `ExerciseDeck` remplace la logique de deck dupliquee et `exercise-content.ts` choisit le contenu via la langue cible.
+- Verification runtime ciblee des contenus francais/anglais/chinois : 15 exercices corriges avec les reponses attendues, dont lectures `2/2`.
+- Verification Chrome headless via DevTools Protocol : desktop 1365x900 OK, bouton `Jouer` vers `/exercises/en`, clic niveau 1 vers `/exercises/en`, 1 noeud interactif, 6 niveaux verrouilles ; route `/exercises/zh` affiche le pinyin ; mobile 390x844 sans overflow horizontal.
+- Verification Etapes 11 et 12 : `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 11 de [docs/next-steps.md](next-steps.md) : premiers exercices anglais.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 13 de [docs/next-steps.md](next-steps.md) : XP, progression et streak.

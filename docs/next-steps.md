@@ -8,17 +8,31 @@
 
 ## Etape actuelle
 
-Etape 10 - Premiers exercices francais.
+Etape 12 - Premiers exercices chinois et prononciation.
 
 Statut : terminee.
 
 Derniere etape appliquee :
 
+- Feedback acces exercices corrige : le niveau 1 de la map ouvre maintenant le deck de la langue apprise, et le ruban affiche un bouton `Jouer`.
+- `apps/web/src/features/exercises/english-exercises.ts` ajoute 5 exercices anglais couvrant vocabulaire courant, grammaire simple, comprehension de phrase et phrases a completer.
+- `apps/web/src/features/exercises/chinese-exercises.ts` ajoute 5 exercices chinois couvrant caracteres simples, pinyin, reconnaissance caractere/sens et lecture courte.
+- `packages/shared/src/index.ts` ajoute `ExercisePronunciationHint` pour porter pinyin et sens optionnel dans le modele.
+- `ExercisePreview` affiche les indices de prononciation et les expose sur les options via titre/label accessible.
+- `ExerciseDeck` factorise le deck jouable ; `exercise-content.ts` choisit le contenu selon `fr`, `en` ou `zh`.
+- Les routes `/exercises/fr`, `/exercises/en` et `/exercises/zh` existent ; `/` lance automatiquement `/exercises/{langue cible}` via le niveau 1.
+- Les autres niveaux campagne restent verrouilles et non interactifs ; aucun XP reel, streak reel, serveur ou progression persistante n'est modifie.
+- Verification Chrome headless desktop/mobile : bouton `Jouer`, clic niveau 1 vers `/exercises/en`, 1 noeud interactif, 6 niveaux verrouilles, route `/exercises/zh` avec pinyin, aucun overflow horizontal.
+- Verification runtime ciblee des contenus : les 15 reponses attendues corrigent les 15 exercices, dont lectures `2/2`.
+- `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 10 :
+
 - `apps/web/src/features/exercises/french-exercises.ts` ajoute un premier lot de 5 exercices francais.
 - Les contenus couvrent `et` / `est`, `savoir` / `connaitre`, conjugaison simple de `etre`, et lecture courte avec questions oui/non.
-- `apps/web/src/features/exercises/FrenchExerciseDeck.tsx` rend ces exercices jouables avec score et XP potentielle, sans toucher aux XP reels, au streak ou a la progression persistante.
-- La route directe `/exercises/fr` permet de verifier le deck, mais elle n'est pas ajoutee a la navigation principale, a la map ou aux quetes journalieres.
-- Les niveaux campagne et journaliers restent non cliquables.
+- `apps/web/src/features/exercises/FrenchExerciseDeck.tsx` rendait ces exercices jouables avec score et XP potentielle, sans toucher aux XP reels, au streak ou a la progression persistante.
+- A l'Etape 10, la route directe `/exercises/fr` servait seulement a verifier le deck ; depuis le feedback de l'Etape 12, le niveau 1 lance le deck de la langue apprise.
+- Les niveaux campagne 2+ et les quetes journalieres restent non cliquables.
 - Verification Chrome headless desktop/mobile : route `/exercises/fr` OK, deck `1/5`, premier exercice jouable, validation correcte, aucun overflow horizontal.
 - Verification runtime ciblee du contenu francais : les reponses attendues corrigent les 5 exercices, dont lecture `2/2`.
 - `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
@@ -133,39 +147,39 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 11 - Premiers exercices anglais
+### Etape 13 - XP, progression et streak
 
 Statut : prochaine.
 
-Objectif : livrer un premier contenu jouable en anglais avec le moteur existant, sans brancher encore toute la progression.
+Objectif : commencer a rendre la progression motivante et coherente, sans serveur.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Relire les decisions sur le contenu pedagogique et les garde-fous UX avant toute modification de contenu.
-- Preparer une premiere source d'exercices anglais dediee, reutilisant `LearningExercise`.
-- Couvrir les contenus initiaux prevus : vocabulaire courant, grammaire simple, comprehension de phrase, phrases a completer.
-- Garder le contenu court, local et facilement revisable.
-- Reutiliser le moteur de correction existant au lieu d'ajouter une seconde logique.
-- Ne pas brancher de XP reel, streak reel, serveur, social ou persistence de progression.
-- Ne pas rendre les niveaux campagne/journaliers cliquables sans parcours explicite.
+- Relire les decisions sur le profil invite, les niveaux, les exercices et les garde-fous UX.
+- Ajouter un modele local de progression d'exercice pour XP gagnee, niveau utilisateur, streak et dernier jour actif.
+- Brancher la validation d'un exercice sur une mise a jour locale controlee du profil invite.
+- Garder une separation claire entre XP potentielle et XP reel gagne.
+- Mettre a jour le header XP/streak apres validation.
+- Eviter toute synchronisation serveur ou compte.
+- Garder les niveaux verrouilles tant qu'aucune vraie progression de niveau n'est definie.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- Un premier lot d'exercices anglais existe dans un module dedie.
-- Ces exercices utilisent le modele partage et le moteur de correction de l'Etape 9.
-- Les themes initiaux de la roadmap sont couverts au moins par des exemples courts.
-- Aucun XP reel, streak reel ou progression persistante n'est modifie.
+- Valider un exercice peut ajouter de l'XP locale au profil invite.
+- Le streak local est prepare et affiche de facon coherente.
+- Le systeme ne double-compte pas une meme validation dans le meme deck sans controle explicite.
+- Les donnees restent locales et migrables plus tard.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
+- Serveur et comptes.
+- Leaderboard, amis, messages.
+- Progression pedagogique complete de tous les niveaux.
 - Diagnostic complet.
-- Parcours complet de lancement depuis la map ou les quetes.
-- Contenu chinois.
-- Serveur.
-- XP reel, streak reel, social, messagerie et mini-jeux.
+- Mini-jeux.

@@ -10,9 +10,9 @@ import {
 	UsersRound
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { NavLink, Route, Routes, useLocation } from 'react-router-dom';
-import type { GuestProfile } from '@classyc/shared';
+import type { KeyboardEvent, ReactNode } from 'react';
+import { Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
 import { getOpenPeepCharacter } from '@/assets/open-peeps';
 import { resolveOpenPeepCustomization } from '@/assets/open-peeps-atoms';
 import type { ShellRouteId } from '@/domain/navigation';
@@ -21,7 +21,7 @@ import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
-import { FrenchExerciseDeck } from '@/features/exercises';
+import { ExerciseDeck, getExerciseDeckContent } from '@/features/exercises';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	campaignLevelRoadPath,
@@ -49,6 +49,12 @@ const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	profile: UserRound
 };
 
+const exerciseLanguageCodes: readonly SupportedLanguageCode[] = ['fr', 'en', 'zh'];
+
+function isExerciseLanguageCode(value: string | undefined): value is SupportedLanguageCode {
+	return typeof value === 'string' && exerciseLanguageCodes.includes(value as SupportedLanguageCode);
+}
+
 function navigationClassName({ isActive }: { isActive: boolean }) {
 	return `nav-link${isActive ? ' active' : ''}`;
 }
@@ -74,8 +80,8 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 									path="/"
 								/>
 								<Route
-									element={<PageTransition><ExerciseRoute /></PageTransition>}
-									path="/exercises/fr"
+									element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+									path="/exercises/:languageCode"
 								/>
 								<Route
 									element={<PageTransition><ShellSection section={shellSections.stats} /></PageTransition>}
@@ -116,10 +122,18 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 	);
 }
 
-function ExerciseRoute() {
+function ExerciseRoute({ profile }: { profile: GuestProfile }) {
+	const { languageCode } = useParams();
+	const language = isExerciseLanguageCode(languageCode) ? languageCode : profile.targetLanguage;
+	const content = getExerciseDeckContent(language);
+
 	return (
 		<div className="mx-auto max-w-3xl">
-			<FrenchExerciseDeck />
+			<ExerciseDeck
+				eyebrow={content.eyebrow}
+				exercises={content.exercises}
+				title={content.title}
+			/>
 		</div>
 	);
 }
@@ -253,6 +267,7 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 	const summary = getLearningSummary(profile);
 	const quests = createDailyQuests(profile.nativeLanguage);
 	const campaignProgress = getCampaignMapProgressPercent(campaignLevels);
+	const exercisePath = `/exercises/${profile.targetLanguage}`;
 
 	return (
 		<div className="learn-grid">
@@ -267,6 +282,9 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 						<p className="text-xs font-black uppercase tracking-[0.12em] text-white/80">Section 1</p>
 						<h1 className="truncate text-2xl font-black text-white sm:text-3xl">{summary.mapTitle}</h1>
 					</div>
+					<Link className="unit-ribbon__action" to={exercisePath}>
+						Jouer
+					</Link>
 				</div>
 
 				<div className="level-map" aria-label={summary.title}>
@@ -279,7 +297,12 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 							style={{ strokeDasharray: `${campaignProgress} 100` }}
 						/>
 						{campaignLevels.map((node, index) => (
-							<LevelNodeCard index={index} key={node.id} node={node} />
+							<LevelNodeCard
+								exercisePath={index === 0 ? exercisePath : undefined}
+								index={index}
+								key={node.id}
+								node={node}
+							/>
 						))}
 					</svg>
 				</div>
@@ -297,14 +320,46 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 	);
 }
 
-function LevelNodeCard({ index, node }: { index: number; node: CampaignLevelMapNode }) {
+function LevelNodeCard({
+	exercisePath,
+	index,
+	node
+}: {
+	exercisePath?: string;
+	index: number;
+	node: CampaignLevelMapNode;
+}) {
 	const accessibleLabel = getCampaignLevelAccessibleLabel(node);
 	const rewardLabel = node.reward ? getCampaignLevelRewardLabel(node.reward) : null;
+	const navigate = useNavigate();
+	const isInteractive = Boolean(exercisePath);
+	const interactiveLabel = isInteractive ? `${accessibleLabel} - ouvrir les exercices` : accessibleLabel;
+
+	function openExercise() {
+		if (exercisePath) {
+			navigate(exercisePath);
+		}
+	}
+
+	function handleKeyDown(event: KeyboardEvent<SVGGElement>) {
+		if (!isInteractive) {
+			return;
+		}
+
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			openExercise();
+		}
+	}
 
 	return (
 		<g
-			aria-label={accessibleLabel}
-			className={`map-node map-node--${node.state}`}
+			aria-label={interactiveLabel}
+			className={`map-node map-node--${node.state}${isInteractive ? ' map-node--interactive' : ''}`}
+			onClick={isInteractive ? openExercise : undefined}
+			onKeyDown={handleKeyDown}
+			role={isInteractive ? 'link' : undefined}
+			tabIndex={isInteractive ? 0 : undefined}
 			transform={`translate(${node.x} ${node.y})`}
 		>
 			<motion.g
@@ -313,7 +368,7 @@ function LevelNodeCard({ index, node }: { index: number; node: CampaignLevelMapN
 				style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
 				transition={{ delay: index * 0.045, duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
 			>
-				<title>{accessibleLabel}</title>
+				<title>{interactiveLabel}</title>
 				<circle className="map-node__ring" r="38" />
 				<circle className="map-node__disc" r="29" />
 				<text className="map-node__number" dominantBaseline="central" textAnchor="middle">

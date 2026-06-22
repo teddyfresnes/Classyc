@@ -84,7 +84,7 @@ Raison : permettre francais, anglais et chinois sans dupliquer toute la logique.
 
 ## D006 - Chinois et pinyin
 
-Statut : a implementer a l'Etape 12.
+Statut : implementee en base a l'Etape 12.
 
 Les caracteres chinois doivent pouvoir porter une prononciation et des metadata au niveau caractere ou segment.
 
@@ -94,6 +94,12 @@ Approche prevue :
 - champ `meaning`
 - support hover desktop
 - support tap long mobile
+
+Implementation initiale :
+
+- `ExercisePronunciationHint` porte le pinyin et le sens optionnel dans le modele partage.
+- Les exercices chinois utilisent ces hints au niveau exercice, question ou option.
+- `ExercisePreview` affiche les hints et les expose aussi via le titre/label accessible des options.
 
 ## D007 - OpenMoji
 
@@ -451,7 +457,8 @@ Regles retenues :
 - garder le SVG unique route + pastilles pour eviter les decalages de map ;
 - afficher le bonus `1.5x` uniquement si un niveau expose une propriete `reward` ;
 - preparer les hexcodes OpenMoji dans le modele sans afficher d'icones sur la map tant que cela surchargerait l'interface ;
-- ne pas donner un style distinct ou un curseur cliquable au prochain niveau tant qu'il ne lance pas une vraie action ;
+- ne pas donner un style distinct ou un curseur cliquable a un niveau tant qu'il ne lance pas une vraie action ;
+- depuis le feedback apres l'Etape 10, le niveau 1 peut lancer les exercices de la langue cible, car une vraie action existe ;
 - ne pas brancher d'exercices, XP reel ou progression persistante avant les etapes dediees.
 
 ## D033 - Niveaux journaliers
@@ -495,7 +502,7 @@ Regles retenues :
 - garder une seule logique de correction partagee par les futurs contenus ;
 - ne pas creer de seconde structure pour les exercices francais, anglais ou chinois ;
 - ne pas declencher de progression reelle tant que l'Etape XP/streak n'est pas traitee ;
-- garder les niveaux campagne et journaliers non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente.
+- garder les niveaux campagne et journaliers non cliquables tant qu'un lancement d'exercice explicite n'est pas implemente ; le niveau 1 est l'exception depuis le branchement vers `/exercises/{langue cible}`.
 
 ## D035 - Premiers exercices francais
 
@@ -512,10 +519,30 @@ Contenus couverts :
 
 Le deck `FrenchExerciseDeck` rend ce lot jouable avec l'`ExercisePreview` existant, le moteur de correction de l'Etape 9, un score local et des XP potentielles.
 
-La route directe `/exercises/fr` existe pour verifier le rendu et l'interaction, mais elle reste volontairement hors navigation principale. Elle ne rend pas les niveaux campagne ou journaliers cliquables et ne modifie pas le profil invite, les XP reels, le streak ou la progression persistante.
+La route `/exercises/fr` existe pour verifier le rendu et l'interaction. Depuis le feedback utilisateur suivant l'Etape 10, le niveau 1 et le bouton `Jouer` du ruban lancent le deck de la langue apprise via `/exercises/{langue cible}`. Cela ne modifie pas le profil invite, les XP reels, le streak ou la progression persistante.
 
 Regles retenues :
 
 - les prochains lots de contenu doivent reutiliser le meme modele et le meme moteur ;
 - garder les contenus courts et facilement revisables tant qu'il n'y a pas de validation pedagogique plus complete ;
 - ne pas confondre XP potentielle affichee dans un exercice avec XP reel utilisateur.
+
+## D036 - Contenus anglais, chinois et deck par langue
+
+Statut : retenue et implementee pour les Etapes 11 et 12.
+
+Les premiers contenus anglais et chinois reutilisent le modele `LearningExercise`, le moteur de correction existant et le deck generique :
+
+- `apps/web/src/features/exercises/english-exercises.ts` : vocabulaire courant, grammaire simple, comprehension de phrase et phrases a completer.
+- `apps/web/src/features/exercises/chinese-exercises.ts` : caracteres simples, pinyin, reconnaissance caractere/sens et lecture courte.
+- `apps/web/src/features/exercises/ExerciseDeck.tsx` : deck jouable generique pour tous les contenus.
+- `apps/web/src/features/exercises/exercise-content.ts` : registre `fr` / `en` / `zh`.
+
+La route `/exercises/:languageCode` choisit le contenu par langue. Sur la map, le niveau 1 ouvre `/exercises/{profile.targetLanguage}`.
+
+Regles retenues :
+
+- un seul noeud campagne est interactif pour le moment : le niveau 1 ;
+- les niveaux verrouilles restent visuellement grises et non cliquables ;
+- les quetes journalieres restent informatives ;
+- aucune validation d'exercice ne donne encore d'XP reel, de streak reel ou de progression persistante.
