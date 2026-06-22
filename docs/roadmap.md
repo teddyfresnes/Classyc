@@ -133,7 +133,7 @@ Livrables prevus :
 
 ### Etape 8 - Systeme de niveaux journaliers
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : ajouter des niveaux quotidiens variables.
 
@@ -145,6 +145,8 @@ Livrables prevus :
 - rotation locale de contenu mockee
 
 ### Etape 9 - Moteur d'exercices
+
+Statut : prochaine.
 
 Objectif : creer une base commune pour plusieurs types d'exercices.
 

@@ -30,12 +30,13 @@ import {
 	getCampaignMapProgressPercent
 } from '@/features/learning/campaign-levels';
 import type { CampaignLevelMapNode } from '@/features/learning/campaign-levels';
+import { createDailyQuests } from '@/features/learning/daily-levels';
+import type { DailyQuestPreview } from '@/features/learning/daily-levels';
 import {
-	createDailyQuests,
 	createShellSections,
 	getLearningSummary
 } from '@/features/shell/shell-content';
-import type { DailyQuestPreview, ShellSectionPreview } from '@/features/shell/shell-content';
+import type { ShellSectionPreview } from '@/features/shell/shell-content';
 
 const routeIcons: Record<ShellRouteId, LucideIcon> = {
 	learn: BookOpenCheck,
@@ -319,20 +320,23 @@ function LevelNodeCard({ index, node }: { index: number; node: CampaignLevelMapN
 function DailyQuestCard({ index, quest }: { index: number; quest: DailyQuestPreview }) {
 	return (
 		<motion.article
+			aria-label={quest.accessibleLabel}
 			animate={{ opacity: 1, x: 0 }}
 			className="daily-quest"
 			initial={{ opacity: 0, x: 10 }}
 			transition={{ delay: index * 0.04, duration: 0.2, ease: 'easeOut' }}
-			whileHover={{ y: -1 }}
 		>
 			<span className={`daily-quest__dot daily-quest__dot--${quest.state}`} aria-hidden="true" />
 			<div className="min-w-0 flex-1">
 				<p className="truncate text-sm font-black">{quest.label}</p>
 				<div className="mt-2 h-2 rounded-full bg-[var(--surface-3)]">
-					<div className="h-full w-0 rounded-full bg-[var(--accent)]" />
+					<div className="h-full rounded-full bg-[var(--accent)]" style={{ width: `${quest.progressPercent}%` }} />
 				</div>
 			</div>
-			<span className="rounded-md bg-[var(--surface-3)] px-2 py-1 text-xs font-black text-[var(--text-muted)]">{quest.value}</span>
+			<div className="daily-quest__badges">
+				{quest.rewardLabel ? <span className="daily-quest__reward">{quest.rewardLabel}</span> : null}
+				<span className="daily-quest__value">{quest.value}</span>
+			</div>
 		</motion.article>
 	);
 }

@@ -1373,6 +1373,37 @@ button {
 		background: var(--surface-3);
 	}
 
+	.daily-quest__dot--bonus {
+		background: var(--streak-hot);
+	}
+
+	.daily-quest__badges {
+		display: flex;
+		align-items: center;
+		flex-shrink: 0;
+		gap: 0.35rem;
+	}
+
+	.daily-quest__reward,
+	.daily-quest__value {
+		border-radius: 6px;
+		padding: 0.25rem 0.5rem;
+		font-size: 0.75rem;
+		font-weight: 900;
+		line-height: 1;
+		white-space: nowrap;
+	}
+
+	.daily-quest__reward {
+		background: var(--streak-hot);
+		color: #5b2306;
+	}
+
+	.daily-quest__value {
+		background: var(--surface-3);
+		color: var(--text-muted);
+	}
+
 	.settings-panel {
 		border: 0;
 		border-radius: 8px;

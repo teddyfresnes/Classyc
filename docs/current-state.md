@@ -4,11 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 7 - Systeme de niveaux campagne.
+Etape courante : Etape 8 - Systeme de niveaux journaliers.
 
 Etat : terminee.
 
-Depuis l'Etape 7, la page `Apprendre` utilise une source typee de niveaux campagne avec etats `completed`, `available`, `locked` et un bonus `1.5x` porte par un vrai niveau.
+Depuis l'Etape 8, les quetes journalieres utilisent une source typee de niveaux journaliers avec difficulty tiers, rotation locale et bonus `1.5x` porte par un vrai niveau journalier.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -132,12 +132,16 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Source campagne dediee dans `apps/web/src/features/learning/campaign-levels.ts`.
 - La map `Apprendre` utilise les niveaux campagne typees, garde le SVG unique route + pastilles et affiche un bonus `1.5x` uniquement depuis la propriete `reward` du niveau 1.
 - Les etats visibles actuels de la campagne sont : niveau 1 `completed`, niveaux 2 a 7 `locked`. Le niveau suivant ne reçoit pas de style distinct tant qu'il n'est pas réellement accessible.
+- Modele partage `DailyLevel` avec difficulty tiers `warmup`, `standard`, `challenge`, progression mockee et reward optionnel.
+- Source journaliere dediee dans `apps/web/src/features/learning/daily-levels.ts`.
+- Les quetes journalieres de `Apprendre` sont derivees de niveaux journaliers typees, avec rotation locale par date et premier niveau du jour en bonus `1.5x`.
+- Les cartes de quetes restent informatives : pas de clic, pas de hover interactif, et le bonus visible vient uniquement de la propriete `reward`.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
-- Niveaux journaliers.
+- Moteur d'exercices.
 - Exercices branches aux niveaux.
 - XP, streak, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
@@ -303,7 +307,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, 7 noeuds detectes, badge `1.5x`, niveau 1 `completed`, niveaux 2 a 7 `locked`, captures visuelles sans chevauchement.
 - Correction feedback Etape 7 : le niveau 2 est grise comme les niveaux verrouilles et les pastilles n'utilisent plus de curseur cliquable par defaut. Le type `available` reste disponible dans le modele pour une future action reelle.
 - Navigateur integre Browser retente : indisponible dans cette session a cause d'une erreur de runtime du plugin ; verification visuelle faite via Chrome headless local.
+- Etape 8 niveaux journaliers : ajout de `DailyLevel`, `DailyLevelDifficultyTier` et `DailyLevelReward` dans `packages/shared/src/index.ts`.
+- Ajout de `apps/web/src/features/learning/daily-levels.ts` avec templates journaliers, rotation locale par date, deux cartes par jour et premier niveau avec reward `xpMultiplier` `1.5`.
+- Les quetes journalieres ne viennent plus de placeholders libres dans `shell-content.ts`; elles sont derivees de `createDailyQuests`.
+- Correction UX appliquee aux quetes : les cartes n'ont pas de hover jouable, le badge `1.5x` vient du reward et aucun exercice n'est lance.
+- Verification Etape 8 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Verification Chrome headless via DevTools Protocol : desktop 1365x900 et mobile 390x844 OK, deux quetes journalieres detectees, un seul badge `1.5x`, curseur neutre, aucun niveau campagne `available`.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 8 de [docs/next-steps.md](next-steps.md) : systeme de niveaux journaliers.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 9 de [docs/next-steps.md](next-steps.md) : moteur d'exercices.

@@ -8,11 +8,22 @@
 
 ## Etape actuelle
 
-Etape 7 - Systeme de niveaux campagne.
+Etape 8 - Systeme de niveaux journaliers.
 
 Statut : terminee.
 
 Derniere etape appliquee :
+
+- `packages/shared/src/index.ts` expose `DailyLevel`, `DailyLevelDifficultyTier` et `DailyLevelReward`.
+- `apps/web/src/features/learning/daily-levels.ts` centralise les templates journaliers, la rotation locale par date, les helpers de reward et les previews de quetes.
+- Les quetes journalieres de `Apprendre` sont derivees de `createDailyQuests`, plus de placeholders libres dans `shell-content.ts`.
+- Les difficulty tiers disponibles sont `warmup`, `standard`, `challenge`.
+- Le premier niveau journalier du jour porte un reward `xpMultiplier` `1.5` et affiche le badge `1.5x`.
+- Les cartes de quetes restent informatives : pas de clic, pas de hover jouable, pas d'exercice lance.
+- Verification Chrome headless desktop/mobile : deux quetes journalieres, un seul badge `1.5x`, curseur neutre, aucun niveau campagne `available`.
+- `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 7 :
 
 - `packages/shared/src/index.ts` expose `CampaignLevel`, `CampaignLevelState`, `CampaignLevelReward` avec etats `locked`, `available`, `completed`.
 - `apps/web/src/features/learning/campaign-levels.ts` centralise la source de 7 niveaux campagne, leurs coordonnees SVG, le chemin de route et les helpers de libelle/progression.
@@ -101,38 +112,37 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 8 - Systeme de niveaux journaliers
+### Etape 9 - Moteur d'exercices
 
 Statut : prochaine.
 
-Objectif : ajouter une base de niveaux quotidiens variables sans implementer les exercices.
+Objectif : creer une base commune pour plusieurs types d'exercices, sans livrer encore tout le contenu pedagogique.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Relire les garde-fous UX du learn path et des quetes journalieres avant toute modification.
-- Definir un modele de niveau journalier extensible avec difficulty tiers.
-- Creer une petite source locale de niveaux journaliers mockes.
-- Ajouter un premier niveau journalier avec bonus `1.5x` porte par une propriete `reward`.
-- Preparer une rotation locale simple du contenu mocke, sans serveur.
-- Brancher les quetes journalieres sur cette source sans ajouter d'exercices jouables.
-- Garder l'interface calme, responsive, et sans textes explicatifs inutiles.
+- Relire les decisions sur le contenu pedagogique et les garde-fous UX avant toute modification.
+- Definir un modele d'exercice extensible pour choix multiple, completer, vrai/faux et lecture + questions.
+- Preparer une petite source mockee d'exercices sans contenu pedagogique final.
+- Ajouter une base de correction/score/XP potentielle mockee, sans modifier la progression reelle.
+- Preparer un rendu UI d'exercice responsive minimal, accessible depuis le code mais sans lancer automatiquement depuis la map.
+- Garder les niveaux campagne/journaliers non cliquables tant que le lancement d'exercice n'est pas explicitement branche.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- Les niveaux journaliers sont modelises dans un module dedie et reutilisable.
-- Les quetes journalieres utilisent une source typee plutot que des placeholders libres.
-- Les difficulty tiers existent dans le modele.
-- Le bonus `1.5x` apparait seulement comme propriete d'un vrai niveau journalier.
+- Les exercices ont des types partages et reutilisables.
+- Le moteur sait corriger au moins des reponses mockees pour les types prevus.
+- L'UI d'exercice existe comme base responsive, sans faux parcours complet.
+- Aucun XP reel, streak reel ou progression persistante n'est modifie.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.
 
 Hors scope :
 
-- Exercices jouables.
 - Diagnostic complet.
+- Contenu pedagogique final francais/anglais/chinois.
 - Serveur.
 - XP reel, streak reel, social, messagerie et mini-jeux.

@@ -4,12 +4,16 @@ export type ThemePreference = 'light' | 'dark';
 
 export type LearningMode = 'campaign' | 'daily' | 'diagnostic';
 
-export type CampaignLevelState = 'locked' | 'available' | 'completed';
-
-export interface CampaignLevelReward {
+export interface XpMultiplierReward {
 	type: 'xpMultiplier';
 	multiplier: number;
 }
+
+export type LevelReward = XpMultiplierReward;
+
+export type CampaignLevelState = 'locked' | 'available' | 'completed';
+
+export type CampaignLevelReward = LevelReward;
 
 export interface CampaignLevel {
 	id: string;
@@ -17,6 +21,22 @@ export interface CampaignLevel {
 	title: string;
 	state: CampaignLevelState;
 	reward?: CampaignLevelReward;
+	openMojiHexcode?: string;
+}
+
+export type DailyLevelDifficultyTier = 'warmup' | 'standard' | 'challenge';
+
+export type DailyLevelReward = LevelReward;
+
+export interface DailyLevel {
+	id: string;
+	order: number;
+	title: string;
+	difficulty: DailyLevelDifficultyTier;
+	targetCount: number;
+	completedCount: number;
+	rotationKey: string;
+	reward?: DailyLevelReward;
 	openMojiHexcode?: string;
 }
 

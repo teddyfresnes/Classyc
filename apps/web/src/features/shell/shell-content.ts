@@ -2,13 +2,6 @@ import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import type { ShellRouteId } from '@/domain/navigation';
 import type { GuestProfile, SupportedLanguageCode } from '@classyc/shared';
 
-export interface DailyQuestPreview {
-	id: string;
-	label: string;
-	value: string;
-	state: 'empty' | 'ready';
-}
-
 export interface ShellPanelPreview {
 	id: string;
 	title: string;
@@ -35,25 +28,6 @@ export function getLearningSummary(profile: GuestProfile) {
 		emptyQuest: copy.learn.emptyQuest,
 		next: copy.learn.next
 	};
-}
-
-export function createDailyQuests(language: SupportedLanguageCode): readonly DailyQuestPreview[] {
-	const copy = getUiCopy(language);
-
-	return [
-		{
-			id: 'lesson',
-			label: copy.learn.next,
-			value: '0/1',
-			state: 'ready'
-		},
-		{
-			id: 'quest',
-			label: copy.learn.emptyQuest,
-			value: '0/3',
-			state: 'empty'
-		}
-	];
 }
 
 export function createShellSections(language: SupportedLanguageCode): Record<Exclude<ShellRouteId, 'learn'>, ShellSectionPreview> {

@@ -453,3 +453,22 @@ Regles retenues :
 - preparer les hexcodes OpenMoji dans le modele sans afficher d'icones sur la map tant que cela surchargerait l'interface ;
 - ne pas donner un style distinct ou un curseur cliquable au prochain niveau tant qu'il ne lance pas une vraie action ;
 - ne pas brancher d'exercices, XP reel ou progression persistante avant les etapes dediees.
+
+## D033 - Niveaux journaliers
+
+Statut : retenue et implementee pour l'Etape 8.
+
+Le modele de base des niveaux journaliers vit dans `packages/shared/src/index.ts` :
+
+- `DailyLevelDifficultyTier` : `warmup`, `standard`, `challenge`.
+- `DailyLevelReward` : reward `xpMultiplier` reutilisant le type de reward generique.
+- `DailyLevel` : identifiant, ordre, titre, difficulty tier, progression mockee, cle de rotation, reward optionnel et `openMojiHexcode` optionnel.
+
+La source mockee vit dans `apps/web/src/features/learning/daily-levels.ts`.
+
+Regles retenues :
+
+- la rotation journaliere est locale et deterministe par date, sans serveur ;
+- les quetes journalieres affichent deux niveaux mockes par jour ;
+- le bonus `1.5x` apparait uniquement si le niveau journalier expose une propriete `reward` ;
+- les cartes de quetes restent informatives tant que les exercices ne sont pas branches : pas de hover jouable, pas de curseur cliquable, pas de lancement d'exercice.
