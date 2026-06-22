@@ -106,7 +106,7 @@ Livrables prevus :
 
 ### Etape 6 - Integration OpenMoji et recherche d'icones
 
-Statut : prochaine.
+Statut : terminee.
 
 Objectif : rendre les icones OpenMoji facilement retrouvables par le code et l'IA.
 
@@ -118,6 +118,8 @@ Livrables prevus :
 - exemples pour niveaux, exercices et UI
 
 ### Etape 7 - Systeme de niveaux campagne
+
+Statut : prochaine.
 
 Objectif : creer une carte de progression campagne extensible.
 

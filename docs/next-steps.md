@@ -8,11 +8,21 @@
 
 ## Etape actuelle
 
-Etape 5 - Createur complet de personnage.
+Etape 6 - Integration OpenMoji et recherche d'icones.
 
 Statut : terminee.
 
 Derniere etape appliquee :
+
+- `apps/web/src/assets/openmoji.ts` centralise l'index OpenMoji depuis `Openmoji/openmoji.json`.
+- Les chemins PNG sont resolus via `resolveOpenMojiIconSrc(hexcode)` vers `Openmoji/icons/{hexcode}.png`.
+- `searchOpenMoji(query, { limit })` cherche dans `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups` et `hexcode`, avec normalisation casse/accents/separateurs.
+- Le resultat public reste stable : `hexcode`, `label`, `tags`, `src`.
+- `openMojiUseCaseExamples` donne des exemples pour niveaux, exercices et UI, sans brancher de vraies fonctionnalites.
+- Verification ciblee via Vite SSR : 4495 entrees indexees, recherches `fire`, `target`, `bell` et `1f600` OK.
+- `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+
+Historique utile conserve de l'Etape 5 :
 
 - La galerie simple Open Peeps de l'onboarding est remplacee par un createur complet.
 - Le modele partage ajoute `OpenPeepCustomization` avec corps/tenue, cheveux, visage, pilosite, accessoires, posture et couleurs principales.
@@ -78,31 +88,31 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 6 - Integration OpenMoji et recherche d'icones
+### Etape 7 - Systeme de niveaux campagne
 
 Statut : prochaine.
 
-Objectif : rendre les icones OpenMoji facilement retrouvables par le code et l'IA.
+Objectif : creer une carte de progression campagne extensible sans implementer les exercices.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
-- Inspecter `Openmoji/openmoji.json` et `Openmoji/icons/`.
-- Ignorer les fichiers metadata inutiles.
-- Creer un module d'index OpenMoji centralise, sans disperser les chemins d'assets.
-- Normaliser la recherche sur `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups` et `hexcode`.
-- Ajouter un helper de resolution vers `Openmoji/icons/{hexcode}.png`.
-- Exposer un type stable pour les resultats : `hexcode`, `label`, `tags`, `src`.
-- Ajouter quelques exemples d'utilisation pour niveaux, exercices ou UI, sans implementer les niveaux eux-memes.
+- Relire les garde-fous UX du learn path avant toute modification.
+- Definir un modele de niveau campagne extensible avec etats `locked`, `available`, `completed`.
+- Remplacer les donnees preview de la map par une petite source de niveaux campagne typee.
+- Reintroduire le bonus `1.5x` uniquement sur un vrai niveau campagne, avec libelle/tooltip/tap prevu.
+- Preparer l'usage d'icones OpenMoji depuis l'index centralise si cela aide le modele, sans surcharger la map.
+- Garder le SVG unique route + pastilles pour eviter les decalages.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- L'index OpenMoji est centralise dans un module dedie.
-- Une recherche simple retourne des icones pertinentes depuis le JSON local.
-- Les chemins PNG sont resolus proprement.
+- Les niveaux campagne sont modelises dans un module dedie et reutilisable.
+- La map utilise ces niveaux au lieu de donnees purement decoratives.
+- Les etats verrouille/disponible/termine sont presents et lisibles.
+- Le bonus `1.5x` reapparait seulement comme vraie propriete de niveau campagne.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.
 
@@ -111,4 +121,4 @@ Hors scope :
 - Exercices.
 - Diagnostic complet.
 - Serveur.
-- XP, streak, social, messagerie et mini-jeux.
+- XP reel, streak reel, social, messagerie et mini-jeux.

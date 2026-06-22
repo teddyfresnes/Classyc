@@ -97,9 +97,9 @@ Approche prevue :
 
 ## D007 - OpenMoji
 
-Statut : a implementer a l'Etape 6.
+Statut : implementee a l'Etape 6.
 
-Creer un module d'indexation qui lit `Openmoji/openmoji.json` et expose une recherche simple par :
+Module d'indexation centralise dans `apps/web/src/assets/openmoji.ts`. Il lit `Openmoji/openmoji.json` et expose une recherche simple par :
 
 - `annotation`
 - `tags`
@@ -108,7 +108,15 @@ Creer un module d'indexation qui lit `Openmoji/openmoji.json` et expose une rech
 - `subgroups`
 - `hexcode`
 
-La resolution d'image doit pointer vers `Openmoji/icons/{hexcode}.png`.
+La resolution d'image passe par `resolveOpenMojiIconSrc(hexcode)` et pointe vers `Openmoji/icons/{hexcode}.png`.
+
+API exposee :
+
+- `searchOpenMoji(query, { limit })`
+- `getOpenMojiByHexcode(hexcode)`
+- `resolveOpenMojiIconSrc(hexcode)`
+- `openMojiUseCaseExamples` pour niveaux, exercices et UI
+- type stable `OpenMojiSearchResult` : `hexcode`, `label`, `tags`, `src`
 
 ## D008 - Open Peeps
 

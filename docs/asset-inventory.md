@@ -163,7 +163,7 @@ openmoji_tags
 order
 ```
 
-Resolution d'image prevue :
+Resolution d'image implementee :
 
 ```text
 Openmoji/icons/{hexcode}.png
@@ -178,11 +178,15 @@ Usage prevu :
 - navigation sociale
 - emojis de messagerie
 
-Index a creer plus tard :
+Index cree a l'Etape 6 :
 
-- normaliser les recherches en minuscules
-- chercher dans `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups`, `hexcode`
-- retourner un objet stable : `hexcode`, `label`, `tags`, `src`
+- module dedie : `apps/web/src/assets/openmoji.ts`
+- 4495 entrees JSON et 4495 PNG confirmes
+- normalisation casse/accents/separateurs
+- recherche dans `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups`, `hexcode`
+- helper `resolveOpenMojiIconSrc(hexcode)`
+- objet stable retourne : `hexcode`, `label`, `tags`, `src`
+- exemples exportes pour niveaux, exercices et UI via `openMojiUseCaseExamples`
 
 ## Fonts
 

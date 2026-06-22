@@ -4,9 +4,11 @@ Date : 2026-06-22
 
 ## Statut court
 
-Etape courante : Etape 5 - Createur complet de personnage.
+Etape courante : Etape 6 - Integration OpenMoji et recherche d'icones.
 
 Etat : terminee.
+
+Depuis l'Etape 6, le projet contient aussi un index OpenMoji centralise avec recherche d'icones et resolution des PNG locaux.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -121,6 +123,11 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les anciens profils sans personnalisation complète gardent le fallback PNG `characterId`.
 - Le personnage choisi est rappelé dans la zone profil de la sidebar desktop.
 - L'avatar de profil de la sidebar est cadré sur la tête pour rester lisible en petit format.
+- Index OpenMoji centralise dans `apps/web/src/assets/openmoji.ts`.
+- Recherche OpenMoji via `searchOpenMoji(query, { limit })`, normalisee sur `annotation`, `tags`, `openmoji_tags`, `group`, `subgroups` et `hexcode`.
+- Helper `resolveOpenMojiIconSrc(hexcode)` pour resoudre les PNG `Openmoji/icons/{hexcode}.png`.
+- Resultat OpenMoji stable expose : `hexcode`, `label`, `tags`, `src`.
+- Exemples OpenMoji exportes pour niveaux, exercices et UI via `openMojiUseCaseExamples`, sans implementation des niveaux.
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
@@ -280,7 +287,11 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `npm run typecheck` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
 - `git diff --check` : OK, avec avertissements CRLF/LF attendus sur les fichiers modifies.
+- Etape 6 OpenMoji : inspection de `Openmoji/openmoji.json` et `Openmoji/icons/` terminee, 4495 entrees JSON et 4495 PNG confirmes.
+- Ajout de `apps/web/src/assets/openmoji.ts` avec index centralise, recherche normalisee, resolution PNG par hexcode et exemples d'utilisation pour niveaux/exercices/UI.
+- Verification ciblee via serveur Vite SSR : `openMojiIcons.length === 4495`, recherches `fire`, `target`, `bell` et `1f600` OK, sources PNG resolues.
+- Verification Etape 6 : `npm run lint`, `npm run typecheck`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 6 de [docs/next-steps.md](next-steps.md) : integration OpenMoji et recherche d'icones.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 7 de [docs/next-steps.md](next-steps.md) : systeme de niveaux campagne.
