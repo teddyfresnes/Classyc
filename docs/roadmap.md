@@ -154,7 +154,7 @@ Livrables prevus :
 - correction, feedback, score et XP potentielle
 - UI d'exercice responsive
 
-### Etape 10 - Premiers exercices francais
+### Etape 10 - Premiers exercices français
 
 Objectif : livrer un premier contenu jouable en francais.
 
