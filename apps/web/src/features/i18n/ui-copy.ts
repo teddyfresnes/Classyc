@@ -85,10 +85,10 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 			backgroundPatterns: {
 				plain: 'Simple',
 				dots: 'Pois',
-				grid: 'Grille',
 				waves: 'Vagues',
-				rays: 'Rayons',
-				tiles: 'Carreaux'
+				bubbles: 'Bulles',
+				confetti: 'Confetti',
+				diagonal: 'Diagonal'
 			},
 			categories: {
 				accessories: 'Accessoires',
@@ -197,10 +197,10 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 			backgroundPatterns: {
 				plain: 'Simple',
 				dots: 'Dots',
-				grid: 'Grid',
 				waves: 'Waves',
-				rays: 'Rays',
-				tiles: 'Tiles'
+				bubbles: 'Bubbles',
+				confetti: 'Confetti',
+				diagonal: 'Diagonal'
 			},
 			categories: {
 				accessories: 'Accessories',
@@ -309,10 +309,10 @@ export const uiCopies: Record<SupportedLanguageCode, UiCopy> = {
 			backgroundPatterns: {
 				plain: '\u7b80\u6d01',
 				dots: '\u5706\u70b9',
-				grid: '\u7f51\u683c',
 				waves: '\u6ce2\u7eb9',
-				rays: '\u5149\u7ebf',
-				tiles: '\u65b9\u5757'
+				bubbles: '\u6c14\u6ce1',
+				confetti: '\u5f69\u5c51',
+				diagonal: '\u659c\u7eb9'
 			},
 			categories: {
 				accessories: '配件',

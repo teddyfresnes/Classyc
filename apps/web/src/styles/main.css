@@ -412,6 +412,12 @@ button {
 		overflow: hidden;
 	}
 
+	.onboarding-card:has(.onboarding-step--character) {
+		height: min(35.5rem, calc(100vh - 7rem));
+		min-height: 0;
+		overflow: hidden;
+	}
+
 	.onboarding-card[data-step="character"][data-character-phase="confirming"] {
 		width: min(100%, 41rem);
 	}
@@ -716,7 +722,7 @@ button {
 		height: auto;
 		max-height: 22rem;
 		filter: drop-shadow(0 12px 12px rgba(22, 32, 51, 0.12));
-		transform: translateY(-0.45rem);
+		transform: translateY(0.35rem);
 	}
 
 	.open-peep-css-peep {
@@ -895,15 +901,6 @@ button {
 			var(--character-background-base);
 	}
 
-	.sidebar-character-avatar[data-background-pattern="grid"],
-	.character-preview-stage[data-background-pattern="grid"],
-	.character-background-preview[data-background-pattern="grid"] {
-		background:
-			linear-gradient(var(--character-background-accent) 1px, transparent 1px) 0 0 / 1.4rem 1.4rem,
-			linear-gradient(90deg, var(--character-background-accent) 1px, transparent 1px) 0 0 / 1.4rem 1.4rem,
-			var(--character-background-base);
-	}
-
 	.sidebar-character-avatar[data-background-pattern="waves"],
 	.character-preview-stage[data-background-pattern="waves"],
 	.character-background-preview[data-background-pattern="waves"] {
@@ -912,20 +909,32 @@ button {
 			var(--character-background-base);
 	}
 
-	.sidebar-character-avatar[data-background-pattern="rays"],
-	.character-preview-stage[data-background-pattern="rays"],
-	.character-background-preview[data-background-pattern="rays"] {
+	.sidebar-character-avatar[data-background-pattern="bubbles"],
+	.character-preview-stage[data-background-pattern="bubbles"],
+	.character-background-preview[data-background-pattern="bubbles"] {
 		background:
-			conic-gradient(from -20deg at 50% 105%, transparent 0deg 12deg, var(--character-background-accent) 12deg 17deg, transparent 17deg 30deg),
+			radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--character-background-accent) 70%, transparent) 0 0.5rem, transparent 0.55rem),
+			radial-gradient(circle at 74% 36%, color-mix(in srgb, var(--character-background-accent) 52%, transparent) 0 0.72rem, transparent 0.78rem),
+			radial-gradient(circle at 42% 78%, color-mix(in srgb, var(--character-background-accent) 46%, transparent) 0 0.62rem, transparent 0.7rem),
 			var(--character-background-base);
 	}
 
-	.sidebar-character-avatar[data-background-pattern="tiles"],
-	.character-preview-stage[data-background-pattern="tiles"],
-	.character-background-preview[data-background-pattern="tiles"] {
+	.sidebar-character-avatar[data-background-pattern="confetti"],
+	.character-preview-stage[data-background-pattern="confetti"],
+	.character-background-preview[data-background-pattern="confetti"] {
 		background:
-			linear-gradient(45deg, var(--character-background-accent) 25%, transparent 25% 75%, var(--character-background-accent) 75%) 0 0 / 1.4rem 1.4rem,
-			linear-gradient(45deg, var(--character-background-accent) 25%, transparent 25% 75%, var(--character-background-accent) 75%) 0.7rem 0.7rem / 1.4rem 1.4rem,
+			radial-gradient(circle at 20% 28%, #f97316 0 0.09rem, transparent 0.1rem),
+			radial-gradient(circle at 76% 32%, #14b8a6 0 0.1rem, transparent 0.11rem),
+			radial-gradient(circle at 48% 68%, #a855f7 0 0.09rem, transparent 0.1rem),
+			radial-gradient(circle at 68% 80%, #2563eb 0 0.08rem, transparent 0.09rem),
+			var(--character-background-base);
+	}
+
+	.sidebar-character-avatar[data-background-pattern="diagonal"],
+	.character-preview-stage[data-background-pattern="diagonal"],
+	.character-background-preview[data-background-pattern="diagonal"] {
+		background:
+			repeating-linear-gradient(135deg, transparent 0 0.75rem, var(--character-background-accent) 0.78rem 0.94rem, transparent 0.97rem 1.6rem),
 			var(--character-background-base);
 	}
 
@@ -1455,6 +1464,12 @@ button {
 	}
 
 	.onboarding-card[data-step="character"] {
+		height: auto;
+		min-height: auto;
+		overflow: visible;
+	}
+
+	.onboarding-card:has(.onboarding-step--character) {
 		height: auto;
 		min-height: auto;
 		overflow: visible;

@@ -6,22 +6,25 @@ import {
 import type { OpenPeepBackgroundPatternId, OpenPeepCustomization } from '@classyc/shared';
 
 export interface CharacterBackgroundPattern {
+	color: string;
 	id: OpenPeepBackgroundPatternId;
 }
 
 export const characterBackgroundPatterns: readonly CharacterBackgroundPattern[] = openPeepBackgroundPatternIds.map((id) => ({
+	color: getDefaultBackgroundColor(id),
 	id
 }));
 
 export const safeCharacterBackgroundColors: readonly string[] = [
 	'#EAF1FF',
-	'#F8FAFC',
-	'#EAF7F1',
-	'#FFF3D8',
 	'#FCE7F3',
-	'#EEF2FF',
+	'#DCFCE7',
+	'#FFF3D8',
 	'#E0F2FE',
-	'#F1F5F9'
+	'#EDE9FE',
+	'#CCFBF1',
+	'#FFE4E6',
+	'#F8FAFC'
 ] as const;
 
 export function createCharacterBackgroundStyle(
@@ -46,6 +49,23 @@ function createPatternAccentColor(color: string) {
 	const accentTarget = luminance > 0.82 ? '#2563EB' : '#FFFFFF';
 
 	return mixHexColors(color, accentTarget, luminance > 0.82 ? 0.24 : 0.34);
+}
+
+function getDefaultBackgroundColor(patternId: OpenPeepBackgroundPatternId) {
+	switch (patternId) {
+		case 'plain':
+			return '#EAF1FF';
+		case 'dots':
+			return '#FCE7F3';
+		case 'waves':
+			return '#CCFBF1';
+		case 'bubbles':
+			return '#EDE9FE';
+		case 'confetti':
+			return '#FFF3D8';
+		case 'diagonal':
+			return '#DCFCE7';
+	}
 }
 
 function getRelativeLuminance(color: string) {

@@ -32,18 +32,18 @@ export type OpenPeepPostureMode = 'bust' | 'standing' | 'sitting';
 export type OpenPeepBackgroundPatternId =
 	| 'plain'
 	| 'dots'
-	| 'grid'
 	| 'waves'
-	| 'rays'
-	| 'tiles';
+	| 'bubbles'
+	| 'confetti'
+	| 'diagonal';
 
 export const openPeepBackgroundPatternIds: readonly OpenPeepBackgroundPatternId[] = [
 	'plain',
 	'dots',
-	'grid',
 	'waves',
-	'rays',
-	'tiles'
+	'bubbles',
+	'confetti',
+	'diagonal'
 ] as const;
 
 export interface OpenPeepCustomizationBackground {
@@ -135,7 +135,7 @@ export function isOpenPeepCustomization(value: unknown): value is OpenPeepCustom
 		&& customization.standingPoseId.length > 0
 		&& typeof customization.sittingPoseId === 'string'
 		&& customization.sittingPoseId.length > 0
-		&& (background === undefined || isOpenPeepBackgroundPatternId(background.patternId))
+		&& (background === undefined || typeof background.patternId === 'string')
 		&& Boolean(colors)
 		&& isHexColor(colors?.skin)
 		&& isHexColor(colors?.hair)

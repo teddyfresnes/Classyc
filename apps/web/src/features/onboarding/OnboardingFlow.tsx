@@ -35,7 +35,7 @@ const stepTransition = {
 	mass: 0.8
 } as const;
 
-const characterExpansionMs = 1250;
+const characterExpansionMs = 260;
 const characterCompletionMs = 2000;
 
 interface OnboardingFlowProps {
@@ -165,7 +165,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 					}}
 					transition={{
 						layout: {
-							duration: prefersReducedMotion ? 0 : characterPanelPhase === 'expanding' ? 1.2 : 0.42,
+							duration: prefersReducedMotion ? 0 : characterPanelPhase === 'expanding' ? 0.28 : 0.32,
 							ease: [0.22, 1, 0.36, 1]
 						},
 						opacity: { duration: 0.28, ease: 'easeOut' },

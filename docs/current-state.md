@@ -111,9 +111,9 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les pastilles de couleur utilisent maintenant un rail horizontal sans scrollbar native, pilote par deux boutons fleches gauche/droite.
 - L'apercu personnage est agrandi dans sa zone desktop/mobile.
 - Le createur s'ouvre par defaut sur la categorie `Cheveux`.
-- La categorie `Fond` est ajoutee apres `Tenues`, avec motifs simples (`Simple`, `Pois`, `Grille`, `Vagues`, `Rayons`, `Carreaux`) et palette de couleurs claire pour limiter les mauvais contrastes avec le personnage.
+- La categorie `Fond` est ajoutee apres `Tenues`, avec motifs simples (`Simple`, `Pois`, `Vagues`, `Bulles`, `Confetti`, `Diagonal`) et palette de couleurs plus distincte pour limiter les mauvais contrastes avec le personnage.
 - Le fond choisi est sauvegarde dans `OpenPeepCustomization`, reste retrocompatible avec les anciens profils et est reutilise sur le petit avatar de sidebar.
-- L'etape personnage de l'onboarding s'agrandit lateralement pendant environ 1,25 s avant d'afficher le contenu ; au clic sur `Commencer`, la carte revient a la taille standard, affiche une animation de validation, puis ouvre le shell.
+- L'etape personnage de l'onboarding s'agrandit lateralement rapidement avant d'afficher le contenu ; au clic sur `Commencer`, la carte revient a la taille standard, affiche une animation de validation, puis ouvre le shell.
 - Correction feedback cheveux applique 2026-06-20 : l'apercu principal du buste utilise un rendu hybride, avec le corps/tenue en CSS-Peeps et la tete en SVG Open Peeps original, afin que la coupe appliquee corresponde aux previews sans formes noires parasites autour du crane.
 - Le calque `--peep-head-detail` CSS-Peeps est neutralise sur le rendu principal ; CSS-Peeps reste utilise pour les tenues colorisables et les previews de tenues.
 - La zone personnage a ete encore agrandie en desktop/mobile.
@@ -263,6 +263,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `npm run typecheck` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
 - `git diff --check` : OK, avec avertissements CRLF/LF attendus sur les fichiers modifies.
+- Retouche feedback 2026-06-22 : personnage descendu legerement, animation d'ouverture personnage acceleree, anciens fonds `Grille`/`Rayons`/`Carreaux` remplaces, couleurs de fonds plus distinctes, retour vers le prenom stabilise sans pic de hauteur.
 
 ## Verification du 2026-06-22
 

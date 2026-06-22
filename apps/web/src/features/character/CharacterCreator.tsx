@@ -203,6 +203,10 @@ function BackgroundPanel({
 					...customization,
 					background: {
 						patternId: pattern.id
+					},
+					colors: {
+						...customization.colors,
+						background: pattern.color
 					}
 				};
 
@@ -220,6 +224,10 @@ function BackgroundPanel({
 							background: {
 								...customization.background,
 								patternId: pattern.id
+							},
+							colors: {
+								...customization.colors,
+								background: pattern.color
 							}
 						})}
 						title={copy.backgroundPatterns[pattern.id]}
