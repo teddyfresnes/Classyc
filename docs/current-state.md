@@ -10,6 +10,8 @@ Etat : terminee.
 
 Depuis la correction feedback exercices du 2026-06-23, le niveau 1 de la map lance une vraie premiere lecon plus jouable : feedback vert/rouge immediat, bouton `Valider` qui devient `Continuer`, erreurs remises en fin de session, fin de lecon avec +10 XP et progression locale d'un palier sur 3 pour le niveau campagne. Les quetes journalieres lancent aussi de courts decks de revision avec difficulte visible et XP locale limitee par identifiant de quete, sans streak avance ni serveur.
 
+Depuis la reprise feedback suivante du 2026-06-23, les exercices affichent des raccourcis numeriques dans les bulles/options, acceptent `Entree`/`Espace` pour valider ou continuer, et le matching peut etre fait colonne droite puis colonne gauche. Les 3 paliers du niveau 1 utilisent maintenant trois variantes distinctes pilotees par `apps/web/src/features/exercises/levels/campaign-intro.json`.
+
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
 ## Structure observee
@@ -153,8 +155,10 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Le bouton `Recommencer`/`Rejouer` est retire de l'experience d'exercice.
 - Les messages de feedback sont affiches pres du bouton d'action, dans la langue de l'utilisateur.
 - `ExercisePreview` affiche les etats de reponse : selection en bleu, bonne reponse en vert, erreur en rouge, avec verrouillage apres validation.
-- L'exercice de matching marque les associations correctes en vert et incorrectes en rouge en temps reel ; recliquer sur l'element gauche actif annule la selection.
+- L'exercice de matching marque les associations correctes en vert et incorrectes en rouge en temps reel ; recliquer sur un element actif annule la selection, et l'association peut commencer par la colonne de droite ou par la colonne de gauche.
+- Les options, cartes de matching et mots disponibles affichent un petit carre de raccourci (`1`, `2`, `3`, etc.) ; les touches numeriques selectionnent l'element correspondant, et `Entree`/`Espace` valide ou continue quand l'action principale est disponible.
 - La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes/boutons/messages dans la langue utilisateur, mots/phrases d'exercice dans la langue apprise.
+- Le niveau campagne `campaign-intro` est pilote par `apps/web/src/features/exercises/levels/campaign-intro.json`, avec 3 variantes de lecon distinctes et des options/tokens melanges de facon stable.
 - Les exercices illustres de la premiere lecon evitent l'icone OpenMoji de priere pour `merci` ; les images restantes sont directes (`salut`, `oui`, `non`, personnage, lecture).
 - Dossier `apps/api` réservé sans implémentation serveur.
 
@@ -368,8 +372,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Map campagne branchee sur `campaignLevels` du profil invite et affichage de 3 pips de palier par niveau.
 - Contenu de premiere lecon genere par langue cible + langue utilisateur pour separer consignes UI et langue apprise.
 - OpenMoji de priere retire du flux de premiere lecon pour `merci`; les illustrations utilisees dans les exercices joues sont plus directes.
+- Reprise feedback clavier/matching : affichage des numeros dans les options/cartes/mots, selection par touches numeriques, validation/continuation par `Entree` ou `Espace`, et matching possible en commencant par la colonne droite.
+- Le fichier editable `apps/web/src/features/exercises/levels/campaign-intro.json` decrit les 3 variantes du niveau 1 ; `getExerciseDeckContent` choisit la variante selon le palier courant (`completedSteps`).
+- Verification runtime Vite SSR du generateur : `Lecon 1/3`, `Lecon 2/3`, `Lecon 3/3` produisent des premiers exercices differents (`hello`, `no`, `yes`) et des associations distinctes.
 - Verification Edge headless via DevTools Protocol sur `/exercises/en` avec profil francophone : pas de `Recommencer`/`Rejouer`, premiere consigne en francais, reponse fausse affiche `Pas grave, on le remet a la fin.`, option correcte en vert, option fausse en rouge, bouton `Continuer`, matching en francais avec selection annulable et association fausse rouge, compteur `1 a revoir`.
 - Verification longue de fin de lecon tentee via CDP ; la session headless est devenue instable pendant le script complet, donc la validation visuelle complete de l'ecran final reste a refaire manuellement ou avec un runner Playwright dedie.
+- Verification CDP clavier/preview retentee apres cette reprise ; Edge headless a charge les modules Vite mais les scripts de parcours ont expire dans cette session, donc la validation visuelle des raccourcis reste a refaire manuellement ou avec Playwright installe.
 - `npm run typecheck` : OK.
 - `npm run lint` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.

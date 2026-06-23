@@ -1,0 +1,78 @@
+{
+	"id": "campaign-intro",
+	"requiredSteps": 3,
+	"lessons": [
+		{
+			"id": "salutations",
+			"personNames": {
+				"en": "Mia",
+				"fr": "Lina",
+				"zh": "Lina"
+			},
+			"imageChoice": {
+				"concept": "hello",
+				"distractors": ["thanks", "no"]
+			},
+			"translationMatchConcepts": ["hello", "thanks", "goodbye"],
+			"meaningChoice": {
+				"concept": "thanks",
+				"distractors": ["hi", "goodbye"]
+			},
+			"imageMatchConcepts": ["yes", "no", "hi"],
+			"conversationChoice": {
+				"prompt": "howAreYou",
+				"distractors": ["goodbye", "namePhrase"]
+			},
+			"wordOrders": ["name", "goodbye"],
+			"readingQuestions": ["name", "thanks"]
+		},
+		{
+			"id": "oui-non",
+			"personNames": {
+				"en": "Mia",
+				"fr": "Lina",
+				"zh": "Lina"
+			},
+			"imageChoice": {
+				"concept": "no",
+				"distractors": ["yes", "hello"]
+			},
+			"translationMatchConcepts": ["hi", "yes", "no"],
+			"meaningChoice": {
+				"concept": "goodbye",
+				"distractors": ["hello", "thanks"]
+			},
+			"imageMatchConcepts": ["no", "yes", "hi"],
+			"conversationChoice": {
+				"prompt": "howAreYou",
+				"distractors": ["yes", "namePhrase"]
+			},
+			"wordOrders": ["goodbye", "name"],
+			"readingQuestions": ["hello", "name"]
+		},
+		{
+			"id": "presentation",
+			"personNames": {
+				"en": "Mia",
+				"fr": "Lina",
+				"zh": "Lina"
+			},
+			"imageChoice": {
+				"concept": "yes",
+				"distractors": ["no", "thanks"]
+			},
+			"translationMatchConcepts": ["thanks", "yes", "goodbye"],
+			"meaningChoice": {
+				"concept": "hello",
+				"distractors": ["thanks", "no"]
+			},
+			"imageMatchConcepts": ["hi", "yes", "no"],
+			"conversationChoice": {
+				"prompt": "howAreYou",
+				"distractors": ["goodbye", "no"]
+			},
+			"wordOrders": ["name", "goodbye"],
+			"readingQuestions": ["thanks", "hello"]
+		}
+	]
+}

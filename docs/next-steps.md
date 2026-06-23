@@ -17,15 +17,17 @@ Derniere etape appliquee :
 - Correction feedback exercices approfondie appliquee le 2026-06-23 : le bouton `Recommencer`/`Rejouer` est retire, `Valider` devient `Continuer` ou `Terminer`, et le feedback est affiche pres du bouton.
 - `ExerciseDeck` utilise maintenant une file de session : une reponse fausse ou partielle remet l'exercice en fin de lecon au lieu de bloquer ou de relancer toute la session.
 - `ExercisePreview` expose des etats visuels forts : selection bleue, bonne reponse verte, erreur rouge, verrouillage apres validation.
-- Le matching donne un feedback en temps reel par paire, annule la selection si l'utilisateur reclique sur l'element gauche actif, et conserve les associations visibles.
+- Le matching donne un feedback en temps reel par paire, annule la selection si l'utilisateur reclique sur l'element actif, conserve les associations visibles, et accepte une association commencee par la colonne droite ou gauche.
+- Les options, cartes et mots disponibles affichent un raccourci numerique dans un petit carre ; `1`, `2`, `3`, etc. selectionnent les elements, et `Entree`/`Espace` valident ou continuent quand c'est possible.
 - La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes, boutons et feedback dans la langue utilisateur ; mots/phrases d'exercice dans la langue apprise.
+- Le niveau 1 est maintenant pilote par `apps/web/src/features/exercises/levels/campaign-intro.json`, avec 3 variantes distinctes choisies selon le palier courant et des options/tokens melanges de facon stable.
 - Les illustrations OpenMoji de la premiere lecon evitent l'icone de priere pour `merci` et privilegient les pictos directs (`salut`, `oui`, `non`, personnage, lecture).
 - Le profil invite local ajoute `campaignLevels` et `completedLessons`; les anciens profils sont normalises au chargement.
 - Chaque niveau campagne porte une base de 3 paliers. Finir la lecon du niveau 1 donne +10 XP et avance un palier jusqu'a 3/3 ; une quete journaliere donne +10 XP une seule fois par identifiant.
 - La map affiche les paliers par trois pips sous les pastilles de niveau.
 - Verification Edge headless ciblee : consigne francaise, absence de bouton restart, mauvaise reponse rouge + bonne reponse verte, bouton `Continuer`, matching annulable et rouge en cas d'erreur, compteur `1 a revoir`.
-- Verification finale : `npm run typecheck`, `npm run lint`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
-- Limite de verification : le script CDP de parcours complet est devenu instable pendant la fin de lecon ; refaire une verification visuelle complete de l'ecran final avec Playwright dedie ou manuellement si possible.
+- Verification finale : `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check` et verification runtime Vite SSR des 3 variantes OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Limite de verification : les scripts CDP de parcours complet/clavier ont expire ou sont devenus instables ; refaire une verification visuelle complete de l'ecran final et des raccourcis avec Playwright dedie ou manuellement si possible.
 
 - Correction feedback UX exercices appliquee : les routes `/exercises/*` et `/daily/*` utilisent un shell minimal sans sidebar, sans header lourd et sans navigation mobile.
 - `packages/shared/src/index.ts` et `exercise-engine.ts` ajoutent les types jouables `matching`, `imageChoice` et `wordOrder`, en plus des types existants.

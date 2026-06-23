@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Home } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ExerciseAnswer, ExerciseEvaluation, LearningExercise } from '@classyc/shared';
 import type { LessonCompletionContext, LessonCompletionResult } from '@/features/learning/progress';
@@ -55,6 +55,41 @@ export function ExerciseDeck({
 		&& masteredExerciseIds.length + 1 >= exercises.length
 	);
 
+	useEffect(() => {
+		if (isComplete) {
+			return undefined;
+		}
+
+		function handleKeyDown(event: KeyboardEvent) {
+			if (!isLessonActionKey(event)) {
+				return;
+			}
+
+			if (isNativeButtonTarget(event.target)) {
+				return;
+			}
+
+			if (isTypingTarget(event.target) && event.key !== 'Enter') {
+				return;
+			}
+
+			if (evaluation) {
+				event.preventDefault();
+				continueLesson();
+				return;
+			}
+
+			if (canValidate) {
+				event.preventDefault();
+				validateAnswer();
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	});
+
 	if (!exercise || !currentAttempt) {
 		return null;
 	}
@@ -71,7 +106,7 @@ export function ExerciseDeck({
 	}
 
 	function validateAnswer() {
-		if (!answer) {
+		if (!answer || !isExerciseAnswerComplete(exercise, answer)) {
 			return;
 		}
 
@@ -203,6 +238,21 @@ export function ExerciseDeck({
 			</footer>
 		</div>
 	);
+}
+
+function isLessonActionKey(event: KeyboardEvent) {
+	return !event.altKey
+		&& !event.ctrlKey
+		&& !event.metaKey
+		&& (event.key === 'Enter' || event.key === ' ');
+}
+
+function isNativeButtonTarget(target: EventTarget | null) {
+	return target instanceof HTMLElement && Boolean(target.closest('button, a'));
+}
+
+function isTypingTarget(target: EventTarget | null) {
+	return target instanceof HTMLElement && Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
 }
 
 function createInitialQueue(exercises: readonly LearningExercise[]) {

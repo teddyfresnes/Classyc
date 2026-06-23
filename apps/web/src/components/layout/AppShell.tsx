@@ -35,7 +35,7 @@ import {
 import type { CampaignLevelMapNode } from '@/features/learning/campaign-levels';
 import { createDailyQuests } from '@/features/learning/daily-levels';
 import type { DailyQuestPreview } from '@/features/learning/daily-levels';
-import { completeLesson } from '@/features/learning/progress';
+import { completeLesson, getCampaignLevelProgress } from '@/features/learning/progress';
 import type { LessonCompletionContext } from '@/features/learning/progress';
 import {
 	createShellSections,
@@ -190,7 +190,8 @@ function ExerciseRoute({
 }) {
 	const { languageCode } = useParams();
 	const language = isExerciseLanguageCode(languageCode) ? languageCode : profile.targetLanguage;
-	const content = getExerciseDeckContent(language, profile.nativeLanguage);
+	const campaignIntroProgress = getCampaignLevelProgress(profile.progress, 'campaign-intro');
+	const content = getExerciseDeckContent(language, profile.nativeLanguage, campaignIntroProgress.completedSteps);
 
 	return (
 		<div className="exercise-route-frame">

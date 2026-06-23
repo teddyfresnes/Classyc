@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type {
 	ExerciseAnswer,
 	ExerciseEvaluation,
@@ -24,6 +24,7 @@ interface ExercisePreviewProps {
 
 type ExerciseChoiceState = 'correct' | 'idle' | 'incorrect' | 'selected';
 type MatchCardState = 'active' | 'correct' | 'idle' | 'incorrect';
+type MatchSelection = { id: string; side: 'left' | 'right' };
 
 export function ExercisePreview({ answer, copy, evaluation, exercise, onAnswerChange }: ExercisePreviewProps) {
 	const writableAnswerChange = evaluation ? undefined : onAnswerChange;
@@ -147,6 +148,7 @@ function OptionList({
 	optionStates,
 	options,
 	readOnly,
+	shortcutStart = 1,
 	variant
 }: {
 	answer: string | undefined;
@@ -159,11 +161,38 @@ function OptionList({
 		pronunciationHint?: ExercisePronunciationHint;
 	}[];
 	readOnly: boolean;
+	shortcutStart?: number;
 	variant?: 'binary';
 }) {
+	useEffect(() => {
+		if (readOnly) {
+			return undefined;
+		}
+
+		function handleKeyDown(event: KeyboardEvent) {
+			if (isTypingTarget(event.target)) {
+				return;
+			}
+
+			const shortcutNumber = getShortcutNumberFromKey(event);
+			const option = shortcutNumber ? options[shortcutNumber - shortcutStart] : undefined;
+
+			if (!option) {
+				return;
+			}
+
+			event.preventDefault();
+			onAnswerChange(option.id);
+		}
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [onAnswerChange, options, readOnly, shortcutStart]);
+
 	return (
 		<div className={`exercise-option-list${variant === 'binary' ? ' exercise-option-list--binary' : ''}`}>
-			{options.map((option) => {
+			{options.map((option, index) => {
 				const state = optionStates?.[option.id] ?? (answer === option.id ? 'selected' : 'idle');
 
 				return (
@@ -182,6 +211,7 @@ function OptionList({
 							label={option.label}
 							openMojiHexcode={option.openMojiHexcode}
 							pronunciationHint={option.pronunciationHint}
+							shortcutNumber={shortcutStart + index}
 						/>
 					</button>
 				);
@@ -230,35 +260,77 @@ function MatchingExerciseBody({
 	exercise: MatchingExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
-	const [activeLeftId, setActiveLeftId] = useState<string | null>(null);
+	const [activeSelection, setActiveSelection] = useState<MatchSelection | null>(null);
 	const matches = answer?.type === 'matching' ? answer.matches : [];
 	const rightItems = useMemo(() => rotateMatchingItems(exercise.pairs.map((pair) => pair.right)), [exercise.pairs]);
 	const matchedRightByLeftId = Object.fromEntries(matches.map((match) => [match.leftId, match.rightId]));
 	const matchedLeftByRightId = Object.fromEntries(matches.map((match) => [match.rightId, match.leftId]));
 	const correctRightByLeftId = Object.fromEntries(exercise.pairs.map((pair) => [pair.left.id, pair.right.id]));
 
-	function chooseLeft(leftId: string) {
+	useEffect(() => {
+		if (!onAnswerChange) {
+			return undefined;
+		}
+
+		function handleKeyDown(event: KeyboardEvent) {
+			if (isTypingTarget(event.target)) {
+				return;
+			}
+
+			const shortcutNumber = getShortcutNumberFromKey(event);
+
+			if (!shortcutNumber) {
+				return;
+			}
+
+			const leftShortcutCount = exercise.pairs.length;
+			const leftPair = exercise.pairs[shortcutNumber - 1];
+			const rightItem = rightItems[shortcutNumber - leftShortcutCount - 1];
+
+			if (leftPair) {
+				event.preventDefault();
+				chooseMatchItem({ id: leftPair.left.id, side: 'left' });
+				return;
+			}
+
+			if (rightItem) {
+				event.preventDefault();
+				chooseMatchItem({ id: rightItem.id, side: 'right' });
+			}
+		}
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	});
+
+	function chooseMatchItem(selection: MatchSelection) {
 		if (!onAnswerChange) {
 			return;
 		}
 
-		setActiveLeftId((currentLeftId) => (currentLeftId === leftId ? null : leftId));
-	}
-
-	function chooseRight(rightId: string) {
-		if (!activeLeftId || !onAnswerChange) {
+		if (activeSelection?.side === selection.side && activeSelection.id === selection.id) {
+			setActiveSelection(null);
 			return;
 		}
 
-		onAnswerChange?.(createMatchingAnswer(answer, exercise.id, activeLeftId, rightId));
-		setActiveLeftId(null);
+		if (activeSelection && activeSelection.side !== selection.side) {
+			const leftId = activeSelection.side === 'left' ? activeSelection.id : selection.id;
+			const rightId = activeSelection.side === 'right' ? activeSelection.id : selection.id;
+
+			onAnswerChange(createMatchingAnswer(answer, exercise.id, leftId, rightId));
+			setActiveSelection(null);
+			return;
+		}
+
+		setActiveSelection(selection);
 	}
 
 	return (
 		<div className="exercise-matching" aria-label={exercise.prompt}>
 			<div className="exercise-matching__column">
-				{exercise.pairs.map((pair) => {
-					const isActive = activeLeftId === pair.left.id;
+				{exercise.pairs.map((pair, index) => {
+					const isActive = activeSelection?.side === 'left' && activeSelection.id === pair.left.id;
 					const matchedRightId = matchedRightByLeftId[pair.left.id];
 
 					return (
@@ -266,16 +338,17 @@ function MatchingExerciseBody({
 							disabled={!onAnswerChange}
 							item={pair.left}
 							key={pair.left.id}
-							onClick={() => chooseLeft(pair.left.id)}
+							onClick={() => chooseMatchItem({ id: pair.left.id, side: 'left' })}
+							shortcutNumber={index + 1}
 							state={isActive ? 'active' : getMatchState(matchedRightId, pair.right.id)}
 						/>
 					);
 				})}
 			</div>
 			<div className="exercise-matching__column">
-				{rightItems.map((item) => {
+				{rightItems.map((item, index) => {
 					const matchedLeftId = matchedLeftByRightId[item.id];
-					const isActiveMatch = activeLeftId ? matchedRightByLeftId[activeLeftId] === item.id : false;
+					const isActive = activeSelection?.side === 'right' && activeSelection.id === item.id;
 					const correctRightId = matchedLeftId ? correctRightByLeftId[matchedLeftId] : undefined;
 
 					return (
@@ -283,8 +356,9 @@ function MatchingExerciseBody({
 							disabled={!onAnswerChange}
 							item={item}
 							key={item.id}
-							onClick={() => chooseRight(item.id)}
-							state={isActiveMatch ? 'active' : getMatchState(item.id, correctRightId)}
+							onClick={() => chooseMatchItem({ id: item.id, side: 'right' })}
+							shortcutNumber={exercise.pairs.length + index + 1}
+							state={isActive ? 'active' : getMatchState(item.id, correctRightId)}
 						/>
 					);
 				})}
@@ -297,11 +371,13 @@ function MatchButton({
 	disabled,
 	item,
 	onClick,
+	shortcutNumber,
 	state
 }: {
 	disabled: boolean;
 	item: ExerciseMatchItem;
 	onClick: () => void;
+	shortcutNumber: number;
 	state: MatchCardState;
 }) {
 	return (
@@ -318,6 +394,7 @@ function MatchButton({
 				label={item.label}
 				openMojiHexcode={item.openMojiHexcode}
 				pronunciationHint={item.pronunciationHint}
+				shortcutNumber={shortcutNumber}
 			/>
 		</button>
 	);
@@ -341,6 +418,36 @@ function WordOrderExerciseBody({
 		.map((tokenId) => exercise.tokens.find((token) => token.id === tokenId))
 		.filter((token): token is WordOrderExercise['tokens'][number] => Boolean(token));
 	const remainingTokens = exercise.tokens.filter((token) => !selectedTokenIds.includes(token.id));
+
+	useEffect(() => {
+		if (!onAnswerChange) {
+			return undefined;
+		}
+
+		function handleKeyDown(event: KeyboardEvent) {
+			if (isTypingTarget(event.target)) {
+				return;
+			}
+
+			const shortcutNumber = getShortcutNumberFromKey(event);
+			const token = shortcutNumber ? remainingTokens[shortcutNumber - 1] : undefined;
+
+			if (!token) {
+				return;
+			}
+
+			event.preventDefault();
+			onAnswerChange?.({
+				exerciseId: exercise.id,
+				type: 'wordOrder',
+				tokenIds: [...selectedTokenIds, token.id]
+			});
+		}
+
+		window.addEventListener('keydown', handleKeyDown);
+
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, [exercise.id, onAnswerChange, remainingTokens, selectedTokenIds]);
 
 	function addToken(tokenId: string) {
 		onAnswerChange?.({
@@ -383,7 +490,7 @@ function WordOrderExerciseBody({
 				)}
 			</div>
 			<div className="exercise-word-order__bank">
-				{remainingTokens.map((token) => (
+				{remainingTokens.map((token, index) => (
 					<button
 						className="exercise-word-token"
 						disabled={!onAnswerChange}
@@ -392,7 +499,7 @@ function WordOrderExerciseBody({
 						title={formatPronunciationTitle(token.pronunciationHint)}
 						type="button"
 					>
-						<OptionLabel label={token.label} pronunciationHint={token.pronunciationHint} />
+						<OptionLabel label={token.label} pronunciationHint={token.pronunciationHint} shortcutNumber={index + 1} />
 					</button>
 				))}
 			</div>
@@ -411,6 +518,8 @@ function ReadingExerciseBody({
 	exercise: ReadingComprehensionExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
+	let shortcutStart = 1;
+
 	return (
 		<div className="exercise-reading">
 			<article className="exercise-reading__passage">
@@ -419,16 +528,22 @@ function ReadingExerciseBody({
 				{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
 			</article>
 			<div className="exercise-reading__questions">
-				{exercise.questions.map((question) => (
-					<ReadingQuestionCard
-						answer={answer}
-						evaluation={evaluation}
-						exerciseId={exercise.id}
-						key={question.id}
-						onAnswerChange={onAnswerChange}
-						question={question}
-					/>
-				))}
+				{exercise.questions.map((question) => {
+					const questionShortcutStart = shortcutStart;
+					shortcutStart += question.options.length;
+
+					return (
+						<ReadingQuestionCard
+							answer={answer}
+							evaluation={evaluation}
+							exerciseId={exercise.id}
+							key={question.id}
+							onAnswerChange={onAnswerChange}
+							question={question}
+							shortcutStart={questionShortcutStart}
+						/>
+					);
+				})}
 			</div>
 		</div>
 	);
@@ -439,13 +554,15 @@ function ReadingQuestionCard({
 	evaluation,
 	exerciseId,
 	onAnswerChange,
-	question
+	question,
+	shortcutStart
 }: {
 	answer: ExerciseAnswer | undefined;
 	evaluation: ExerciseEvaluation | undefined;
 	exerciseId: string;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 	question: ReadingComprehensionQuestion;
+	shortcutStart: number;
 }) {
 	const selectedOptionId = answer?.type === 'readingComprehension'
 		? answer.answers.find((item) => item.questionId === question.id)?.optionId
@@ -461,6 +578,7 @@ function ReadingQuestionCard({
 				optionStates={getChoiceOptionStates(selectedOptionId, question.correctOptionId, evaluation)}
 				options={question.options}
 				readOnly={!onAnswerChange}
+				shortcutStart={shortcutStart}
 			/>
 		</section>
 	);
@@ -579,14 +697,21 @@ function PronunciationHint({ hint }: { hint: ExercisePronunciationHint }) {
 function OptionLabel({
 	label,
 	openMojiHexcode,
-	pronunciationHint
+	pronunciationHint,
+	shortcutNumber
 }: {
 	label: string;
 	openMojiHexcode?: string;
 	pronunciationHint?: ExercisePronunciationHint;
+	shortcutNumber?: number;
 }) {
 	return (
 		<span className="exercise-option__content">
+			{shortcutNumber ? (
+				<span className="exercise-shortcut-key" aria-hidden="true">
+					{formatShortcutNumber(shortcutNumber)}
+				</span>
+			) : null}
 			{openMojiHexcode ? <OpenMojiPicture className="exercise-option__icon" hexcode={openMojiHexcode} /> : null}
 			<span className="exercise-option__text">
 				<span>{label}</span>
@@ -617,6 +742,30 @@ function OpenMojiPicture({
 			src={resolveOpenMojiIconSrc(hexcode)}
 		/>
 	);
+}
+
+function getShortcutNumberFromKey(event: KeyboardEvent) {
+	if (event.altKey || event.ctrlKey || event.metaKey) {
+		return null;
+	}
+
+	if (/^[1-9]$/.test(event.key)) {
+		return Number(event.key);
+	}
+
+	return event.key === '0' ? 10 : null;
+}
+
+function formatShortcutNumber(shortcutNumber: number) {
+	return shortcutNumber === 10 ? '0' : String(shortcutNumber);
+}
+
+function isTypingTarget(target: EventTarget | null) {
+	if (!(target instanceof HTMLElement)) {
+		return false;
+	}
+
+	return Boolean(target.closest('input, textarea, select, [contenteditable="true"]'));
 }
 
 function formatPronunciationTitle(hint: ExercisePronunciationHint | undefined) {

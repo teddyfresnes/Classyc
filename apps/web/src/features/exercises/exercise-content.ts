@@ -1,8 +1,15 @@
-import type { ExerciseMatchItem, ExerciseOption, LearningExercise, SupportedLanguageCode } from '@classyc/shared';
+import type {
+	ExerciseMatchItem,
+	ExerciseOption,
+	LearningExercise,
+	ReadingComprehensionQuestion,
+	SupportedLanguageCode
+} from '@classyc/shared';
 import { chineseStarterExercises } from './chinese-exercises';
 import { englishStarterExercises } from './english-exercises';
 import { frenchStarterExercises } from './french-exercises';
 import { getExerciseCopy } from './exercise-copy';
+import campaignIntroLevelSource from './levels/campaign-intro.json';
 
 export interface ExerciseDeckContent {
 	language: SupportedLanguageCode;
@@ -34,12 +41,13 @@ export const exerciseDeckContentByLanguage: Record<SupportedLanguageCode, Exerci
 
 export function getExerciseDeckContent(
 	language: SupportedLanguageCode,
-	uiLanguage: SupportedLanguageCode = 'fr'
+	uiLanguage: SupportedLanguageCode = 'fr',
+	lessonStep = 0
 ) {
 	return {
 		...exerciseDeckContentByLanguage[language],
-		title: getStarterLessonTitle(uiLanguage),
-		exercises: createStarterExercises(language, uiLanguage)
+		title: getStarterLessonTitle(uiLanguage, lessonStep),
+		exercises: createStarterExercises(language, uiLanguage, lessonStep)
 	};
 }
 
@@ -55,11 +63,45 @@ type StarterConceptId =
 	| 'thanks'
 	| 'yes';
 
+type StarterImageConceptId = Extract<StarterConceptId, 'hello' | 'hi' | 'no' | 'yes'>;
+type StarterReadingQuestionId = 'hello' | 'name' | 'thanks';
+type StarterWordOrderId = 'goodbye' | 'name';
+type ConversationChoiceId = 'goodbye' | 'namePhrase' | 'no' | 'yes';
+
+interface CampaignIntroLessonSource {
+	conversationChoice: {
+		distractors: readonly ConversationChoiceId[];
+		prompt: 'howAreYou';
+	};
+	id: string;
+	imageChoice: {
+		concept: StarterImageConceptId;
+		distractors: readonly StarterConceptId[];
+	};
+	imageMatchConcepts: readonly StarterImageConceptId[];
+	meaningChoice: {
+		concept: StarterConceptId;
+		distractors: readonly StarterConceptId[];
+	};
+	personNames: Partial<Record<SupportedLanguageCode, string>>;
+	readingQuestions: readonly StarterReadingQuestionId[];
+	translationMatchConcepts: readonly StarterConceptId[];
+	wordOrders: readonly StarterWordOrderId[];
+}
+
+interface CampaignIntroLevelSource {
+	id: 'campaign-intro';
+	lessons: readonly CampaignIntroLessonSource[];
+	requiredSteps: number;
+}
+
 interface ConceptLabeler {
 	(concept: StarterConceptId): string;
 	matchItem: (concept: StarterConceptId, id?: string) => ExerciseMatchItem;
 	option: (concept: StarterConceptId, id?: string) => ExerciseOption;
 }
+
+const campaignIntroLevel = campaignIntroLevelSource as CampaignIntroLevelSource;
 
 const starterConceptLabels: Record<StarterConceptId, Record<SupportedLanguageCode, string>> = {
 	bye: {
@@ -125,7 +167,38 @@ const starterPinyin: Partial<Record<StarterConceptId, string>> = {
 	yes: 'shì'
 };
 
-function createStarterExercises(targetLanguage: SupportedLanguageCode, uiLanguage: SupportedLanguageCode): readonly LearningExercise[] {
+function createStarterExercises(
+	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode,
+	lessonStep = 0
+): readonly LearningExercise[] {
+	const lesson = getCampaignIntroLesson(lessonStep);
+
+	if (!lesson) {
+		return createLegacyStarterExercises(targetLanguage, uiLanguage);
+	}
+
+	const copy = getExerciseCopy(uiLanguage);
+	const target = createConceptLabeler(targetLanguage, uiLanguage);
+	const native = createConceptLabeler(uiLanguage, uiLanguage);
+	const personName = lesson.personNames[targetLanguage] ?? (targetLanguage === 'en' ? 'Mia' : 'Lina');
+	const seed = `${campaignIntroLevel.id}:${lesson.id}:${targetLanguage}:${uiLanguage}`;
+	const primaryWordOrderId = lesson.wordOrders[0] ?? 'name';
+	const secondaryWordOrderId = lesson.wordOrders[1] ?? (primaryWordOrderId === 'name' ? 'goodbye' : 'name');
+
+	return [
+		createImageChoiceExercise(targetLanguage, target, native, lesson, `${seed}:image-choice`),
+		createTranslationMatchExercise(targetLanguage, target, native, lesson, `${seed}:translation-match`),
+		createMeaningChoiceExercise(targetLanguage, uiLanguage, target, native, lesson, `${seed}:meaning-choice`),
+		createImageMatchingExercise(targetLanguage, target, native, lesson, `${seed}:image-match`),
+		createWordOrderExercise(targetLanguage, personName, lesson.id, primaryWordOrderId, `${seed}:word-order:0`),
+		createConversationChoiceExercise(targetLanguage, uiLanguage, target, native, lesson, personName, `${seed}:conversation`),
+		createWordOrderExercise(targetLanguage, personName, lesson.id, secondaryWordOrderId, `${seed}:word-order:1`),
+		createReadingExercise(targetLanguage, uiLanguage, copy, target, native, lesson, personName, `${seed}:reading`)
+	];
+}
+
+function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiLanguage: SupportedLanguageCode): readonly LearningExercise[] {
 	const copy = getExerciseCopy(uiLanguage);
 	const target = createConceptLabeler(targetLanguage, uiLanguage);
 	const native = createConceptLabeler(uiLanguage, uiLanguage);
@@ -282,6 +355,313 @@ function createStarterExercises(targetLanguage: SupportedLanguageCode, uiLanguag
 	];
 }
 
+function createImageChoiceExercise(
+	targetLanguage: SupportedLanguageCode,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	seed: string
+): LearningExercise {
+	const concept = lesson.imageChoice.concept;
+
+	return {
+		id: `${targetLanguage}-${lesson.id}-image-${concept}`,
+		type: 'imageChoice',
+		prompt: '',
+		potentialXp: 6,
+		openMojiHexcode: getImageConceptOpenMojiHexcode(concept),
+		imageOpenMojiHexcode: getImageConceptOpenMojiHexcode(concept),
+		imageAlt: native(concept),
+		options: createConceptOptions(target, concept, lesson.imageChoice.distractors, seed),
+		correctOptionId: concept
+	};
+}
+
+function createTranslationMatchExercise(
+	targetLanguage: SupportedLanguageCode,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	seed: string
+): LearningExercise {
+	return {
+		id: `${targetLanguage}-${lesson.id}-translation-match`,
+		type: 'matching',
+		prompt: '',
+		potentialXp: 10,
+		openMojiHexcode: '1F4AC',
+		pairs: shuffleBySeed(uniqueItems(lesson.translationMatchConcepts), seed).map((concept) => ({
+			id: concept,
+			left: target.matchItem(concept),
+			right: native.matchItem(concept, `${concept}-native`)
+		}))
+	};
+}
+
+function createMeaningChoiceExercise(
+	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	seed: string
+): LearningExercise {
+	const concept = lesson.meaningChoice.concept;
+
+	return {
+		id: `${targetLanguage}-${lesson.id}-${concept}-meaning`,
+		type: 'multipleChoice',
+		prompt: target(concept),
+		potentialXp: 6,
+		openMojiHexcode: '1F4AC',
+		pronunciationHint: getPronunciationHint(concept, targetLanguage, uiLanguage),
+		options: createConceptOptions(native, concept, lesson.meaningChoice.distractors, seed),
+		correctOptionId: concept
+	};
+}
+
+function createImageMatchingExercise(
+	targetLanguage: SupportedLanguageCode,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	seed: string
+): LearningExercise {
+	return {
+		id: `${targetLanguage}-${lesson.id}-image-match`,
+		type: 'matching',
+		prompt: '',
+		potentialXp: 10,
+		openMojiHexcode: '2705',
+		pairs: shuffleBySeed(uniqueItems(lesson.imageMatchConcepts), seed).map((concept) => ({
+			id: concept,
+			left: target.matchItem(concept),
+			right: {
+				...native.matchItem(concept),
+				id: `${concept}-icon`,
+				openMojiHexcode: getImageConceptOpenMojiHexcode(concept)
+			}
+		}))
+	};
+}
+
+function createConversationChoiceExercise(
+	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	personName: string,
+	seed: string
+): LearningExercise {
+	return {
+		id: `${targetLanguage}-${lesson.id}-how-are-you-choice`,
+		type: 'multipleChoice',
+		prompt: getHowAreYouPrompt(targetLanguage),
+		potentialXp: 6,
+		openMojiHexcode: '1F642',
+		pronunciationHint: targetLanguage === 'zh'
+			? {
+				pinyin: 'ni hao ma?',
+				meaning: native('hello')
+			}
+			: undefined,
+		options: shuffleBySeed(
+			[
+				getFineOption(targetLanguage, uiLanguage),
+				...lesson.conversationChoice.distractors.map((distractor) => (
+					createConversationDistractorOption(target, targetLanguage, personName, distractor)
+				))
+			],
+			seed
+		),
+		correctOptionId: 'fine'
+	};
+}
+
+function createWordOrderExercise(
+	language: SupportedLanguageCode,
+	personName: string,
+	lessonId: string,
+	wordOrderId: StarterWordOrderId,
+	seed: string
+): Extract<LearningExercise, { type: 'wordOrder' }> {
+	const exercise = wordOrderId === 'name'
+		? createNameOrderExercise(language, personName)
+		: createGoodbyeOrderExercise(language, personName);
+
+	return {
+		...exercise,
+		id: `${language}-${lessonId}-${wordOrderId}-order`,
+		tokens: shuffleBySeed(exercise.tokens, seed)
+	};
+}
+
+function createReadingExercise(
+	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode,
+	copy: ReturnType<typeof getExerciseCopy>,
+	target: ConceptLabeler,
+	native: ConceptLabeler,
+	lesson: CampaignIntroLessonSource,
+	personName: string,
+	seed: string
+): LearningExercise {
+	const fallbackQuestionIds: readonly StarterReadingQuestionId[] = ['name', 'thanks'];
+	const questionIds = lesson.readingQuestions.length > 0 ? lesson.readingQuestions : fallbackQuestionIds;
+
+	return {
+		id: `${targetLanguage}-${lesson.id}-mini-phrase`,
+		type: 'readingComprehension',
+		prompt: '',
+		potentialXp: 10,
+		openMojiHexcode: '1F4D6',
+		passage: getStarterPassage(targetLanguage, personName),
+		pronunciationHint: targetLanguage === 'zh'
+			? {
+				pinyin: `Ni hao! Wo jiao ${personName}. Xie xie. Zai jian!`,
+				meaning: `${native('hello')} ! ${getNativeNameSentence(uiLanguage, personName)}. ${native('thanks')}. ${native('goodbye')} !`
+			}
+			: undefined,
+		questions: questionIds.map((questionId, index) => (
+			createReadingQuestion(copy, target, questionId, personName, `${seed}:${questionId}:${index}`)
+		))
+	};
+}
+
+function createReadingQuestion(
+	copy: ReturnType<typeof getExerciseCopy>,
+	target: ConceptLabeler,
+	questionId: StarterReadingQuestionId,
+	personName: string,
+	seed: string
+): ReadingComprehensionQuestion {
+	if (questionId === 'name') {
+		return {
+			id: 'name',
+			prompt: copy.reading.nameQuestion,
+			options: shuffleBySeed([
+				{
+					id: 'person-name',
+					label: personName
+				},
+				target.option('thanks')
+			], seed),
+			correctOptionId: 'person-name'
+		};
+	}
+
+	if (questionId === 'hello') {
+		return {
+			id: 'hello',
+			prompt: copy.reading.helloQuestion,
+			options: createConceptOptions(target, 'hello', ['no'], seed),
+			correctOptionId: 'hello'
+		};
+	}
+
+	return {
+		id: 'thanks',
+		prompt: copy.reading.thanksQuestion,
+		options: createConceptOptions(target, 'thanks', ['no'], seed),
+		correctOptionId: 'thanks'
+	};
+}
+
+function createConceptOptions(
+	labeler: ConceptLabeler,
+	correctConcept: StarterConceptId,
+	distractors: readonly StarterConceptId[],
+	seed: string
+) {
+	return shuffleBySeed([correctConcept, ...uniqueItems(distractors).filter((concept) => concept !== correctConcept)], seed)
+		.map((concept) => labeler.option(concept));
+}
+
+function createConversationDistractorOption(
+	target: ConceptLabeler,
+	targetLanguage: SupportedLanguageCode,
+	personName: string,
+	distractor: ConversationChoiceId
+): ExerciseOption {
+	if (distractor === 'namePhrase') {
+		return getNamePhraseOption(targetLanguage, personName);
+	}
+
+	if (distractor === 'goodbye') {
+		return target.option('goodbye', 'bye');
+	}
+
+	return target.option(distractor);
+}
+
+function getCampaignIntroLesson(lessonStep: number) {
+	const lessonIndex = getCampaignIntroLessonIndex(lessonStep);
+
+	return campaignIntroLevel.lessons[lessonIndex];
+}
+
+function getCampaignIntroLessonIndex(lessonStep: number) {
+	const lastLessonIndex = campaignIntroLevel.lessons.length - 1;
+
+	if (lastLessonIndex <= 0) {
+		return 0;
+	}
+
+	return Math.max(0, Math.min(Math.floor(lessonStep), lastLessonIndex));
+}
+
+function getImageConceptOpenMojiHexcode(concept: StarterImageConceptId) {
+	const hexcodes: Record<StarterImageConceptId, string> = {
+		hello: '1F44B',
+		hi: '1F44B',
+		no: '274C',
+		yes: '2705'
+	};
+
+	return hexcodes[concept];
+}
+
+function uniqueItems<T>(items: readonly T[]) {
+	return Array.from(new Set(items));
+}
+
+function shuffleBySeed<T>(items: readonly T[], seed: string): T[] {
+	const result = [...items];
+	const random = createSeededRandom(seed);
+
+	for (let index = result.length - 1; index > 0; index -= 1) {
+		const swapIndex = Math.floor(random() * (index + 1));
+		const item = result[index];
+
+		result[index] = result[swapIndex];
+		result[swapIndex] = item;
+	}
+
+	return result;
+}
+
+function createSeededRandom(seed: string) {
+	let state = hashString(seed) || 1;
+
+	return () => {
+		state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+
+		return state / 4294967296;
+	};
+}
+
+function hashString(value: string) {
+	let hash = 2166136261;
+
+	for (let index = 0; index < value.length; index += 1) {
+		hash ^= value.charCodeAt(index);
+		hash = Math.imul(hash, 16777619);
+	}
+
+	return hash >>> 0;
+}
+
 function createConceptLabeler(language: SupportedLanguageCode, uiLanguage: SupportedLanguageCode) {
 	const label = ((concept: StarterConceptId) => {
 		return starterConceptLabels[concept][language];
@@ -323,7 +703,10 @@ function getPronunciationHint(
 	};
 }
 
-function createNameOrderExercise(language: SupportedLanguageCode, personName: string): LearningExercise {
+function createNameOrderExercise(
+	language: SupportedLanguageCode,
+	personName: string
+): Extract<LearningExercise, { type: 'wordOrder' }> {
 	if (language === 'en') {
 		return {
 			id: 'en-name-order',
@@ -372,7 +755,10 @@ function createNameOrderExercise(language: SupportedLanguageCode, personName: st
 	};
 }
 
-function createGoodbyeOrderExercise(language: SupportedLanguageCode, personName: string): LearningExercise {
+function createGoodbyeOrderExercise(
+	language: SupportedLanguageCode,
+	personName: string
+): Extract<LearningExercise, { type: 'wordOrder' }> {
 	if (language === 'en') {
 		return {
 			id: 'en-goodbye-order',
@@ -497,11 +883,13 @@ function getNativeNameSentence(language: SupportedLanguageCode, personName: stri
 	return `Je m’appelle ${personName}`;
 }
 
-function getStarterLessonTitle(uiLanguage: SupportedLanguageCode) {
+function getStarterLessonTitle(uiLanguage: SupportedLanguageCode, lessonStep: number) {
+	const lessonNumber = getCampaignIntroLessonIndex(lessonStep) + 1;
+	const lessonCount = campaignIntroLevel.lessons.length;
 	const titles: Record<SupportedLanguageCode, string> = {
-		en: 'Lesson 1',
-		fr: 'Leçon 1',
-		zh: '第 1 课'
+		en: `Lesson ${lessonNumber}/${lessonCount}`,
+		fr: `Leçon ${lessonNumber}/${lessonCount}`,
+		zh: `第 ${lessonNumber}/${lessonCount} 课`
 	};
 
 	return titles[uiLanguage];
