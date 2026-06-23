@@ -14,10 +14,23 @@ Statut : terminee.
 
 Derniere etape appliquee :
 
+- Correction feedback exercices approfondie appliquee le 2026-06-23 : le bouton `Recommencer`/`Rejouer` est retire, `Valider` devient `Continuer` ou `Terminer`, et le feedback est affiche pres du bouton.
+- `ExerciseDeck` utilise maintenant une file de session : une reponse fausse ou partielle remet l'exercice en fin de lecon au lieu de bloquer ou de relancer toute la session.
+- `ExercisePreview` expose des etats visuels forts : selection bleue, bonne reponse verte, erreur rouge, verrouillage apres validation.
+- Le matching donne un feedback en temps reel par paire, annule la selection si l'utilisateur reclique sur l'element gauche actif, et conserve les associations visibles.
+- La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes, boutons et feedback dans la langue utilisateur ; mots/phrases d'exercice dans la langue apprise.
+- Les illustrations OpenMoji de la premiere lecon evitent l'icone de priere pour `merci` et privilegient les pictos directs (`salut`, `oui`, `non`, personnage, lecture).
+- Le profil invite local ajoute `campaignLevels` et `completedLessons`; les anciens profils sont normalises au chargement.
+- Chaque niveau campagne porte une base de 3 paliers. Finir la lecon du niveau 1 donne +10 XP et avance un palier jusqu'a 3/3 ; une quete journaliere donne +10 XP une seule fois par identifiant.
+- La map affiche les paliers par trois pips sous les pastilles de niveau.
+- Verification Edge headless ciblee : consigne francaise, absence de bouton restart, mauvaise reponse rouge + bonne reponse verte, bouton `Continuer`, matching annulable et rouge en cas d'erreur, compteur `1 a revoir`.
+- Verification finale : `npm run typecheck`, `npm run lint`, `npm run build` et `git diff --check` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Limite de verification : le script CDP de parcours complet est devenu instable pendant la fin de lecon ; refaire une verification visuelle complete de l'ecran final avec Playwright dedie ou manuellement si possible.
+
 - Correction feedback UX exercices appliquee : les routes `/exercises/*` et `/daily/*` utilisent un shell minimal sans sidebar, sans header lourd et sans navigation mobile.
 - `packages/shared/src/index.ts` et `exercise-engine.ts` ajoutent les types jouables `matching`, `imageChoice` et `wordOrder`, en plus des types existants.
 - `ExercisePreview` rend les illustrations OpenMoji, les associations, les choix image, l'ordre des mots et la lecture ; les labels techniques et XP potentielles ne sont plus visibles dans l'exercice.
-- `ExerciseDeck` affiche une progression minimale, valide localement, puis montre un ecran de fin sans modifier XP reel, streak reel ou progression persistante.
+- `ExerciseDeck` affiche une progression de lecon et un ecran de fin ; depuis le feedback du 2026-06-23, il modifie aussi XP locale et paliers campagne de facon controlee.
 - La premiere lecon campagne francais/anglais/chinois part de zero : salutations, merci, au revoir, oui/non, presentation simple, repetition par plusieurs formes.
 - Les contenus plus avances ou de revision (`et`/`est`/`es`, conjugaison, grammaire, pinyin/revision ciblee) sont deplaces dans de vrais decks journaliers via `daily-exercises.ts`.
 - Les quetes journalieres sont cliquables, ouvrent `/daily/{dailyLevelId}` et affichent leur difficulte (`Facile`, `Moyen`, `Difficile`) en bas de carte.
@@ -146,31 +159,34 @@ Garde-fous UX conserves :
 
 ## Prochaine
 
-### Etape 13 - XP, progression et streak
+### Etape 13 - Streak, niveau utilisateur et progression avancee
 
 Statut : prochaine.
 
-Objectif : commencer a rendre la progression motivante et coherente, sans serveur.
+Objectif : completer la motivation locale sans serveur, en s'appuyant sur les +10 XP et les paliers de niveau deja ajoutes au feedback exercices.
 
 Taches prevues :
 
 - Verifier l'etat du workspace.
 - Lire les docs de reprise.
 - Relire les decisions sur le profil invite, les niveaux, les exercices et les garde-fous UX.
-- Ajouter un modele local de progression d'exercice pour XP gagnee, niveau utilisateur, streak et dernier jour actif.
-- Brancher la validation d'un exercice sur une mise a jour locale controlee du profil invite.
-- Garder une separation claire entre XP potentielle et XP reel gagne.
-- Mettre a jour le header XP/streak apres validation.
+- Relire la base ajoutee le 2026-06-23 : `campaignLevels`, `completedLessons`, +10 XP et paliers 3/3.
+- Ajouter un modele local pour niveau utilisateur, seuils d'XP, streak et dernier jour actif.
+- Brancher la fin de lecon sur une mise a jour streak controlee, sans double-compter une meme journee.
+- Mettre a jour le header XP/streak et les previews de stats apres fin de lecon.
+- Verifier que les paliers niveau campagne ne double-comptent pas au-dela de 3/3.
+- Refaire une verification visuelle complete de l'ecran final de lecon, idealement avec Playwright ou un script CDP plus stable.
 - Eviter toute synchronisation serveur ou compte.
-- Garder les niveaux verrouilles tant qu'aucune vraie progression de niveau n'est definie.
+- Garder les niveaux 2+ non interactifs tant qu'aucun contenu pedagogique dedie n'existe.
 - Lancer lint, typecheck et build.
 - Mettre a jour les docs.
 
 Critere d'acceptation :
 
-- Valider un exercice peut ajouter de l'XP locale au profil invite.
-- Le streak local est prepare et affiche de facon coherente.
-- Le systeme ne double-compte pas une meme validation dans le meme deck sans controle explicite.
+- Finir une lecon met a jour XP, niveau utilisateur et streak local de facon coherente.
+- Le systeme ne double-compte pas une meme lecon/journee sans controle explicite.
+- Le header et les surfaces de stats refletent la progression locale.
+- La fin de lecon est verifiee visuellement.
 - Les donnees restent locales et migrables plus tard.
 - L'application build toujours.
 - La documentation indique clairement l'etape suivante.

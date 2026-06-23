@@ -1,6 +1,7 @@
 export { ExerciseDeck } from './ExerciseDeck';
 export { ExercisePreview } from './ExercisePreview';
 export { FrenchExerciseDeck } from './FrenchExerciseDeck';
+export { getExerciseCopy } from './exercise-copy';
 export { chineseStarterExerciseAnswers, chineseStarterExercises } from './chinese-exercises';
 export { getDailyExerciseAnswers, getDailyExerciseDeckContent } from './daily-exercises';
 export { englishStarterExerciseAnswers, englishStarterExercises } from './english-exercises';

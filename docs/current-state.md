@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-22
+Date : 2026-06-23
 
 ## Statut court
 
@@ -8,7 +8,7 @@ Etape courante : Etape 12 - Premiers exercices chinois et prononciation.
 
 Etat : terminee.
 
-Depuis la correction feedback de l'Etape 12, le niveau 1 de la map lance une vraie premiere lecon de bases simples pour la langue apprise, dans un shell d'exercice minimal sans sidebar ni navigation lourde. Les quetes journalieres lancent aussi de courts decks de revision avec difficulte visible, sans XP reel, streak reel ou progression persistante.
+Depuis la correction feedback exercices du 2026-06-23, le niveau 1 de la map lance une vraie premiere lecon plus jouable : feedback vert/rouge immediat, bouton `Valider` qui devient `Continuer`, erreurs remises en fin de session, fin de lecon avec +10 XP et progression locale d'un palier sur 3 pour le niveau campagne. Les quetes journalieres lancent aussi de courts decks de revision avec difficulte visible et XP locale limitee par identifiant de quete, sans streak avance ni serveur.
 
 Le projet contient une workspace npm avec une application web React/Vite dans `apps/web`, un package partagé dans `packages/shared`, un emplacement réservé pour le futur serveur dans `apps/api`, un shell UI moderne, un onboarding initial avec profil invité local et un créateur complet de personnage Open Peeps.
 
@@ -144,15 +144,26 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les points plus avances (`et`/`est`/`es`, conjugaison, grammaire, pinyin/revision ciblee) sont deplaces dans `apps/web/src/features/exercises/daily-exercises.ts`.
 - Deck jouable generique `ExerciseDeck` avec progression minimale, validation locale et ecran de fin, sans afficher les XP potentielles dans l'experience.
 - Les routes `/exercises/fr`, `/exercises/en`, `/exercises/zh` et `/daily/{dailyLevelId}` utilisent un shell d'exercice minimal avec logo Classyc, progression, exercice et actions, sans sidebar ni navigation mobile.
-- Le niveau 1 et le bouton `Jouer` du ruban ouvrent `/exercises/{langue cible}` ; le niveau 1 est `available`, les autres niveaux restent verrouilles et non interactifs.
+- Le niveau 1 et le bouton `Jouer` du ruban ouvrent `/exercises/{langue cible}` ; le niveau 1 est `available`, les autres niveaux restent non interactifs tant que leur contenu n'existe pas.
+- Les niveaux campagne ont maintenant une base de progression locale en 3 paliers (`completedSteps` / `requiredSteps`) dans le profil invite.
+- Finir une lecon campagne ajoute +10 XP tant que le niveau n'a pas atteint 3/3, puis avance le palier du niveau 1.
+- Finir une quete journaliere ajoute +10 XP locale une seule fois par identifiant de quete.
+- Les anciens profils invites sont normalises au chargement pour ajouter `campaignLevels` et `completedLessons`.
+- `ExerciseDeck` utilise une file de session : une reponse fausse ou partielle n'arrete pas la lecon, mais remet l'exercice en fin de file jusqu'a reussite.
+- Le bouton `Recommencer`/`Rejouer` est retire de l'experience d'exercice.
+- Les messages de feedback sont affiches pres du bouton d'action, dans la langue de l'utilisateur.
+- `ExercisePreview` affiche les etats de reponse : selection en bleu, bonne reponse en vert, erreur en rouge, avec verrouillage apres validation.
+- L'exercice de matching marque les associations correctes en vert et incorrectes en rouge en temps reel ; recliquer sur l'element gauche actif annule la selection.
+- La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes/boutons/messages dans la langue utilisateur, mots/phrases d'exercice dans la langue apprise.
+- Les exercices illustres de la premiere lecon evitent l'icone OpenMoji de priere pour `merci` ; les images restantes sont directes (`salut`, `oui`, `non`, personnage, lecture).
 - Dossier `apps/api` réservé sans implémentation serveur.
 
 ## Ce qui n'existe pas encore
 
 - Serveur/API.
 - Exercices branches a tous les niveaux.
-- Progression persistante apres exercice.
-- XP, streak, amis, messagerie ou mini-jeux.
+- Progression pedagogique complete des niveaux 2+.
+- Streak avance, amis, messagerie ou mini-jeux.
 - Diagnostic complet.
 
 ## Verification du 2026-06-13
@@ -350,6 +361,21 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification correction feedback exercices : `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 - Verification Chrome headless via DevTools Protocol : niveau 1 ouvre `/exercises/en`, pas de sidebar ni navigation mobile en exercice, progression `1/8`, aucun label de type/XP, illustration OpenMoji presente, matching au second exercice, quete journaliere vers `/daily/daily-sounds-2026-06-22`, mobile 390x844 sans overflow horizontal.
 
+## Verification du 2026-06-23
+
+- Correction profonde UX exercices : retrait du bouton `Recommencer`, validation transformee en `Continuer`/`Terminer`, feedback pres du bouton, reprise des erreurs en fin de file.
+- Progression locale ajoutee : +10 XP par lecon terminee, niveau campagne en 3 paliers, quetes journalieres recompensees une seule fois par identifiant.
+- Map campagne branchee sur `campaignLevels` du profil invite et affichage de 3 pips de palier par niveau.
+- Contenu de premiere lecon genere par langue cible + langue utilisateur pour separer consignes UI et langue apprise.
+- OpenMoji de priere retire du flux de premiere lecon pour `merci`; les illustrations utilisees dans les exercices joues sont plus directes.
+- Verification Edge headless via DevTools Protocol sur `/exercises/en` avec profil francophone : pas de `Recommencer`/`Rejouer`, premiere consigne en francais, reponse fausse affiche `Pas grave, on le remet a la fin.`, option correcte en vert, option fausse en rouge, bouton `Continuer`, matching en francais avec selection annulable et association fausse rouge, compteur `1 a revoir`.
+- Verification longue de fin de lecon tentee via CDP ; la session headless est devenue instable pendant le script complet, donc la validation visuelle complete de l'ecran final reste a refaire manuellement ou avec un runner Playwright dedie.
+- `npm run typecheck` : OK.
+- `npm run lint` : OK.
+- `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
+- `git diff --check` : OK avec avertissements CRLF/LF attendus.
+- Serveur Vite frais lance sur `http://127.0.0.1:5174/`, status HTTP 200.
+
 ## Reprise
 
-Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 13 de [docs/next-steps.md](next-steps.md) : XP, progression et streak.
+Si l'utilisateur tape `nextstepproject`, realiser uniquement l'Etape 13 de [docs/next-steps.md](next-steps.md) : streak, niveau utilisateur et progression avancee locale.

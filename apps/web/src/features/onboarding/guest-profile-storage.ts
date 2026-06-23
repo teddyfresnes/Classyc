@@ -1,5 +1,6 @@
 import { isOpenPeepCharacterId, isOpenPeepCustomization } from '@classyc/shared';
 import type { GuestProfile, OpenPeepCharacterId, OpenPeepCustomization, SupportedLanguageCode } from '@classyc/shared';
+import { createInitialProgress, normalizeProgress } from '@/features/learning/progress';
 
 const storageKey = 'classyc-guest-profile';
 const languageCodes: readonly SupportedLanguageCode[] = ['fr', 'en', 'zh'];
@@ -60,10 +61,7 @@ export function createGuestProfile(input: GuestProfileInput): GuestProfile {
 		targetLanguage: input.targetLanguage,
 		characterId: input.characterId,
 		characterCustomization: input.characterCustomization,
-		progress: {
-			xp: 0,
-			streakDays: 0
-		},
+		progress: createInitialProgress(),
 		createdAt: now,
 		onboardingCompletedAt: now
 	};
@@ -79,7 +77,7 @@ export function loadGuestProfile() {
 
 		const parsedProfile = JSON.parse(storedProfile) as unknown;
 
-		return isGuestProfile(parsedProfile) ? parsedProfile : null;
+		return isGuestProfile(parsedProfile) ? normalizeGuestProfile(parsedProfile) : null;
 	} catch {
 		return null;
 	}
@@ -87,4 +85,11 @@ export function loadGuestProfile() {
 
 export function saveGuestProfile(profile: GuestProfile) {
 	window.localStorage.setItem(storageKey, JSON.stringify(profile));
+}
+
+function normalizeGuestProfile(profile: GuestProfile): GuestProfile {
+	return {
+		...profile,
+		progress: normalizeProgress(profile.progress ?? createInitialProgress())
+	};
 }

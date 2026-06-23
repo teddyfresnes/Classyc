@@ -1,7 +1,9 @@
-import type { CampaignLevel, CampaignLevelReward, CampaignLevelState } from '@classyc/shared';
+import type { CampaignLevel, CampaignLevelProgress, CampaignLevelReward, CampaignLevelState, PreviewProgress } from '@classyc/shared';
+import { getCampaignLevelProgress } from '@/features/learning/progress';
 
 export interface CampaignLevelMapNode extends CampaignLevel {
 	label: string;
+	progress?: CampaignLevelProgress;
 	x: number;
 	y: number;
 }
@@ -118,6 +120,10 @@ export function getCampaignLevelAccessibleLabel(level: CampaignLevelMapNode) {
 		campaignLevelStateLabels[level.state]
 	];
 
+	if (level.progress) {
+		parts.push(`${level.progress.completedSteps}/${level.progress.requiredSteps}`);
+	}
+
 	if (level.reward) {
 		parts.push(getCampaignLevelRewardDescription(level.reward));
 	}
@@ -125,18 +131,46 @@ export function getCampaignLevelAccessibleLabel(level: CampaignLevelMapNode) {
 	return parts.join(' - ');
 }
 
+export function createCampaignLevelsForProgress(progress: PreviewProgress) {
+	let previousLevelCompleted = true;
+
+	return campaignLevels.map((level) => {
+		const levelProgress = getCampaignLevelProgress(progress, level.id);
+		const isCompleted = levelProgress.completedSteps >= levelProgress.requiredSteps;
+		const state: CampaignLevelState = isCompleted
+			? 'completed'
+			: previousLevelCompleted
+				? 'available'
+				: 'locked';
+
+		previousLevelCompleted = isCompleted;
+
+		return {
+			...level,
+			progress: levelProgress,
+			state
+		};
+	});
+}
+
 export function getCampaignMapProgressPercent(levels: readonly CampaignLevelMapNode[] = campaignLevels) {
 	if (levels.length <= 1) {
 		return 0;
 	}
 
-	const activeIndex = levels.reduce((lastActiveIndex, level, index) => {
+	const activeProgress = levels.reduce((lastActiveProgress, level, index) => {
 		if (level.state === 'locked') {
-			return lastActiveIndex;
+			return lastActiveProgress;
 		}
 
-		return index;
+		const stepProgress = level.progress
+			? level.progress.completedSteps / Math.max(1, level.progress.requiredSteps)
+			: level.state === 'completed'
+				? 1
+				: 0;
+
+		return index + Math.min(1, Math.max(0, stepProgress));
 	}, 0);
 
-	return Math.round((activeIndex / (levels.length - 1)) * 100);
+	return Math.round((Math.min(activeProgress, levels.length - 1) / (levels.length - 1)) * 100);
 }

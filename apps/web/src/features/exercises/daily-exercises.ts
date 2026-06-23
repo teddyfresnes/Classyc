@@ -1,10 +1,11 @@
-import type { ExerciseAnswer, SupportedLanguageCode } from '@classyc/shared';
+import type { ExerciseAnswer, LearningExercise, SupportedLanguageCode } from '@classyc/shared';
 import type { ExerciseDeckContent } from './exercise-content';
 
 export type DailyExerciseTemplateId = 'daily-routine' | 'daily-memory' | 'daily-sounds' | 'daily-challenge';
 
 export interface DailyExerciseDeckContent extends ExerciseDeckContent {
 	difficultyLabel: string;
+	lessonId: string;
 }
 
 const dailyExerciseTemplateIds: readonly DailyExerciseTemplateId[] = [
@@ -14,16 +15,36 @@ const dailyExerciseTemplateIds: readonly DailyExerciseTemplateId[] = [
 	'daily-challenge'
 ];
 
-const dailyDifficultyLabels: Record<DailyExerciseTemplateId, string> = {
-	'daily-challenge': 'Difficile',
-	'daily-memory': 'Moyen',
-	'daily-routine': 'Facile',
-	'daily-sounds': 'Moyen'
+const dailyDifficultyLabels: Record<SupportedLanguageCode, Record<DailyExerciseTemplateId, string>> = {
+	en: {
+		'daily-challenge': 'Hard',
+		'daily-memory': 'Medium',
+		'daily-routine': 'Easy',
+		'daily-sounds': 'Medium'
+	},
+	fr: {
+		'daily-challenge': 'Difficile',
+		'daily-memory': 'Moyen',
+		'daily-routine': 'Facile',
+		'daily-sounds': 'Moyen'
+	},
+	zh: {
+		'daily-challenge': '困难',
+		'daily-memory': '中等',
+		'daily-routine': '简单',
+		'daily-sounds': '中等'
+	}
+};
+
+const dailyDeckTitles: Record<SupportedLanguageCode, string> = {
+	en: 'Daily quest',
+	fr: 'Quête du jour',
+	zh: '每日任务'
 };
 
 const dailyExerciseContent: Record<
 	DailyExerciseTemplateId,
-	Record<SupportedLanguageCode, Omit<DailyExerciseDeckContent, 'difficultyLabel' | 'language'>>
+	Record<SupportedLanguageCode, Omit<DailyExerciseDeckContent, 'difficultyLabel' | 'language' | 'lessonId'>>
 > = {
 	'daily-routine': {
 		en: {
@@ -543,14 +564,18 @@ export const dailyExerciseAnswers: Record<
 
 export function getDailyExerciseDeckContent(
 	dailyLevelId: string | undefined,
-	language: SupportedLanguageCode
+	language: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode = 'fr'
 ): DailyExerciseDeckContent {
 	const templateId = getDailyExerciseTemplateId(dailyLevelId);
 	const content = dailyExerciseContent[templateId][language];
 
 	return {
 		...content,
-		difficultyLabel: dailyDifficultyLabels[templateId],
+		difficultyLabel: dailyDifficultyLabels[uiLanguage][templateId],
+		exercises: localizeDailyExercises(content.exercises, language, uiLanguage),
+		lessonId: dailyLevelId ?? templateId,
+		title: dailyDeckTitles[uiLanguage],
 		language
 	};
 }
@@ -566,4 +591,119 @@ export function getDailyExerciseTemplateId(dailyLevelId: string | undefined): Da
 	return dailyExerciseTemplateIds.find((templateId) => (
 		dailyLevelId === templateId || dailyLevelId?.startsWith(`${templateId}-`)
 	)) ?? 'daily-routine';
+}
+
+function localizeDailyExercises(
+	exercises: readonly LearningExercise[],
+	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode
+): readonly LearningExercise[] {
+	if (targetLanguage !== 'zh') {
+		return exercises;
+	}
+
+	return exercises.map((exercise) => {
+		if (exercise.id === 'daily-zh-routine-hello' && exercise.type === 'imageChoice') {
+			return {
+				...exercise,
+				imageAlt: zhMeaningLabels.hello[uiLanguage],
+				options: exercise.options.map((option) => ({
+					...option,
+					pronunciationHint: option.pronunciationHint
+						? {
+							...option.pronunciationHint,
+							meaning: getZhOptionMeaning(option.id, uiLanguage)
+						}
+						: undefined
+				}))
+			};
+		}
+
+		if (exercise.id === 'daily-zh-memory-shi' && exercise.type === 'multipleChoice') {
+			return {
+				...exercise,
+				pronunciationHint: {
+					pinyin: 'shì',
+					meaning: zhMeaningLabels.yes[uiLanguage]
+				},
+				options: [
+					{ id: 'yes', label: zhMeaningLabels.yes[uiLanguage] },
+					{ id: 'thanks', label: zhMeaningLabels.thanks[uiLanguage] },
+					{ id: 'bye', label: zhMeaningLabels.goodbye[uiLanguage] }
+				]
+			};
+		}
+
+		if (exercise.id === 'daily-zh-memory-bushi' && exercise.type === 'trueFalse') {
+			return {
+				...exercise,
+				pronunciationHint: {
+					pinyin: 'bú shì',
+					meaning: zhMeaningLabels.not[uiLanguage]
+				},
+				statement: `不是 = ${zhMeaningLabels.not[uiLanguage]}`
+			};
+		}
+
+		if (exercise.id === 'daily-zh-challenge-bushi' && exercise.type === 'multipleChoice') {
+			return {
+				...exercise,
+				pronunciationHint: {
+					pinyin: 'bú shì',
+					meaning: zhMeaningLabels.not[uiLanguage]
+				},
+				options: [
+					{ id: 'not', label: zhMeaningLabels.not[uiLanguage] },
+					{ id: 'thanks', label: zhMeaningLabels.thanks[uiLanguage] },
+					{ id: 'hello', label: zhMeaningLabels.hello[uiLanguage] }
+				]
+			};
+		}
+
+		return exercise;
+	});
+}
+
+const zhMeaningLabels: Record<string, Record<SupportedLanguageCode, string>> = {
+	goodbye: {
+		en: 'goodbye',
+		fr: 'au revoir',
+		zh: '再见'
+	},
+	hello: {
+		en: 'hello',
+		fr: 'bonjour',
+		zh: '你好'
+	},
+	not: {
+		en: 'no / not',
+		fr: 'non / ce n’est pas',
+		zh: '不是'
+	},
+	thanks: {
+		en: 'thank you',
+		fr: 'merci',
+		zh: '谢谢'
+	},
+	yes: {
+		en: 'yes',
+		fr: 'oui',
+		zh: '是'
+	}
+};
+
+function getZhOptionMeaning(optionId: string, uiLanguage: SupportedLanguageCode) {
+	if (optionId === 'nihao') {
+		return zhMeaningLabels.hello[uiLanguage];
+	}
+
+	if (optionId === 'xiexie') {
+		return zhMeaningLabels.thanks[uiLanguage];
+	}
+
+	if (optionId === 'bushi') {
+		return zhMeaningLabels.not[uiLanguage];
+	}
+
+	return undefined;
 }

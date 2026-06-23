@@ -8,6 +8,8 @@ export interface LearningPreviewCard {
 }
 
 export const progressPreview: PreviewProgress = {
+	campaignLevels: {},
+	completedLessons: {},
 	xp: 0,
 	streakDays: 0
 };

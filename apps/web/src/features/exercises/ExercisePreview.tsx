@@ -12,37 +12,40 @@ import type {
 	WordOrderExercise
 } from '@classyc/shared';
 import { resolveOpenMojiIconSrc } from '@/assets/openmoji';
+import type { ExerciseDeckCopy } from './exercise-copy';
 
 interface ExercisePreviewProps {
 	exercise: LearningExercise;
 	answer?: ExerciseAnswer;
+	copy: ExerciseDeckCopy;
 	evaluation?: ExerciseEvaluation;
 	onAnswerChange?: (answer: ExerciseAnswer) => void;
 }
 
-export function ExercisePreview({ answer, evaluation, exercise, onAnswerChange }: ExercisePreviewProps) {
+type ExerciseChoiceState = 'correct' | 'idle' | 'incorrect' | 'selected';
+type MatchCardState = 'active' | 'correct' | 'idle' | 'incorrect';
+
+export function ExercisePreview({ answer, copy, evaluation, exercise, onAnswerChange }: ExercisePreviewProps) {
+	const writableAnswerChange = evaluation ? undefined : onAnswerChange;
+	const title = getExerciseTitle(exercise, copy);
+	const instruction = getExerciseInstruction(exercise, copy);
+
 	return (
-		<section className="exercise-preview" aria-label={exercise.prompt}>
+		<section className="exercise-preview" aria-label={title}>
 			<header className="exercise-preview__header">
 				{exercise.openMojiHexcode ? (
 					<OpenMojiPicture className="exercise-preview__icon" hexcode={exercise.openMojiHexcode} />
 				) : null}
 				<div className="min-w-0">
-					<h2 className="exercise-preview__prompt">{exercise.prompt}</h2>
-					{exercise.instruction ? <p className="exercise-preview__instruction">{exercise.instruction}</p> : null}
+					<h2 className="exercise-preview__prompt">{title}</h2>
+					{instruction ? <p className="exercise-preview__instruction">{instruction}</p> : null}
 					{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
 				</div>
 			</header>
 
 			<div className="exercise-preview__body">
-				{renderExerciseBody(exercise, answer, onAnswerChange)}
+				{renderExerciseBody(exercise, answer, writableAnswerChange, evaluation, copy)}
 			</div>
-
-			{evaluation ? (
-				<footer className={`exercise-preview__feedback exercise-preview__feedback--${evaluation.feedback}`}>
-					<span>{formatExerciseFeedback(evaluation.feedback)}</span>
-				</footer>
-			) : null}
 		</section>
 	);
 }
@@ -50,7 +53,9 @@ export function ExercisePreview({ answer, evaluation, exercise, onAnswerChange }
 function renderExerciseBody(
 	exercise: LearningExercise,
 	answer: ExerciseAnswer | undefined,
-	onAnswerChange: ExercisePreviewProps['onAnswerChange']
+	onAnswerChange: ExercisePreviewProps['onAnswerChange'],
+	evaluation: ExerciseEvaluation | undefined,
+	copy: ExerciseDeckCopy
 ) {
 	switch (exercise.type) {
 		case 'multipleChoice':
@@ -58,6 +63,11 @@ function renderExerciseBody(
 				<OptionList
 					answer={answer?.type === 'multipleChoice' ? answer.optionId : undefined}
 					onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
+					optionStates={getChoiceOptionStates(
+						answer?.type === 'multipleChoice' ? answer.optionId : undefined,
+						exercise.correctOptionId,
+						evaluation
+					)}
 					options={exercise.options}
 					readOnly={!onAnswerChange}
 				/>
@@ -67,6 +77,7 @@ function renderExerciseBody(
 				<input
 					aria-label={exercise.prompt}
 					className="exercise-text-input"
+					data-state={getTextInputState(answer, evaluation)}
 					onChange={(event) => onAnswerChange?.({ exerciseId: exercise.id, type: 'fillBlank', value: event.target.value })}
 					placeholder={exercise.placeholder}
 					readOnly={!onAnswerChange}
@@ -83,9 +94,14 @@ function renderExerciseBody(
 						onAnswerChange={(optionId) => (
 							onAnswerChange?.({ exerciseId: exercise.id, type: 'trueFalse', value: optionId === 'true' })
 						)}
+						optionStates={getChoiceOptionStates(
+							answer?.type === 'trueFalse' ? String(answer.value) : undefined,
+							String(exercise.correctAnswer),
+							evaluation
+						)}
 						options={[
-							{ id: 'true', label: 'Vrai', openMojiHexcode: '2705' },
-							{ id: 'false', label: 'Faux', openMojiHexcode: '274C' }
+							{ id: 'true', label: copy.trueFalse.true, openMojiHexcode: '2705' },
+							{ id: 'false', label: copy.trueFalse.false, openMojiHexcode: '274C' }
 						]}
 						readOnly={!onAnswerChange}
 						variant="binary"
@@ -93,25 +109,49 @@ function renderExerciseBody(
 				</div>
 			);
 		case 'readingComprehension':
-			return <ReadingExerciseBody answer={answer} exercise={exercise} onAnswerChange={onAnswerChange} />;
+			return (
+				<ReadingExerciseBody
+					answer={answer}
+					evaluation={evaluation}
+					exercise={exercise}
+					onAnswerChange={onAnswerChange}
+				/>
+			);
 		case 'matching':
 			return <MatchingExerciseBody answer={answer} exercise={exercise} onAnswerChange={onAnswerChange} />;
 		case 'imageChoice':
-			return <ImageChoiceExerciseBody answer={answer} exercise={exercise} onAnswerChange={onAnswerChange} />;
+			return (
+				<ImageChoiceExerciseBody
+					answer={answer}
+					evaluation={evaluation}
+					exercise={exercise}
+					onAnswerChange={onAnswerChange}
+				/>
+			);
 		case 'wordOrder':
-			return <WordOrderExerciseBody answer={answer} exercise={exercise} onAnswerChange={onAnswerChange} />;
+			return (
+				<WordOrderExerciseBody
+					answer={answer}
+					copy={copy}
+					evaluation={evaluation}
+					exercise={exercise}
+					onAnswerChange={onAnswerChange}
+				/>
+			);
 	}
 }
 
 function OptionList({
 	answer,
 	onAnswerChange,
+	optionStates,
 	options,
 	readOnly,
 	variant
 }: {
 	answer: string | undefined;
 	onAnswerChange: (optionId: string) => void;
+	optionStates?: Record<string, ExerciseChoiceState>;
 	options: readonly {
 		id: string;
 		label: string;
@@ -123,35 +163,41 @@ function OptionList({
 }) {
 	return (
 		<div className={`exercise-option-list${variant === 'binary' ? ' exercise-option-list--binary' : ''}`}>
-			{options.map((option) => (
-				<button
-					aria-label={formatOptionAccessibleLabel(option.label, option.pronunciationHint)}
-					aria-pressed={answer === option.id}
-					className="exercise-option"
-					data-selected={answer === option.id}
-					disabled={readOnly}
-					key={option.id}
-					onClick={() => onAnswerChange(option.id)}
-					title={formatPronunciationTitle(option.pronunciationHint)}
-					type="button"
-				>
-					<OptionLabel
-						label={option.label}
-						openMojiHexcode={option.openMojiHexcode}
-						pronunciationHint={option.pronunciationHint}
-					/>
-				</button>
-			))}
+			{options.map((option) => {
+				const state = optionStates?.[option.id] ?? (answer === option.id ? 'selected' : 'idle');
+
+				return (
+					<button
+						aria-label={formatOptionAccessibleLabel(option.label, option.pronunciationHint)}
+						aria-pressed={state !== 'idle'}
+						className="exercise-option"
+						data-state={state}
+						disabled={readOnly}
+						key={option.id}
+						onClick={() => onAnswerChange(option.id)}
+						title={formatPronunciationTitle(option.pronunciationHint)}
+						type="button"
+					>
+						<OptionLabel
+							label={option.label}
+							openMojiHexcode={option.openMojiHexcode}
+							pronunciationHint={option.pronunciationHint}
+						/>
+					</button>
+				);
+			})}
 		</div>
 	);
 }
 
 function ImageChoiceExerciseBody({
 	answer,
+	evaluation,
 	exercise,
 	onAnswerChange
 }: {
 	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
 	exercise: ImageChoiceExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
@@ -163,6 +209,11 @@ function ImageChoiceExerciseBody({
 			<OptionList
 				answer={answer?.type === 'imageChoice' ? answer.optionId : undefined}
 				onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'imageChoice', optionId })}
+				optionStates={getChoiceOptionStates(
+					answer?.type === 'imageChoice' ? answer.optionId : undefined,
+					exercise.correctOptionId,
+					evaluation
+				)}
 				options={exercise.options}
 				readOnly={!onAnswerChange}
 			/>
@@ -184,9 +235,18 @@ function MatchingExerciseBody({
 	const rightItems = useMemo(() => rotateMatchingItems(exercise.pairs.map((pair) => pair.right)), [exercise.pairs]);
 	const matchedRightByLeftId = Object.fromEntries(matches.map((match) => [match.leftId, match.rightId]));
 	const matchedLeftByRightId = Object.fromEntries(matches.map((match) => [match.rightId, match.leftId]));
+	const correctRightByLeftId = Object.fromEntries(exercise.pairs.map((pair) => [pair.left.id, pair.right.id]));
+
+	function chooseLeft(leftId: string) {
+		if (!onAnswerChange) {
+			return;
+		}
+
+		setActiveLeftId((currentLeftId) => (currentLeftId === leftId ? null : leftId));
+	}
 
 	function chooseRight(rightId: string) {
-		if (!activeLeftId) {
+		if (!activeLeftId || !onAnswerChange) {
 			return;
 		}
 
@@ -199,29 +259,32 @@ function MatchingExerciseBody({
 			<div className="exercise-matching__column">
 				{exercise.pairs.map((pair) => {
 					const isActive = activeLeftId === pair.left.id;
-					const isMatched = Boolean(matchedRightByLeftId[pair.left.id]);
+					const matchedRightId = matchedRightByLeftId[pair.left.id];
 
 					return (
 						<MatchButton
+							disabled={!onAnswerChange}
 							item={pair.left}
 							key={pair.left.id}
-							onClick={() => setActiveLeftId(pair.left.id)}
-							state={isActive ? 'active' : isMatched ? 'matched' : 'idle'}
+							onClick={() => chooseLeft(pair.left.id)}
+							state={isActive ? 'active' : getMatchState(matchedRightId, pair.right.id)}
 						/>
 					);
 				})}
 			</div>
 			<div className="exercise-matching__column">
 				{rightItems.map((item) => {
-					const isMatched = Boolean(matchedLeftByRightId[item.id]);
+					const matchedLeftId = matchedLeftByRightId[item.id];
 					const isActiveMatch = activeLeftId ? matchedRightByLeftId[activeLeftId] === item.id : false;
+					const correctRightId = matchedLeftId ? correctRightByLeftId[matchedLeftId] : undefined;
 
 					return (
 						<MatchButton
+							disabled={!onAnswerChange}
 							item={item}
 							key={item.id}
 							onClick={() => chooseRight(item.id)}
-							state={isActiveMatch ? 'active' : isMatched ? 'matched' : 'idle'}
+							state={isActiveMatch ? 'active' : getMatchState(item.id, correctRightId)}
 						/>
 					);
 				})}
@@ -231,19 +294,22 @@ function MatchingExerciseBody({
 }
 
 function MatchButton({
+	disabled,
 	item,
 	onClick,
 	state
 }: {
+	disabled: boolean;
 	item: ExerciseMatchItem;
 	onClick: () => void;
-	state: 'active' | 'idle' | 'matched';
+	state: MatchCardState;
 }) {
 	return (
 		<button
 			aria-pressed={state !== 'idle'}
 			className="exercise-match-card"
 			data-state={state}
+			disabled={disabled}
 			onClick={onClick}
 			title={formatPronunciationTitle(item.pronunciationHint)}
 			type="button"
@@ -259,10 +325,14 @@ function MatchButton({
 
 function WordOrderExerciseBody({
 	answer,
+	copy,
+	evaluation,
 	exercise,
 	onAnswerChange
 }: {
 	answer: ExerciseAnswer | undefined;
+	copy: ExerciseDeckCopy;
+	evaluation: ExerciseEvaluation | undefined;
 	exercise: WordOrderExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
@@ -290,11 +360,16 @@ function WordOrderExerciseBody({
 
 	return (
 		<div className="exercise-word-order">
-			<div className="exercise-word-order__answer" aria-label="Réponse">
+			<div
+				aria-label={copy.wordOrderAnswer}
+				className="exercise-word-order__answer"
+				data-state={getWordOrderState(answer, evaluation)}
+			>
 				{selectedTokens.length > 0 ? (
 					selectedTokens.map((token, index) => (
 						<button
 							className="exercise-word-token exercise-word-token--selected"
+							disabled={!onAnswerChange}
 							key={`${token.id}-${index}`}
 							onClick={() => removeToken(index)}
 							title={formatPronunciationTitle(token.pronunciationHint)}
@@ -304,13 +379,14 @@ function WordOrderExerciseBody({
 						</button>
 					))
 				) : (
-					<span className="exercise-word-order__placeholder">...</span>
+					<span className="exercise-word-order__placeholder">{copy.wordOrderPlaceholder}</span>
 				)}
 			</div>
 			<div className="exercise-word-order__bank">
 				{remainingTokens.map((token) => (
 					<button
 						className="exercise-word-token"
+						disabled={!onAnswerChange}
 						key={token.id}
 						onClick={() => addToken(token.id)}
 						title={formatPronunciationTitle(token.pronunciationHint)}
@@ -326,10 +402,12 @@ function WordOrderExerciseBody({
 
 function ReadingExerciseBody({
 	answer,
+	evaluation,
 	exercise,
 	onAnswerChange
 }: {
 	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
 	exercise: ReadingComprehensionExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
@@ -344,6 +422,7 @@ function ReadingExerciseBody({
 				{exercise.questions.map((question) => (
 					<ReadingQuestionCard
 						answer={answer}
+						evaluation={evaluation}
 						exerciseId={exercise.id}
 						key={question.id}
 						onAnswerChange={onAnswerChange}
@@ -357,11 +436,13 @@ function ReadingExerciseBody({
 
 function ReadingQuestionCard({
 	answer,
+	evaluation,
 	exerciseId,
 	onAnswerChange,
 	question
 }: {
 	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
 	exerciseId: string;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 	question: ReadingComprehensionQuestion;
@@ -377,6 +458,7 @@ function ReadingQuestionCard({
 			<OptionList
 				answer={selectedOptionId}
 				onAnswerChange={(optionId) => onAnswerChange?.(createReadingAnswer(answer, exerciseId, question.id, optionId))}
+				optionStates={getChoiceOptionStates(selectedOptionId, question.correctOptionId, evaluation)}
 				options={question.options}
 				readOnly={!onAnswerChange}
 			/>
@@ -428,6 +510,61 @@ function rotateMatchingItems(items: readonly ExerciseMatchItem[]) {
 	}
 
 	return [...items.slice(1), items[0]];
+}
+
+function getChoiceOptionStates(
+	selectedOptionId: string | undefined,
+	correctOptionId: string,
+	evaluation: ExerciseEvaluation | undefined
+): Record<string, ExerciseChoiceState> {
+	if (!evaluation) {
+		return selectedOptionId ? { [selectedOptionId]: 'selected' } : {};
+	}
+
+	return {
+		...(selectedOptionId && selectedOptionId !== correctOptionId ? { [selectedOptionId]: 'incorrect' as const } : {}),
+		[correctOptionId]: 'correct'
+	};
+}
+
+function getTextInputState(answer: ExerciseAnswer | undefined, evaluation: ExerciseEvaluation | undefined) {
+	if (evaluation) {
+		return evaluation.correct ? 'correct' : 'incorrect';
+	}
+
+	return answer?.type === 'fillBlank' && answer.value.trim().length > 0 ? 'selected' : 'idle';
+}
+
+function getWordOrderState(answer: ExerciseAnswer | undefined, evaluation: ExerciseEvaluation | undefined) {
+	if (evaluation) {
+		return evaluation.correct ? 'correct' : 'incorrect';
+	}
+
+	return answer?.type === 'wordOrder' && answer.tokenIds.length > 0 ? 'selected' : 'idle';
+}
+
+function getMatchState(matchedRightId: string | undefined, correctRightId: string | undefined): MatchCardState {
+	if (!matchedRightId || !correctRightId) {
+		return 'idle';
+	}
+
+	return matchedRightId === correctRightId ? 'correct' : 'incorrect';
+}
+
+function getExerciseTitle(exercise: LearningExercise, copy: ExerciseDeckCopy) {
+	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
+		return exercise.prompt || copy.typeInstructions[exercise.type];
+	}
+
+	return copy.typeInstructions[exercise.type];
+}
+
+function getExerciseInstruction(exercise: LearningExercise, copy: ExerciseDeckCopy) {
+	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
+		return exercise.prompt ? copy.typeInstructions[exercise.type] : undefined;
+	}
+
+	return undefined;
 }
 
 function PronunciationHint({ hint }: { hint: ExercisePronunciationHint }) {
@@ -494,14 +631,4 @@ function formatOptionAccessibleLabel(label: string, hint: ExercisePronunciationH
 	const hintLabel = formatPronunciationTitle(hint);
 
 	return hintLabel ? `${label} - ${hintLabel}` : label;
-}
-
-function formatExerciseFeedback(feedback: ExerciseEvaluation['feedback']) {
-	const labels: Record<ExerciseEvaluation['feedback'], string> = {
-		correct: 'Bien joué',
-		incorrect: 'À revoir',
-		partial: 'Presque'
-	};
-
-	return labels[feedback];
 }

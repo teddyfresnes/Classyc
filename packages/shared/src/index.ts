@@ -381,9 +381,23 @@ export function getSupportedLanguage(code: SupportedLanguageCode) {
 	return supportedLanguages.find((language) => language.code === code) ?? supportedLanguages[0];
 }
 
+export interface CampaignLevelProgress {
+	completedSteps: number;
+	requiredSteps: number;
+	updatedAt?: string;
+	completedAt?: string;
+}
+
+export interface LessonCompletionRecord {
+	completedAt: string;
+	xpAwarded: number;
+}
+
 export interface PreviewProgress {
 	xp: number;
 	streakDays: number;
+	campaignLevels: Record<string, CampaignLevelProgress>;
+	completedLessons: Record<string, LessonCompletionRecord>;
 }
 
 export interface GuestProfile {

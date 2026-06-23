@@ -23,11 +23,11 @@ import { BrandLogo } from '@/components/ui/brand-logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import { createCharacterBackgroundStyle } from '@/features/character/character-backgrounds';
-import { ExerciseDeck, getDailyExerciseDeckContent, getExerciseDeckContent } from '@/features/exercises';
+import { ExerciseDeck, getDailyExerciseDeckContent, getExerciseCopy, getExerciseDeckContent } from '@/features/exercises';
 import { getLanguageOption, getUiCopy } from '@/features/i18n/ui-copy';
 import {
 	campaignLevelRoadPath,
-	campaignLevels,
+	createCampaignLevelsForProgress,
 	getCampaignLevelAccessibleLabel,
 	getCampaignLevelRewardLabel,
 	getCampaignMapProgressPercent
@@ -35,6 +35,8 @@ import {
 import type { CampaignLevelMapNode } from '@/features/learning/campaign-levels';
 import { createDailyQuests } from '@/features/learning/daily-levels';
 import type { DailyQuestPreview } from '@/features/learning/daily-levels';
+import { completeLesson } from '@/features/learning/progress';
+import type { LessonCompletionContext } from '@/features/learning/progress';
 import {
 	createShellSections,
 	getLearningSummary
@@ -61,11 +63,17 @@ function navigationClassName({ isActive }: { isActive: boolean }) {
 	return `nav-link${isActive ? ' active' : ''}`;
 }
 
-export function AppShell({ profile }: { profile: GuestProfile }) {
+export function AppShell({
+	onProfileChange,
+	profile
+}: {
+	onProfileChange: (profile: GuestProfile) => void;
+	profile: GuestProfile;
+}) {
 	const location = useLocation();
 
 	if (isExerciseShellPath(location.pathname)) {
-		return <ExerciseShell profile={profile} />;
+		return <ExerciseShell onProfileChange={onProfileChange} profile={profile} />;
 	}
 
 	const copy = getUiCopy(profile.nativeLanguage);
@@ -87,7 +95,7 @@ export function AppShell({ profile }: { profile: GuestProfile }) {
 									path="/"
 								/>
 								<Route
-									element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+									element={<PageTransition><ExerciseRoute onProfileChange={onProfileChange} profile={profile} /></PageTransition>}
 									path="/exercises/:languageCode"
 								/>
 								<Route
@@ -133,14 +141,21 @@ function isExerciseShellPath(pathname: string) {
 	return pathname.startsWith('/exercises/') || pathname.startsWith('/daily/');
 }
 
-function ExerciseShell({ profile }: { profile: GuestProfile }) {
+function ExerciseShell({
+	onProfileChange,
+	profile
+}: {
+	onProfileChange: (profile: GuestProfile) => void;
+	profile: GuestProfile;
+}) {
 	const location = useLocation();
+	const copy = getUiCopy(profile.nativeLanguage);
 
 	return (
 		<div className="exercise-shell">
 			<header className="exercise-shell__top">
 				<BrandLogo />
-				<Link className="icon-action icon-action--flat" to="/" aria-label="Retour à la carte" title="Retour à la carte">
+				<Link className="icon-action icon-action--flat" to="/" aria-label={copy.back} title={copy.back}>
 					<X aria-hidden="true" size={21} strokeWidth={2.4} />
 				</Link>
 			</header>
@@ -148,15 +163,15 @@ function ExerciseShell({ profile }: { profile: GuestProfile }) {
 				<AnimatePresence mode="wait">
 					<Routes key={location.pathname} location={location}>
 						<Route
-							element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+							element={<PageTransition><ExerciseRoute onProfileChange={onProfileChange} profile={profile} /></PageTransition>}
 							path="/exercises/:languageCode"
 						/>
 						<Route
-							element={<PageTransition><DailyExerciseRoute profile={profile} /></PageTransition>}
+							element={<PageTransition><DailyExerciseRoute onProfileChange={onProfileChange} profile={profile} /></PageTransition>}
 							path="/daily/:dailyLevelId"
 						/>
 						<Route
-							element={<PageTransition><ExerciseRoute profile={profile} /></PageTransition>}
+							element={<PageTransition><ExerciseRoute onProfileChange={onProfileChange} profile={profile} /></PageTransition>}
 							path="*"
 						/>
 					</Routes>
@@ -166,33 +181,63 @@ function ExerciseShell({ profile }: { profile: GuestProfile }) {
 	);
 }
 
-function ExerciseRoute({ profile }: { profile: GuestProfile }) {
+function ExerciseRoute({
+	onProfileChange,
+	profile
+}: {
+	onProfileChange: (profile: GuestProfile) => void;
+	profile: GuestProfile;
+}) {
 	const { languageCode } = useParams();
 	const language = isExerciseLanguageCode(languageCode) ? languageCode : profile.targetLanguage;
-	const content = getExerciseDeckContent(language);
+	const content = getExerciseDeckContent(language, profile.nativeLanguage);
 
 	return (
 		<div className="exercise-route-frame">
 			<ExerciseDeck
+				completionContext={{ type: 'campaign', levelId: 'campaign-intro' }}
+				copy={getExerciseCopy(profile.nativeLanguage)}
 				exercises={content.exercises}
+				onLessonComplete={(context) => completeLessonForProfile(profile, onProfileChange, context)}
 				title={content.title}
 			/>
 		</div>
 	);
 }
 
-function DailyExerciseRoute({ profile }: { profile: GuestProfile }) {
+function DailyExerciseRoute({
+	onProfileChange,
+	profile
+}: {
+	onProfileChange: (profile: GuestProfile) => void;
+	profile: GuestProfile;
+}) {
 	const { dailyLevelId } = useParams();
-	const content = getDailyExerciseDeckContent(dailyLevelId, profile.targetLanguage);
+	const content = getDailyExerciseDeckContent(dailyLevelId, profile.targetLanguage, profile.nativeLanguage);
 
 	return (
 		<div className="exercise-route-frame">
 			<ExerciseDeck
+				completionContext={{ type: 'daily', lessonId: content.lessonId }}
+				copy={getExerciseCopy(profile.nativeLanguage)}
 				exercises={content.exercises}
+				onLessonComplete={(context) => completeLessonForProfile(profile, onProfileChange, context)}
 				title={content.title}
 			/>
 		</div>
 	);
+}
+
+function completeLessonForProfile(
+	profile: GuestProfile,
+	onProfileChange: (profile: GuestProfile) => void,
+	context: LessonCompletionContext
+) {
+	const result = completeLesson(profile, context);
+
+	onProfileChange(result.profile);
+
+	return result.result;
 }
 
 function PageTransition({ children }: { children: ReactNode }) {
@@ -323,6 +368,7 @@ function StreakMark() {
 function LearningHome({ profile }: { profile: GuestProfile }) {
 	const summary = getLearningSummary(profile);
 	const quests = createDailyQuests(profile.nativeLanguage);
+	const campaignLevels = createCampaignLevelsForProgress(profile.progress);
 	const campaignProgress = getCampaignMapProgressPercent(campaignLevels);
 	const exercisePath = `/exercises/${profile.targetLanguage}`;
 
@@ -431,6 +477,20 @@ function LevelNodeCard({
 				<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
 					{node.label}
 				</text>
+				{node.progress ? (
+					<g className="map-node__steps" transform="translate(0 45)">
+						{Array.from({ length: node.progress.requiredSteps }, (_, stepIndex) => (
+							<circle
+								className="map-node__step"
+								data-filled={stepIndex < node.progress!.completedSteps}
+								cx={(stepIndex - ((node.progress!.requiredSteps - 1) / 2)) * 13}
+								cy="0"
+								key={stepIndex}
+								r="4"
+							/>
+						))}
+					</g>
+				) : null}
 				{rewardLabel ? (
 					<g className="map-node__reward" transform="translate(31 -27)">
 						<rect height="24" rx="12" width="46" x="-23" y="-12" />

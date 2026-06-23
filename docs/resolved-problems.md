@@ -127,3 +127,9 @@ Probleme : apres l'ajout des premiers exercices francais, le deck etait accessib
 Resolution : brancher le niveau 1 et le bouton `Jouer` du ruban vers `/exercises/{langue cible}`. Les niveaux 2+ restent verrouilles et non interactifs. Le deck est factorise par langue pour reutiliser le meme lancement avec les contenus francais, anglais et chinois.
 
 Verification : Chrome headless confirme un seul noeud interactif, six niveaux verrouilles, un clic niveau 1 vers `/exercises/en` pour un profil apprenant l'anglais, et aucun overflow horizontal desktop/mobile.
+
+## 2026-06-23 - Verification CDP longue instable sur la fin de lecon
+
+Probleme : pendant la correction profonde de l'UX exercices, les verifications ciblees Edge headless via DevTools Protocol ont bien valide les etats importants du deck, mais les scripts longs de parcours complet sont devenus instables avant l'ecran final. Les sessions CDP ne repondaient plus de facon fiable apres plusieurs interactions rapides.
+
+Resolution : conserver les verifications ciblees reussies pour le flux critique visible (`Valider` -> feedback rouge/vert -> `Continuer`, matching annulable, compteur `1 a revoir`) et documenter la limite. La prochaine passe doit refaire la verification complete de l'ecran final avec un runner plus stable, idealement Playwright installe dans le projet ou un script CDP decoupe en etapes plus courtes.

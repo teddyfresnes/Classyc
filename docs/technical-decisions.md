@@ -566,3 +566,30 @@ Les routes d'exercice doivent sortir du shell complet :
 - La premiere lecon campagne doit commencer par des bases simples et repetitives, pas par grammaire/conjugaison.
 - Les quetes journalieres peuvent porter des revisions, pieges ou points plus avances, avec difficulte visible.
 - Aucune progression reelle, XP reel ou streak reel ne doit etre ajoute tant que l'UX d'exercice n'est pas propre.
+
+## D038 - Boucle de lecon jouable et paliers locaux
+
+Statut : retenue apres feedback utilisateur du 2026-06-23.
+
+Le mode exercice doit fonctionner comme une lecon courte a terminer, pas comme une fiche que l'on recommence.
+
+Regles retenues :
+
+- retirer les actions `Recommencer`/`Rejouer` de la lecon ;
+- valider une reponse affiche un feedback localise pres du bouton d'action ;
+- apres validation, le bouton principal devient `Continuer` ou `Terminer` ;
+- une reponse fausse ou partielle ne bloque pas : l'exercice est ajoute en fin de file et devra etre reussi plus tard dans la meme lecon ;
+- les options selectionnees restent bleues avant validation, les bonnes reponses deviennent vertes et les erreurs rouges ;
+- le matching evalue les paires en temps reel, garde les associations visibles et annule la selection si l'utilisateur reclique l'element gauche actif ;
+- les consignes, boutons et messages utilisent la langue de l'utilisateur, tandis que les mots/phrases de l'exercice restent dans la langue apprise ;
+- la premiere lecon est generee depuis un registre target/native pour eviter de coder des traductions francaises dans une interface anglaise ou chinoise ;
+- eviter les OpenMoji ambigus pour les mots abstraits, notamment ne pas utiliser l'icone de priere pour `merci`.
+
+Progression locale retenue :
+
+- `PreviewProgress` contient `campaignLevels` et `completedLessons` ;
+- chaque niveau campagne prepare `requiredSteps: 3` ;
+- finir la lecon campagne du niveau 1 ajoute +10 XP et avance un palier jusqu'a 3/3 ;
+- finir une quete journaliere ajoute +10 XP une seule fois par identifiant de quete ;
+- les anciens profils invites sont normalises au chargement pour rester compatibles ;
+- le streak, les niveaux utilisateur et la progression pedagogique des niveaux 2+ restent pour l'etape suivante.
