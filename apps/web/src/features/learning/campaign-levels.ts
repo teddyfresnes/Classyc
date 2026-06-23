@@ -1,5 +1,9 @@
 import type { CampaignLevel, CampaignLevelProgress, CampaignLevelReward, CampaignLevelState, PreviewProgress } from '@classyc/shared';
-import { getCampaignLevelProgress } from '@/features/learning/progress';
+import {
+	dailyCampaignBoostMultiplier,
+	getCampaignLevelProgress,
+	getDailyCampaignBoostLessonId
+} from '@/features/learning/progress';
 
 export interface CampaignLevelMapNode extends CampaignLevel {
 	label: string;
@@ -27,7 +31,6 @@ export const campaignLevels: readonly CampaignLevelMapNode[] = [
 		x: 180,
 		y: 72,
 		state: 'available',
-		reward: createXpMultiplierReward(1.5),
 		openMojiHexcode: '1F3AF'
 	},
 	{
@@ -148,6 +151,9 @@ export function createCampaignLevelsForProgress(progress: PreviewProgress) {
 		return {
 			...level,
 			progress: levelProgress,
+			reward: state === 'available' && !progress.completedLessons[getDailyCampaignBoostLessonId(level.id)]
+				? createXpMultiplierReward(dailyCampaignBoostMultiplier)
+				: undefined,
 			state
 		};
 	});

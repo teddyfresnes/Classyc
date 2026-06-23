@@ -2,6 +2,7 @@ import type {
 	DailyLevel,
 	DailyLevelDifficultyTier,
 	DailyLevelReward,
+	PreviewProgress,
 	SupportedLanguageCode
 } from '@classyc/shared';
 
@@ -75,29 +76,39 @@ const dailyLevelTemplates: readonly DailyLevelTemplate[] = [
 
 const dailyQuestCount = 2;
 
-export function createDailyLevels(language: SupportedLanguageCode, date = new Date()): readonly DailyLevel[] {
+export function createDailyLevels(
+	language: SupportedLanguageCode,
+	date = new Date(),
+	progress?: PreviewProgress
+): readonly DailyLevel[] {
 	const rotationKey = getDailyRotationKey(date);
 	const rotationIndex = getDailyRotationIndex(rotationKey);
 
 	return Array.from({ length: dailyQuestCount }, (_, index) => {
 		const template = dailyLevelTemplates[(rotationIndex + index) % dailyLevelTemplates.length];
+		const id = `${template.id}-${rotationKey}`;
+		const isCompleted = Boolean(progress?.completedLessons[id]);
 
 		return {
-			id: `${template.id}-${rotationKey}`,
+			id,
 			order: index + 1,
 			title: template.titles[language],
 			difficulty: template.difficulty,
 			targetCount: template.targetCount,
-			completedCount: 0,
+			completedCount: isCompleted ? template.targetCount : 0,
 			rotationKey,
-			reward: index === 0 ? createDailyXpMultiplierReward(1.5) : undefined,
+			reward: index === 0 && !isCompleted ? createDailyXpMultiplierReward(1.5) : undefined,
 			openMojiHexcode: template.openMojiHexcode
 		};
 	});
 }
 
-export function createDailyQuests(language: SupportedLanguageCode, date = new Date()): readonly DailyQuestPreview[] {
-	return createDailyLevels(language, date).map(createDailyQuestPreview);
+export function createDailyQuests(
+	language: SupportedLanguageCode,
+	date = new Date(),
+	progress?: PreviewProgress
+): readonly DailyQuestPreview[] {
+	return createDailyLevels(language, date, progress).map(createDailyQuestPreview);
 }
 
 export function getDailyLevelRewardLabel(reward: DailyLevelReward) {

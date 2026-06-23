@@ -49,6 +49,8 @@ export type ExerciseType =
 	| 'imageChoice'
 	| 'wordOrder';
 
+export type ExercisePresentation = 'conversation' | 'translation';
+
 export interface ExercisePronunciationHint {
 	pinyin: string;
 	meaning?: string;
@@ -66,6 +68,7 @@ export interface ExerciseBase {
 	type: ExerciseType;
 	prompt: string;
 	instruction?: string;
+	presentation?: ExercisePresentation;
 	potentialXp: number;
 	openMojiHexcode?: string;
 	pronunciationHint?: ExercisePronunciationHint;

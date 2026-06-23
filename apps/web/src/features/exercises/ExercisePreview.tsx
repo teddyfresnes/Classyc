@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { defaultOpenPeepCustomization } from '@classyc/shared';
 import type {
 	ExerciseAnswer,
 	ExerciseEvaluation,
@@ -6,12 +7,16 @@ import type {
 	ExercisePronunciationHint,
 	ImageChoiceExercise,
 	LearningExercise,
+	MultipleChoiceExercise,
+	OpenPeepCustomization,
 	MatchingExercise,
 	ReadingComprehensionExercise,
 	ReadingComprehensionQuestion,
 	WordOrderExercise
 } from '@classyc/shared';
+import { openPeepAtomAssets } from '@/assets/open-peeps-atoms';
 import { resolveOpenMojiIconSrc } from '@/assets/openmoji';
+import { OpenPeepComposer } from '@/features/character/OpenPeepComposer';
 import type { ExerciseDeckCopy } from './exercise-copy';
 
 interface ExercisePreviewProps {
@@ -29,20 +34,25 @@ type MatchSelection = { id: string; side: 'left' | 'right' };
 export function ExercisePreview({ answer, copy, evaluation, exercise, onAnswerChange }: ExercisePreviewProps) {
 	const writableAnswerChange = evaluation ? undefined : onAnswerChange;
 	const title = getExerciseTitle(exercise, copy);
-	const instruction = getExerciseInstruction(exercise, copy);
+	const instruction = getExerciseInstruction(exercise);
+	const useInlineTranslationHeader = isInlineTranslationExercise(exercise);
 
 	return (
-		<section className="exercise-preview" aria-label={title}>
-			<header className="exercise-preview__header">
-				{exercise.openMojiHexcode ? (
-					<OpenMojiPicture className="exercise-preview__icon" hexcode={exercise.openMojiHexcode} />
-				) : null}
-				<div className="min-w-0">
-					<h2 className="exercise-preview__prompt">{title}</h2>
-					{instruction ? <p className="exercise-preview__instruction">{instruction}</p> : null}
-					{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
-				</div>
-			</header>
+		<section
+			aria-label={title}
+			className="exercise-preview"
+			data-presentation={exercise.presentation}
+			data-type={exercise.type}
+		>
+			{useInlineTranslationHeader ? null : (
+				<header className="exercise-preview__header">
+					<div className="exercise-preview__header-copy">
+						<h2 className="exercise-preview__prompt">{title}</h2>
+						{instruction ? <p className="exercise-preview__instruction">{instruction}</p> : null}
+						{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
+					</div>
+				</header>
+			)}
 
 			<div className="exercise-preview__body">
 				{renderExerciseBody(exercise, answer, writableAnswerChange, evaluation, copy)}
@@ -60,30 +70,44 @@ function renderExerciseBody(
 ) {
 	switch (exercise.type) {
 		case 'multipleChoice':
+			if (exercise.presentation === 'translation') {
+				return (
+					<TranslationChoiceExerciseBody
+						answer={answer}
+						copy={copy}
+						evaluation={evaluation}
+						exercise={exercise}
+						onAnswerChange={onAnswerChange}
+					/>
+				);
+			}
+
+			if (exercise.presentation === 'conversation') {
+				return (
+					<ConversationChoiceExerciseBody
+						answer={answer}
+						evaluation={evaluation}
+						exercise={exercise}
+						onAnswerChange={onAnswerChange}
+					/>
+				);
+			}
+
 			return (
-				<OptionList
-					answer={answer?.type === 'multipleChoice' ? answer.optionId : undefined}
-					onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
-					optionStates={getChoiceOptionStates(
-						answer?.type === 'multipleChoice' ? answer.optionId : undefined,
-						exercise.correctOptionId,
-						evaluation
-					)}
-					options={exercise.options}
-					readOnly={!onAnswerChange}
+				<PromptChoiceExerciseBody
+					answer={answer}
+					evaluation={evaluation}
+					exercise={exercise}
+					onAnswerChange={onAnswerChange}
 				/>
 			);
 		case 'fillBlank':
 			return (
-				<input
-					aria-label={exercise.prompt}
-					className="exercise-text-input"
-					data-state={getTextInputState(answer, evaluation)}
-					onChange={(event) => onAnswerChange?.({ exerciseId: exercise.id, type: 'fillBlank', value: event.target.value })}
-					placeholder={exercise.placeholder}
-					readOnly={!onAnswerChange}
-					type="text"
-					value={answer?.type === 'fillBlank' ? answer.value : ''}
+				<FillBlankExerciseBody
+					answer={answer}
+					evaluation={evaluation}
+					exercise={exercise}
+					onAnswerChange={onAnswerChange}
 				/>
 			);
 		case 'trueFalse':
@@ -162,7 +186,7 @@ function OptionList({
 	}[];
 	readOnly: boolean;
 	shortcutStart?: number;
-	variant?: 'binary';
+	variant?: 'binary' | 'conversation' | 'translation';
 }) {
 	useEffect(() => {
 		if (readOnly) {
@@ -190,8 +214,13 @@ function OptionList({
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, [onAnswerChange, options, readOnly, shortcutStart]);
 
+	const listClassName = [
+		'exercise-option-list',
+		variant ? `exercise-option-list--${variant}` : ''
+	].filter(Boolean).join(' ');
+
 	return (
-		<div className={`exercise-option-list${variant === 'binary' ? ' exercise-option-list--binary' : ''}`}>
+		<div className={listClassName}>
 			{options.map((option, index) => {
 				const state = optionStates?.[option.id] ?? (answer === option.id ? 'selected' : 'idle');
 
@@ -216,6 +245,138 @@ function OptionList({
 					</button>
 				);
 			})}
+		</div>
+	);
+}
+
+function PromptChoiceExerciseBody({
+	answer,
+	evaluation,
+	exercise,
+	onAnswerChange
+}: {
+	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
+	exercise: MultipleChoiceExercise;
+	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
+}) {
+	const selectedOptionId = answer?.type === 'multipleChoice' ? answer.optionId : undefined;
+
+	return (
+		<div className="exercise-choice-body">
+			{exercise.prompt ? (
+				<p className="exercise-target-prompt">{exercise.prompt}</p>
+			) : null}
+			<OptionList
+				answer={selectedOptionId}
+				onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
+				optionStates={getChoiceOptionStates(selectedOptionId, exercise.correctOptionId, evaluation)}
+				options={exercise.options}
+				readOnly={!onAnswerChange}
+			/>
+		</div>
+	);
+}
+
+function FillBlankExerciseBody({
+	answer,
+	evaluation,
+	exercise,
+	onAnswerChange
+}: {
+	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
+	exercise: Extract<LearningExercise, { type: 'fillBlank' }>;
+	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
+}) {
+	return (
+		<div className="exercise-choice-body">
+			{exercise.prompt ? (
+				<p className="exercise-target-prompt">{exercise.prompt}</p>
+			) : null}
+			<input
+				aria-label={exercise.prompt}
+				className="exercise-text-input"
+				data-state={getTextInputState(answer, evaluation)}
+				onChange={(event) => onAnswerChange?.({ exerciseId: exercise.id, type: 'fillBlank', value: event.target.value })}
+				placeholder={exercise.placeholder}
+				readOnly={!onAnswerChange}
+				type="text"
+				value={answer?.type === 'fillBlank' ? answer.value : ''}
+			/>
+		</div>
+	);
+}
+
+function TranslationChoiceExerciseBody({
+	answer,
+	copy,
+	evaluation,
+	exercise,
+	onAnswerChange
+}: {
+	answer: ExerciseAnswer | undefined;
+	copy: ExerciseDeckCopy;
+	evaluation: ExerciseEvaluation | undefined;
+	exercise: MultipleChoiceExercise;
+	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
+}) {
+	const selectedOptionId = answer?.type === 'multipleChoice' ? answer.optionId : undefined;
+
+	return (
+		<div className="exercise-translation">
+			<div className="exercise-translation__question">
+				<div className="exercise-translation__copy">
+					<p className="exercise-translation__prompt">{copy.translation.choiceTitle}</p>
+					<div className="exercise-translation__word" aria-label={`${copy.translation.wordLabel}: ${exercise.prompt}`}>
+						<span>{exercise.prompt}</span>
+					</div>
+					{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
+				</div>
+				<ExercisePeepIllustration exercise={exercise} variant="translation" />
+			</div>
+			<div className="exercise-translation__options">
+				<OptionList
+					answer={selectedOptionId}
+					onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
+					optionStates={getChoiceOptionStates(selectedOptionId, exercise.correctOptionId, evaluation)}
+					options={exercise.options}
+					readOnly={!onAnswerChange}
+					variant="translation"
+				/>
+			</div>
+		</div>
+	);
+}
+
+function ConversationChoiceExerciseBody({
+	answer,
+	evaluation,
+	exercise,
+	onAnswerChange
+}: {
+	answer: ExerciseAnswer | undefined;
+	evaluation: ExerciseEvaluation | undefined;
+	exercise: MultipleChoiceExercise;
+	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
+}) {
+	const selectedOptionId = answer?.type === 'multipleChoice' ? answer.optionId : undefined;
+
+	return (
+		<div className="exercise-conversation">
+			<div className="exercise-conversation__thread">
+				<div className="exercise-conversation__bubble">
+					<span>{exercise.prompt}</span>
+				</div>
+			</div>
+			<OptionList
+				answer={selectedOptionId}
+				onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
+				optionStates={getChoiceOptionStates(selectedOptionId, exercise.correctOptionId, evaluation)}
+				options={exercise.options}
+				readOnly={!onAnswerChange}
+				variant="conversation"
+			/>
 		</div>
 	);
 }
@@ -309,12 +470,21 @@ function MatchingExerciseBody({
 			return;
 		}
 
+		if (isCorrectMatchLocked(selection)) {
+			return;
+		}
+
 		if (activeSelection?.side === selection.side && activeSelection.id === selection.id) {
 			setActiveSelection(null);
 			return;
 		}
 
 		if (activeSelection && activeSelection.side !== selection.side) {
+			if (isCorrectMatchLocked(activeSelection)) {
+				setActiveSelection(null);
+				return;
+			}
+
 			const leftId = activeSelection.side === 'left' ? activeSelection.id : selection.id;
 			const rightId = activeSelection.side === 'right' ? activeSelection.id : selection.id;
 
@@ -326,16 +496,27 @@ function MatchingExerciseBody({
 		setActiveSelection(selection);
 	}
 
+	function isCorrectMatchLocked(selection: MatchSelection) {
+		if (selection.side === 'left') {
+			return matchedRightByLeftId[selection.id] === correctRightByLeftId[selection.id];
+		}
+
+		const matchedLeftId = matchedLeftByRightId[selection.id];
+
+		return Boolean(matchedLeftId && correctRightByLeftId[matchedLeftId] === selection.id);
+	}
+
 	return (
 		<div className="exercise-matching" aria-label={exercise.prompt}>
 			<div className="exercise-matching__column">
 				{exercise.pairs.map((pair, index) => {
 					const isActive = activeSelection?.side === 'left' && activeSelection.id === pair.left.id;
 					const matchedRightId = matchedRightByLeftId[pair.left.id];
+					const isLocked = isCorrectMatchLocked({ id: pair.left.id, side: 'left' });
 
 					return (
 						<MatchButton
-							disabled={!onAnswerChange}
+							disabled={!onAnswerChange || isLocked}
 							item={pair.left}
 							key={pair.left.id}
 							onClick={() => chooseMatchItem({ id: pair.left.id, side: 'left' })}
@@ -350,10 +531,11 @@ function MatchingExerciseBody({
 					const matchedLeftId = matchedLeftByRightId[item.id];
 					const isActive = activeSelection?.side === 'right' && activeSelection.id === item.id;
 					const correctRightId = matchedLeftId ? correctRightByLeftId[matchedLeftId] : undefined;
+					const isLocked = isCorrectMatchLocked({ id: item.id, side: 'right' });
 
 					return (
 						<MatchButton
-							disabled={!onAnswerChange}
+							disabled={!onAnswerChange || isLocked}
 							item={item}
 							key={item.id}
 							onClick={() => chooseMatchItem({ id: item.id, side: 'right' })}
@@ -380,10 +562,13 @@ function MatchButton({
 	shortcutNumber: number;
 	state: MatchCardState;
 }) {
+	const isImageOnly = Boolean(item.openMojiHexcode);
+
 	return (
 		<button
+			aria-label={formatOptionAccessibleLabel(item.label, item.pronunciationHint)}
 			aria-pressed={state !== 'idle'}
-			className="exercise-match-card"
+			className={`exercise-match-card${isImageOnly ? ' exercise-match-card--image' : ''}`}
 			data-state={state}
 			disabled={disabled}
 			onClick={onClick}
@@ -391,6 +576,7 @@ function MatchButton({
 			type="button"
 		>
 			<OptionLabel
+				imageOnly={isImageOnly}
 				label={item.label}
 				openMojiHexcode={item.openMojiHexcode}
 				pronunciationHint={item.pronunciationHint}
@@ -670,16 +856,36 @@ function getMatchState(matchedRightId: string | undefined, correctRightId: strin
 }
 
 function getExerciseTitle(exercise: LearningExercise, copy: ExerciseDeckCopy) {
-	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
-		return exercise.prompt || copy.typeInstructions[exercise.type];
+	if (exercise.presentation === 'conversation') {
+		return copy.typeInstructions.multipleChoice;
 	}
 
-	return copy.typeInstructions[exercise.type];
+	if (exercise.presentation === 'translation') {
+		return exercise.type === 'matching' ? copy.translation.matchTitle : copy.translation.choiceTitle;
+	}
+
+	if (exercise.type === 'matching' && hasImageMatchItems(exercise)) {
+		return copy.imageMatchTitle;
+	}
+
+	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
+		return copy.typeInstructions[exercise.type];
+	}
+
+	return exercise.prompt || copy.typeInstructions[exercise.type];
 }
 
-function getExerciseInstruction(exercise: LearningExercise, copy: ExerciseDeckCopy) {
+function hasImageMatchItems(exercise: MatchingExercise) {
+	return exercise.pairs.some((pair) => Boolean(pair.left.openMojiHexcode || pair.right.openMojiHexcode));
+}
+
+function getExerciseInstruction(exercise: LearningExercise) {
+	if (exercise.presentation === 'conversation' || exercise.presentation === 'translation') {
+		return undefined;
+	}
+
 	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
-		return exercise.prompt ? copy.typeInstructions[exercise.type] : undefined;
+		return undefined;
 	}
 
 	return undefined;
@@ -695,11 +901,13 @@ function PronunciationHint({ hint }: { hint: ExercisePronunciationHint }) {
 }
 
 function OptionLabel({
+	imageOnly = false,
 	label,
 	openMojiHexcode,
 	pronunciationHint,
 	shortcutNumber
 }: {
+	imageOnly?: boolean;
 	label: string;
 	openMojiHexcode?: string;
 	pronunciationHint?: ExercisePronunciationHint;
@@ -713,7 +921,7 @@ function OptionLabel({
 				</span>
 			) : null}
 			{openMojiHexcode ? <OpenMojiPicture className="exercise-option__icon" hexcode={openMojiHexcode} /> : null}
-			<span className="exercise-option__text">
+			<span className={`exercise-option__text${imageOnly ? ' sr-only' : ''}`}>
 				<span>{label}</span>
 				{pronunciationHint ? (
 					<span className="exercise-option__hint" aria-hidden="true">
@@ -742,6 +950,177 @@ function OpenMojiPicture({
 			src={resolveOpenMojiIconSrc(hexcode)}
 		/>
 	);
+}
+
+type PeepIllustrationVariant = 'translation';
+
+function ExercisePeepIllustration({
+	exercise,
+	variant
+}: {
+	exercise: LearningExercise;
+	variant: PeepIllustrationVariant;
+}) {
+	const customization = useMemo(() => createExercisePeepCustomization(exercise), [exercise]);
+
+	return (
+		<figure className={`exercise-peep-illustration exercise-peep-illustration--${variant}`} aria-hidden="true">
+			<OpenPeepComposer
+				className="exercise-peep-illustration__figure"
+				customization={customization}
+			/>
+		</figure>
+	);
+}
+
+const monochromePeepPalettes = [
+	{
+		skin: '#F8FAFC',
+		hair: '#111827',
+		outfit: '#FFFFFF',
+		outfitSecondary: '#111827',
+		accessory: '#111827'
+	},
+	{
+		skin: '#E5E7EB',
+		hair: '#030712',
+		outfit: '#D1D5DB',
+		outfitSecondary: '#FFFFFF',
+		accessory: '#374151'
+	},
+	{
+		skin: '#F3F4F6',
+		hair: '#374151',
+		outfit: '#111827',
+		outfitSecondary: '#F9FAFB',
+		accessory: '#111827'
+	}
+] as const;
+
+function createExercisePeepCustomization(exercise: LearningExercise): OpenPeepCustomization {
+	const seed = hashString(exercise.id);
+	const palette = pickItem(monochromePeepPalettes, seed + 13);
+	const preset = getExercisePeepPreset(exercise);
+
+	return {
+		...defaultOpenPeepCustomization,
+		bodyId: preset.bodyId ?? pickAtomId('body', seed + 1),
+		headId: preset.headId ?? 'Short 4',
+		faceId: preset.faceId ?? pickAtomId('face', seed + 3),
+		facialHairId: preset.facialHairId ?? '_ None',
+		accessoryId: preset.accessoryId ?? '_ None',
+		postureMode: 'bust',
+		standingPoseId: pickAtomId('standingPose', seed + 7),
+		sittingPoseId: pickAtomId('sittingPose', seed + 8),
+		colors: {
+			...defaultOpenPeepCustomization.colors,
+			...palette,
+			background: '#F8FAFC',
+			ink: '#111827'
+		}
+	};
+}
+
+function getExercisePeepPreset(exercise: LearningExercise): Partial<OpenPeepCustomization> {
+	const concept = getExerciseConceptHint(exercise);
+
+	if (concept === 'thanks') {
+		return {
+			bodyId: 'Coffee',
+			faceId: 'Loving Grin 1'
+		};
+	}
+
+	if (concept === 'no') {
+		return {
+			bodyId: 'Tee Arms Crossed',
+			faceId: 'Serious'
+		};
+	}
+
+	if (concept === 'yes') {
+		return {
+			bodyId: 'Pointing Up',
+			faceId: 'Smile Big'
+		};
+	}
+
+	if (concept === 'hello' || concept === 'hi' || concept === 'goodbye') {
+		return {
+			bodyId: 'Explaining',
+			faceId: 'Smile Big'
+		};
+	}
+
+	return {
+		bodyId: 'Explaining',
+		faceId: 'Smile'
+	};
+}
+
+function getExerciseConceptHint(exercise: LearningExercise) {
+	const signature = `${exercise.id} ${exercise.prompt}`.toLowerCase();
+
+	if (signature.includes('thanks') || signature.includes('merci')) {
+		return 'thanks';
+	}
+
+	if (signature.includes('goodbye') || signature.includes('au-revoir') || signature.includes('bye')) {
+		return 'goodbye';
+	}
+
+	if (signature.includes('hello') || signature.includes('bonjour')) {
+		return 'hello';
+	}
+
+	if (signature.includes('hi') || signature.includes('salut')) {
+		return 'hi';
+	}
+
+	if (signature.includes('yes') || signature.includes('oui')) {
+		return 'yes';
+	}
+
+	if (signature.includes('no') || signature.includes('non')) {
+		return 'no';
+	}
+
+	return null;
+}
+
+function isInlineTranslationExercise(exercise: LearningExercise) {
+	return exercise.presentation === 'translation' && exercise.type === 'multipleChoice';
+}
+
+function pickAtomId(category: keyof typeof openPeepAtomAssets, seed: number) {
+	const assets = openPeepAtomAssets[category];
+
+	return pickItem(assets, seed)?.id ?? defaultOpenPeepCustomization[defaultAtomIdKeyByCategory[category]];
+}
+
+const defaultAtomIdKeyByCategory = {
+	accessories: 'accessoryId',
+	body: 'bodyId',
+	face: 'faceId',
+	facialHair: 'facialHairId',
+	head: 'headId',
+	sittingPose: 'sittingPoseId',
+	standingPose: 'standingPoseId'
+} as const;
+
+function pickItem<T>(items: readonly T[], seed: number) {
+	return items[Math.abs(seed) % items.length];
+}
+
+function hashString(value: string) {
+	let hash = 2166136261;
+
+	for (let index = 0; index < value.length; index += 1) {
+		hash ^= value.charCodeAt(index);
+		hash = Math.imul(hash, 16777619);
+	}
+
+	return hash >>> 0;
 }
 
 function getShortcutNumberFromKey(event: KeyboardEvent) {

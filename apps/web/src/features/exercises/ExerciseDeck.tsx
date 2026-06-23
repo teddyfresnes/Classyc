@@ -65,7 +65,7 @@ export function ExerciseDeck({
 				return;
 			}
 
-			if (isNativeButtonTarget(event.target)) {
+			if (event.key === ' ' && isNativeButtonTarget(event.target)) {
 				return;
 			}
 

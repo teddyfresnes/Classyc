@@ -14,6 +14,16 @@ Statut : terminee.
 
 Derniere etape appliquee :
 
+- Correction feedback exercices visuels/clavier appliquee le 2026-06-23 : les paires de matching correctes deviennent verrouillees en vert et ne peuvent plus etre deselectionnees au clic ni aux raccourcis clavier.
+- La touche `Entree` valide l'exercice des que la reponse est complete, meme si le focus est sur une option, puis passe a l'exercice suivant apres feedback.
+- Les OpenMoji ne sont plus affiches avant la consigne dans le header d'exercice ; ils restent utilises dans les exercices d'image et les options illustrees pour faire deviner un mot.
+- `ExercisePreview` rend les exercices de traduction simple avec un layout dedie : consigne plus discrete, mot cible juste sous la consigne en texte primaire/blanc sans gros encadre, options separees et Open Peep monochrome ancre a droite du meme bloc, sans fond.
+- Les associations d'image affichent uniquement l'illustration OpenMoji du cote image avec les memes cartes alignees que les associations texte ; les associations de traduction restent texte contre texte.
+- Le feedback correct/incorrect est affiche en texte colore sans fond.
+- Le ruban de section reste sans drapeau, et l'etat actif de la sidebar reprend le bleu du logo/ruban avec texte blanc en theme sombre.
+- La map remplace les trois pips de palier par un indicateur `x/3`, rend les niveaux termines en vert avec check, et le bonus `1.5x` campagne est quotidien global : il disparait apres une lecon faite le meme jour.
+- Les exercices de presentation `conversation` sont identifies par le modele partage et rendus avec une bulle de dialogue dediee, notamment pour `How are you?` / `Ca va ?`.
+- Verification Chrome headless via DevTools Protocol : OpenMoji absent du header, Open Peeps absent du matching et de la conversation mais present sur traduction simple pres de la consigne, cartes image/texte equilibrees, `Entree` valide puis continue, paire `Hello` / `Bonjour` verrouillee apres clic et touches numeriques, conversation desktop/mobile sans overflow.
 - Correction feedback exercices approfondie appliquee le 2026-06-23 : le bouton `Recommencer`/`Rejouer` est retire, `Valider` devient `Continuer` ou `Terminer`, et le feedback est affiche pres du bouton.
 - `ExerciseDeck` utilise maintenant une file de session : une reponse fausse ou partielle remet l'exercice en fin de lecon au lieu de bloquer ou de relancer toute la session.
 - `ExercisePreview` expose des etats visuels forts : selection bleue, bonne reponse verte, erreur rouge, verrouillage apres validation.
@@ -23,8 +33,8 @@ Derniere etape appliquee :
 - Le niveau 1 est maintenant pilote par `apps/web/src/features/exercises/levels/campaign-intro.json`, avec 3 variantes distinctes choisies selon le palier courant et des options/tokens melanges de facon stable.
 - Les illustrations OpenMoji de la premiere lecon evitent l'icone de priere pour `merci` et privilegient les pictos directs (`salut`, `oui`, `non`, personnage, lecture).
 - Le profil invite local ajoute `campaignLevels` et `completedLessons`; les anciens profils sont normalises au chargement.
-- Chaque niveau campagne porte une base de 3 paliers. Finir la lecon du niveau 1 donne +10 XP et avance un palier jusqu'a 3/3 ; une quete journaliere donne +10 XP une seule fois par identifiant.
-- La map affiche les paliers par trois pips sous les pastilles de niveau.
+- Chaque niveau campagne porte une base de 3 paliers. Finir une lecon donne +10 XP, ou +15 XP quand le bonus quotidien `1.5x` campagne est encore disponible, et avance un palier jusqu'a 3/3 ; une quete journaliere donne +10 XP une seule fois par identifiant.
+- La map affiche les paliers par un indicateur compact `x/3` sur le niveau courant, et un check vert quand un niveau est termine.
 - Verification Edge headless ciblee : consigne francaise, absence de bouton restart, mauvaise reponse rouge + bonne reponse verte, bouton `Continuer`, matching annulable et rouge en cas d'erreur, compteur `1 a revoir`.
 - Verification finale : `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check` et verification runtime Vite SSR des 3 variantes OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 - Limite de verification : les scripts CDP de parcours complet/clavier ont expire ou sont devenus instables ; refaire une verification visuelle complete de l'ecran final et des raccourcis avec Playwright dedie ou manuellement si possible.
@@ -152,7 +162,7 @@ Garde-fous UX conserves :
 - Profil bas de sidebar neutre sur `/profile` : pas d'etat selected interieur.
 - Learn path : route courbe et pastilles dans un SVG unique, sans icones de niveaux ni faux socle bleu.
 - Le bonus `1.5x` peut apparaitre uniquement comme propriete `reward` d'un vrai niveau campagne ou journalier ; ne pas l'ajouter comme decoration libre.
-- Les items selected de sidebar gardent le texte blanc.
+- Les items selected de sidebar utilisent le meme bleu que le logo/ruban, avec le contraste gere par variable selon le theme.
 - Ne pas remettre le bouton `Suivant` dans le ruban tant qu'il n'a pas de vraie action.
 - Sur desktop, garder le scroll de la colonne map separe du scroll des quetes.
 - Animations sobres via Framer Motion et `MotionConfig reducedMotion="user"`.

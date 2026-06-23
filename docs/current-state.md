@@ -75,7 +75,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Sur desktop, la colonne `Apprendre` et les quêtes journalières scrollent indépendamment.
 - Palette clair/sombre réorientée vers un bleu sobre, sans effets fluo ni dégradés décoratifs.
 - Shell desktop en hauteur écran fixe : la sidebar ne scrolle pas, le contenu central utilise `overflow-y: auto`.
-- Polish UI shell : header sans trait inférieur dur, chips de progression sans bordures visibles, navigation sidebar sur la couleur accent sans glow, et quêtes journalières en colonne légère.
+- Polish UI shell : header sans trait inférieur dur, chips de progression sans bordures visibles, navigation sidebar sur la même couleur accent que le logo/ruban, et quêtes journalières en colonne légère.
 - Le bloc profil en bas de sidebar n'affiche pas d'état `active` partiel ; il reste neutre même sur `/profile`.
 - Le logo, la progression du header et les actions principales ne sélectionnent pas de texte au glisser.
 - Logo Classyc partagé entre onboarding et shell avec police locale Fredoka.
@@ -157,6 +157,12 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - `ExercisePreview` affiche les etats de reponse : selection en bleu, bonne reponse en vert, erreur en rouge, avec verrouillage apres validation.
 - L'exercice de matching marque les associations correctes en vert et incorrectes en rouge en temps reel ; recliquer sur un element actif annule la selection, et l'association peut commencer par la colonne de droite ou par la colonne de gauche.
 - Les options, cartes de matching et mots disponibles affichent un petit carre de raccourci (`1`, `2`, `3`, etc.) ; les touches numeriques selectionnent l'element correspondant, et `Entree`/`Espace` valide ou continue quand l'action principale est disponible.
+- Correction feedback exercices visuels/clavier 2026-06-23 : les paires de matching correctes sont verrouillees en vert et ne peuvent plus etre deselectionnees au clic ni via les raccourcis numeriques ; `Entree` valide ou continue meme quand le focus reste sur une option.
+- Les OpenMoji ne sont plus affiches dans le header avant la consigne ; ils restent utilises dans les exercices d'image et les options illustrees. Les Open Peeps monochromes sont limites aux exercices de traduction simple, places pres de la consigne, sans fond ni panneau decoratif.
+- Les exercices de traduction simple affichent une consigne plus discrete et le mot cible juste dessous en texte primaire/blanc sans gros encadre ; l'Open Peep monochrome est ancre a droite du meme bloc sans fond. Les associations de traduction sont titrees comme traductions, et les associations d'image affichent uniquement les illustrations cote image avec les memes cartes alignees que les associations texte.
+- Les messages de feedback correct/incorrect sont des textes colores sans fond.
+- La map affiche le palier courant sous forme `x/3`, les niveaux termines deviennent verts avec un check, et le bonus campagne `1.5x` est globalement quotidien : une fois consomme, il disparait jusqu'au lendemain.
+- Les exercices de type `conversation` sont marques dans le modele partage via `presentation: 'conversation'` et rendus avec une bulle de dialogue distincte, par exemple pour `How are you?` / `Ca va ?`.
 - La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes/boutons/messages dans la langue utilisateur, mots/phrases d'exercice dans la langue apprise.
 - Le niveau campagne `campaign-intro` est pilote par `apps/web/src/features/exercises/levels/campaign-intro.json`, avec 3 variantes de lecon distinctes et des options/tokens melanges de facon stable.
 - Les exercices illustres de la premiere lecon evitent l'icone OpenMoji de priere pour `merci` ; les images restantes sont directes (`salut`, `oui`, `non`, personnage, lecture).
@@ -378,11 +384,15 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification Edge headless via DevTools Protocol sur `/exercises/en` avec profil francophone : pas de `Recommencer`/`Rejouer`, premiere consigne en francais, reponse fausse affiche `Pas grave, on le remet a la fin.`, option correcte en vert, option fausse en rouge, bouton `Continuer`, matching en francais avec selection annulable et association fausse rouge, compteur `1 a revoir`.
 - Verification longue de fin de lecon tentee via CDP ; la session headless est devenue instable pendant le script complet, donc la validation visuelle complete de l'ecran final reste a refaire manuellement ou avec un runner Playwright dedie.
 - Verification CDP clavier/preview retentee apres cette reprise ; Edge headless a charge les modules Vite mais les scripts de parcours ont expire dans cette session, donc la validation visuelle des raccourcis reste a refaire manuellement ou avec Playwright installe.
+- Correction feedback visuel/clavier : suppression des OpenMoji du header de consigne, layout de traduction dedie avec Open Peep pres de la consigne, association image-only, feedback sans fond, map `x/3` + check vert, bonus `1.5x` campagne quotidien global, presentation `conversation` avec bulle dediee sobre, matching vert verrouille au clic et au clavier, et `Entree` prioritaire pour valider/continuer.
+- Verification Chrome headless via DevTools Protocol sur `http://127.0.0.1:5176/` : OpenMoji absent du header, Open Peep absent du matching et de la conversation mais present sur traduction simple, feedback incorrect sans fond, association image sans texte visible cote image, bonus `1.5x` masque apres consommation quotidienne, niveau termine avec check vert, traduction mobile 390x844 sans overflow horizontal.
+- Reprise feedback design exercices : consignes reduites et grisees, mots cibles plus sobres et proches de la consigne, Open Peep de traduction ancre a droite du bloc question, cartes d'association image alignees comme les cartes texte, item actif de sidebar aligne sur le bleu du logo/ruban avec texte blanc, drapeau retire du ruban de section.
+- Verification Chrome headless via DevTools Protocol : traduction desktop/mobile sans overflow, Open Peep dans le bloc question sans fond, cartes image/texte a hauteur et structure coherentes, sidebar active `rgb(96, 165, 250)` comme le ruban avec texte blanc, aucun drapeau de section dans le ruban.
 - `npm run typecheck` : OK.
 - `npm run lint` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.
 - `git diff --check` : OK avec avertissements CRLF/LF attendus.
-- Serveur Vite frais lance sur `http://127.0.0.1:5174/`, status HTTP 200.
+- Serveur Vite frais lance sur `http://127.0.0.1:5176/`, status HTTP 200.
 
 ## Reprise
 

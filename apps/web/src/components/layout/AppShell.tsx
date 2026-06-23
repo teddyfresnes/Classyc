@@ -368,7 +368,7 @@ function StreakMark() {
 
 function LearningHome({ profile }: { profile: GuestProfile }) {
 	const summary = getLearningSummary(profile);
-	const quests = createDailyQuests(profile.nativeLanguage);
+	const quests = createDailyQuests(profile.nativeLanguage, undefined, profile.progress);
 	const campaignLevels = createCampaignLevelsForProgress(profile.progress);
 	const campaignProgress = getCampaignMapProgressPercent(campaignLevels);
 	const exercisePath = `/exercises/${profile.targetLanguage}`;
@@ -384,7 +384,9 @@ function LearningHome({ profile }: { profile: GuestProfile }) {
 				<div className="unit-ribbon">
 					<div className="min-w-0">
 						<p className="text-xs font-black uppercase tracking-[0.12em] text-white/80">Section 1</p>
-						<h1 className="truncate text-2xl font-black text-white sm:text-3xl">{summary.mapTitle}</h1>
+						<h1 className="unit-ribbon__title">
+							<span className="truncate">{summary.mapTitle}</span>
+						</h1>
 					</div>
 					<Link className="unit-ribbon__action" to={exercisePath}>
 						Jouer
@@ -434,10 +436,11 @@ function LevelNodeCard({
 	node: CampaignLevelMapNode;
 }) {
 	const accessibleLabel = getCampaignLevelAccessibleLabel(node);
-	const rewardLabel = node.reward ? getCampaignLevelRewardLabel(node.reward) : null;
+	const rewardLabel = node.reward && node.state !== 'completed' ? getCampaignLevelRewardLabel(node.reward) : null;
 	const navigate = useNavigate();
 	const isInteractive = Boolean(exercisePath);
 	const interactiveLabel = isInteractive ? `${accessibleLabel} - ouvrir les exercices` : accessibleLabel;
+	const shouldShowProgress = Boolean(node.progress && node.state === 'available');
 
 	function openExercise() {
 		if (exercisePath) {
@@ -475,21 +478,19 @@ function LevelNodeCard({
 				<title>{interactiveLabel}</title>
 				<circle className="map-node__ring" r="38" />
 				<circle className="map-node__disc" r="29" />
-				<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
-					{node.label}
-				</text>
-				{node.progress ? (
-					<g className="map-node__steps" transform="translate(0 45)">
-						{Array.from({ length: node.progress.requiredSteps }, (_, stepIndex) => (
-							<circle
-								className="map-node__step"
-								data-filled={stepIndex < node.progress!.completedSteps}
-								cx={(stepIndex - ((node.progress!.requiredSteps - 1) / 2)) * 13}
-								cy="0"
-								key={stepIndex}
-								r="4"
-							/>
-						))}
+				{node.state === 'completed' ? (
+					<path className="map-node__check" d="M-11 0 -3 8 13 -11" />
+				) : (
+					<text className="map-node__number" dominantBaseline="central" textAnchor="middle">
+						{node.label}
+					</text>
+				)}
+				{shouldShowProgress && node.progress ? (
+					<g className="map-node__progress" transform="translate(0 45)">
+						<rect height="20" rx="10" width="48" x="-24" y="-10" />
+						<text dominantBaseline="central" textAnchor="middle">
+							{node.progress.completedSteps}/{node.progress.requiredSteps}
+						</text>
 					</g>
 				) : null}
 				{rewardLabel ? (

@@ -23,6 +23,12 @@ export interface ExerciseDeckCopy {
 		thanksQuestion: string;
 		helloQuestion: string;
 	};
+	translation: {
+		choiceTitle: string;
+		matchTitle: string;
+		wordLabel: string;
+	};
+	imageMatchTitle: string;
 	wordOrderAnswer: string;
 	wordOrderPlaceholder: string;
 }
@@ -46,6 +52,12 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			nameQuestion: 'Comment elle s’appelle ?',
 			thanksQuestion: 'Quel mot veut dire merci ?'
 		},
+		translation: {
+			choiceTitle: 'Quel mot veut dire',
+			matchTitle: 'Relie les traductions.',
+			wordLabel: 'Mot a traduire'
+		},
+		imageMatchTitle: "Associe chaque mot a l'image.",
 		retryCount: (count) => `${count} à revoir`,
 		scoreLabel: (score, maxScore) => `${score}/${maxScore}`,
 		trueFalse: {
@@ -84,6 +96,12 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			nameQuestion: 'What is her name?',
 			thanksQuestion: 'Which word means thank you?'
 		},
+		translation: {
+			choiceTitle: 'Which word means',
+			matchTitle: 'Match the translations.',
+			wordLabel: 'Word to translate'
+		},
+		imageMatchTitle: 'Match each word to an image.',
 		retryCount: (count) => `${count} to review`,
 		scoreLabel: (score, maxScore) => `${score}/${maxScore}`,
 		trueFalse: {
@@ -122,6 +140,12 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			nameQuestion: '她叫什么名字？',
 			thanksQuestion: '哪个词表示谢谢？'
 		},
+		translation: {
+			choiceTitle: '\u54ea\u4e2a\u8bcd\u8868\u793a',
+			matchTitle: '\u8fde\u63a5\u7ffb\u8bd1\u3002',
+			wordLabel: '\u8981\u7ffb\u8bd1\u7684\u8bcd'
+		},
+		imageMatchTitle: '\u628a\u8bcd\u548c\u56fe\u7247\u8fde\u8d77\u6765\u3002',
 		retryCount: (count) => `${count} 个待复习`,
 		scoreLabel: (score, maxScore) => `${score}/${maxScore}`,
 		trueFalse: {

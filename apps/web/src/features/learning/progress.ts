@@ -2,6 +2,7 @@ import type { CampaignLevelProgress, GuestProfile, PreviewProgress } from '@clas
 
 export const campaignLevelRequiredSteps = 3;
 export const lessonCompletionXp = 10;
+export const dailyCampaignBoostMultiplier = 1.5;
 
 export type LessonCompletionContext =
 	| {
@@ -62,12 +63,16 @@ export function completeLesson(
 
 	if (context.type === 'campaign') {
 		const currentLevelProgress = getCampaignLevelProgress(progress, context.levelId);
+		const dailyBoostLessonId = getDailyCampaignBoostLessonId(context.levelId, completedAt);
+		const hasDailyBoost = !progress.completedLessons[dailyBoostLessonId];
 		const nextCompletedSteps = Math.min(
 			currentLevelProgress.requiredSteps,
 			currentLevelProgress.completedSteps + 1
 		);
 		const alreadyRewarded = currentLevelProgress.completedSteps >= currentLevelProgress.requiredSteps;
-		const xpAwarded = alreadyRewarded ? 0 : lessonCompletionXp;
+		const xpAwarded = alreadyRewarded
+			? 0
+			: Math.round(lessonCompletionXp * (hasDailyBoost ? dailyCampaignBoostMultiplier : 1));
 		const nextLevelProgress: CampaignLevelProgress = {
 			completedSteps: nextCompletedSteps,
 			requiredSteps: currentLevelProgress.requiredSteps,
@@ -86,7 +91,16 @@ export function completeLesson(
 					campaignLevels: {
 						...progress.campaignLevels,
 						[context.levelId]: nextLevelProgress
-					}
+					},
+					completedLessons: alreadyRewarded
+						? progress.completedLessons
+						: {
+							...progress.completedLessons,
+							[dailyBoostLessonId]: progress.completedLessons[dailyBoostLessonId] ?? {
+								completedAt,
+								xpAwarded
+							}
+						}
 				}
 			},
 			result: {
@@ -123,6 +137,26 @@ export function completeLesson(
 			xpAwarded
 		}
 	};
+}
+
+export function getDailyCampaignBoostLessonId(levelId: string, date: Date | string = new Date()) {
+	void levelId;
+
+	return `campaign-boost:${getLocalDateKey(date)}`;
+}
+
+function getLocalDateKey(date: Date | string) {
+	const value = typeof date === 'string' ? new Date(date) : date;
+
+	if (Number.isNaN(value.getTime())) {
+		return getLocalDateKey(new Date());
+	}
+
+	return [
+		value.getFullYear(),
+		String(value.getMonth() + 1).padStart(2, '0'),
+		String(value.getDate()).padStart(2, '0')
+	].join('-');
 }
 
 function clampRequiredSteps(value: unknown) {

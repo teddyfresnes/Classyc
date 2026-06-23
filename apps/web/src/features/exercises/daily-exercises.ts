@@ -279,6 +279,7 @@ const dailyExerciseContent: Record<
 					id: 'daily-en-sounds-choice',
 					type: 'multipleChoice',
 					prompt: 'How are you?',
+					presentation: 'conversation',
 					potentialXp: 6,
 					openMojiHexcode: '1F642',
 					options: [
@@ -317,6 +318,7 @@ const dailyExerciseContent: Record<
 					id: 'daily-fr-sounds-choice',
 					type: 'multipleChoice',
 					prompt: 'Ça va ?',
+					presentation: 'conversation',
 					potentialXp: 6,
 					openMojiHexcode: '1F642',
 					options: [

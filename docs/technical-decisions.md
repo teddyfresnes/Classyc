@@ -341,13 +341,13 @@ Règles :
 
 Note : les versions avec libellés/doodles visibles, icônes de niveaux provisoires, route/layout séparés ou faux socle bleu ont été rejetées. Garder cette zone calme jusqu'à la vraie étape niveaux.
 
-## D027 - Texte blanc sur navigation active
+## D027 - Navigation active sur la couleur accent
 
-Statut : retenue après feedback utilisateur sur l'Étape 3.
+Statut : retenue après feedback utilisateur sur l'Étape 3, actualisée le 2026-06-23.
 
-Les items actifs de la sidebar et de la navigation mobile utilisent `--nav-active` et `--nav-active-contrast`, avec un texte blanc même en thème sombre.
+Les items actifs de la sidebar et de la navigation mobile utilisent `--nav-active` et `--nav-active-contrast`. Le fond actif suit la couleur accent/logo, y compris en thème sombre, et le texte actif reste blanc en thème sombre pour éviter un contraste noir sur fond bleu.
 
-Raison : le texte noir sur bleu actif a été jugé visuellement incohérent.
+Raison : l'état actif doit être immédiatement reconnaissable comme l'accent de marque sans devenir illisible sur thème sombre. Le contraste du texte reste géré par variable selon le thème.
 
 ## D028 - Scroll indépendant sur Apprendre
 
@@ -593,3 +593,31 @@ Progression locale retenue :
 - finir une quete journaliere ajoute +10 XP une seule fois par identifiant de quete ;
 - les anciens profils invites sont normalises au chargement pour rester compatibles ;
 - le streak, les niveaux utilisateur et la progression pedagogique des niveaux 2+ restent pour l'etape suivante.
+
+## D039 - Differenciation visuelle des exercices
+
+Statut : retenue apres feedback utilisateur du 2026-06-23.
+
+Les exercices doivent rester identifiables rapidement quand l'utilisateur enchaine plusieurs cartes.
+
+Regles retenues :
+
+- `ExerciseBase.presentation` permet de marquer une presentation UX sans creer un nouveau type de correction ;
+- la presentation `conversation` sert aux questions-reponses courtes comme `How are you?` / `Ca va ?` et rend une bulle de dialogue dediee ;
+- les OpenMoji ne sont plus affiches dans le header de consigne, pour eviter un pictogramme decoratif redondant ;
+- les OpenMoji restent utilises pour les exercices ou options qui demandent de deviner un mot depuis une image ;
+- les exercices `presentation: 'translation'` de choix simple affichent la consigne en texte discret, le mot cible juste sous la consigne en blanc/texte primaire sans gros encadre, et peuvent afficher une illustration Open Peep monochrome ancrée à droite du même bloc, sans fond, générée depuis les assets indexés et sans modification des sources ;
+- les associations de traduction peuvent aussi porter `presentation: 'translation'`, mais restent sans Open Peep et texte contre texte ;
+- les associations d'image affichent uniquement l'illustration du cote image ; le libelle texte reste reserve a l'accessibilite et les cartes image utilisent la meme structure alignee que les cartes texte ;
+- les exercices `conversation`, `wordOrder` et `reading` restent sans Open Peeps pour eviter la surcharge visuelle ;
+- les feedbacks correct/incorrect sont des textes colores sans fond ;
+- les associations correctes en matching sont verrouillees une fois vertes, au clic comme au clavier ;
+- `Entree` est prioritaire pour valider une reponse complete ou continuer apres feedback, meme si le focus reste sur une option.
+
+## D040 - Bonus quotidien et progression de map
+
+Statut : retenue apres feedback utilisateur du 2026-06-23.
+
+Le bonus `1.5x` de campagne est un boost quotidien global, pas un bonus par niveau. Il s'affiche sur la lecon courante quand il n'a pas encore ete consomme pour la date locale, puis disparait apres une lecon terminee et revient le lendemain.
+
+La map n'utilise plus trois petits points pour representer les paliers d'un niveau. Le niveau courant affiche un indicateur compact `x/3`, et un niveau termine passe en vert avec un check pour rendre l'etat immediatement lisible.

@@ -224,6 +224,7 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 			id: `${targetLanguage}-basic-match`,
 			type: 'matching',
 			prompt: '',
+			presentation: 'translation',
 			potentialXp: 10,
 			openMojiHexcode: '1F4AC',
 			pairs: [
@@ -248,6 +249,7 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 			id: `${targetLanguage}-thanks-meaning`,
 			type: 'multipleChoice',
 			prompt: target('thanks'),
+			presentation: 'translation',
 			potentialXp: 6,
 			openMojiHexcode: '1F4AC',
 			pronunciationHint: getPronunciationHint('thanks', targetLanguage, uiLanguage),
@@ -299,6 +301,7 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 			id: `${targetLanguage}-how-are-you-choice`,
 			type: 'multipleChoice',
 			prompt: getHowAreYouPrompt(targetLanguage),
+			presentation: 'conversation',
 			potentialXp: 6,
 			openMojiHexcode: '1F642',
 			pronunciationHint: targetLanguage === 'zh'
@@ -388,6 +391,7 @@ function createTranslationMatchExercise(
 		id: `${targetLanguage}-${lesson.id}-translation-match`,
 		type: 'matching',
 		prompt: '',
+		presentation: 'translation',
 		potentialXp: 10,
 		openMojiHexcode: '1F4AC',
 		pairs: shuffleBySeed(uniqueItems(lesson.translationMatchConcepts), seed).map((concept) => ({
@@ -412,6 +416,7 @@ function createMeaningChoiceExercise(
 		id: `${targetLanguage}-${lesson.id}-${concept}-meaning`,
 		type: 'multipleChoice',
 		prompt: target(concept),
+		presentation: 'translation',
 		potentialXp: 6,
 		openMojiHexcode: '1F4AC',
 		pronunciationHint: getPronunciationHint(concept, targetLanguage, uiLanguage),
@@ -458,6 +463,7 @@ function createConversationChoiceExercise(
 		id: `${targetLanguage}-${lesson.id}-how-are-you-choice`,
 		type: 'multipleChoice',
 		prompt: getHowAreYouPrompt(targetLanguage),
+		presentation: 'conversation',
 		potentialXp: 6,
 		openMojiHexcode: '1F642',
 		pronunciationHint: targetLanguage === 'zh'
