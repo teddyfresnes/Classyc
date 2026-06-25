@@ -54,15 +54,15 @@ const dailyExerciseContent: Record<
 				{
 					id: 'daily-en-routine-hello',
 					type: 'imageChoice',
-					prompt: 'What do you say here?',
+					prompt: 'Hello',
 					potentialXp: 5,
 					openMojiHexcode: '1F44B',
 					imageOpenMojiHexcode: '1F44B',
 					imageAlt: 'Waving hand',
 					options: [
-						{ id: 'hello', label: 'Hello' },
-						{ id: 'thanks', label: 'Thank you' },
-						{ id: 'no', label: 'No' }
+						{ id: 'hello', label: 'Hello', openMojiHexcode: '1F44B' },
+						{ id: 'thanks', label: 'Thank you', openMojiHexcode: '1F64F' },
+						{ id: 'no', label: 'No', openMojiHexcode: '274C' }
 					],
 					correctOptionId: 'hello'
 				},
@@ -76,7 +76,10 @@ const dailyExerciseContent: Record<
 						{ id: 'my', label: 'My' },
 						{ id: 'name', label: 'name' },
 						{ id: 'is', label: 'is' },
-						{ id: 'mia', label: 'Mia' }
+						{ id: 'mia', label: 'Mia' },
+						{ id: 'hello-extra', label: 'Hello' },
+						{ id: 'thanks-extra', label: 'Thank you' },
+						{ id: 'no-extra', label: 'No' }
 					],
 					correctTokenIds: ['my', 'name', 'is', 'mia']
 				}
@@ -89,15 +92,15 @@ const dailyExerciseContent: Record<
 				{
 					id: 'daily-fr-routine-hello',
 					type: 'imageChoice',
-					prompt: 'Que dit-on ici ?',
+					prompt: 'Bonjour',
 					potentialXp: 5,
 					openMojiHexcode: '1F44B',
 					imageOpenMojiHexcode: '1F44B',
 					imageAlt: 'Main qui salue',
 					options: [
-						{ id: 'bonjour', label: 'Bonjour' },
-						{ id: 'merci', label: 'Merci' },
-						{ id: 'non', label: 'Non' }
+						{ id: 'bonjour', label: 'Bonjour', openMojiHexcode: '1F44B' },
+						{ id: 'merci', label: 'Merci', openMojiHexcode: '1F64F' },
+						{ id: 'non', label: 'Non', openMojiHexcode: '274C' }
 					],
 					correctOptionId: 'bonjour'
 				},
@@ -110,7 +113,10 @@ const dailyExerciseContent: Record<
 					tokens: [
 						{ id: 'je', label: 'Je' },
 						{ id: 'mappelle', label: 'm’appelle' },
-						{ id: 'lina', label: 'Lina' }
+						{ id: 'lina', label: 'Lina' },
+						{ id: 'bonjour-extra', label: 'Bonjour' },
+						{ id: 'merci-extra', label: 'Merci' },
+						{ id: 'non-extra', label: 'Non' }
 					],
 					correctTokenIds: ['je', 'mappelle', 'lina']
 				}
@@ -123,7 +129,7 @@ const dailyExerciseContent: Record<
 				{
 					id: 'daily-zh-routine-hello',
 					type: 'imageChoice',
-					prompt: 'On dit quoi ici ?',
+					prompt: '\u4F60\u597D',
 					potentialXp: 5,
 					openMojiHexcode: '1F44B',
 					imageOpenMojiHexcode: '1F44B',
@@ -132,16 +138,19 @@ const dailyExerciseContent: Record<
 						{
 							id: 'nihao',
 							label: '你好',
+							openMojiHexcode: '1F44B',
 							pronunciationHint: { pinyin: 'nǐ hǎo', meaning: 'bonjour' }
 						},
 						{
 							id: 'xiexie',
 							label: '谢谢',
+							openMojiHexcode: '1F64F',
 							pronunciationHint: { pinyin: 'xiè xie', meaning: 'merci' }
 						},
 						{
 							id: 'bushi',
 							label: '不是',
+							openMojiHexcode: '274C',
 							pronunciationHint: { pinyin: 'bú shì', meaning: 'non' }
 						}
 					],
@@ -156,7 +165,10 @@ const dailyExerciseContent: Record<
 					tokens: [
 						{ id: 'wo', label: '我', pronunciationHint: { pinyin: 'wǒ' } },
 						{ id: 'jiao', label: '叫', pronunciationHint: { pinyin: 'jiào' } },
-						{ id: 'lina', label: 'Lina' }
+						{ id: 'lina', label: 'Lina' },
+						{ id: 'nihao-extra', label: '你好', pronunciationHint: { pinyin: 'nǐ hǎo' } },
+						{ id: 'xiexie-extra', label: '谢谢', pronunciationHint: { pinyin: 'xiè xie' } },
+						{ id: 'bushi-extra', label: '不是', pronunciationHint: { pinyin: 'bú shì' } }
 					],
 					correctTokenIds: ['wo', 'jiao', 'lina']
 				}
@@ -285,7 +297,7 @@ const dailyExerciseContent: Record<
 					options: [
 						{ id: 'fine', label: 'I am fine.' },
 						{ id: 'bye', label: 'Goodbye.' },
-						{ id: 'yes', label: 'Yes.' }
+						{ id: 'name', label: 'My name is Mia.' }
 					],
 					correctOptionId: 'fine'
 				}

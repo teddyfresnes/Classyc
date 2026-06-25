@@ -608,8 +608,16 @@ Regles retenues :
 - les OpenMoji restent utilises pour les exercices ou options qui demandent de deviner un mot depuis une image ;
 - les exercices `presentation: 'translation'` de choix simple affichent la consigne en texte discret, le mot cible juste sous la consigne en blanc/texte primaire sans gros encadre, et peuvent afficher une illustration Open Peep monochrome ancrée à droite du même bloc, sans fond, générée depuis les assets indexés et sans modification des sources ;
 - les associations de traduction peuvent aussi porter `presentation: 'translation'`, mais restent sans Open Peep et texte contre texte ;
+- dans les associations de traduction, la colonne gauche sert de reponses en langue utilisateur/native, et la colonne droite garde la langue apprise ;
 - les associations d'image affichent uniquement l'illustration du cote image ; le libelle texte reste reserve a l'accessibilite et les cartes image utilisent la meme structure alignee que les cartes texte ;
+- les `imageChoice` illustrables font l'inverse d'une carte image classique : le stimulus visible est le mot en langue apprise, et les options sont des illustrations OpenMoji accessibles par libelle ;
+- depuis la reprise feedback, ce stimulus `imageChoice` doit etre integre au titre sous la forme `Choisis la bonne reponse pour <mot>` avec le mot accentue, sans grande carte/panneau contenant seulement le mot ;
+- les choix de traduction simple peuvent alterner le sens : soit mot en langue apprise avec options natives, soit mot natif/utilisateur avec options en langue apprise ;
+- les conversations `How are you?` / `Ca va ?` doivent eviter les distracteurs semantiquement acceptables comme `oui` ou `non`, afin qu'une seule reponse soit clairement correcte ;
+- le rendu conversation garde une bulle question venant de gauche et une bulle reponses venant de droite, sans panneau de thread supplementaire autour de la question ; les deux bulles doivent partager le meme style de surface et de radius ;
 - les exercices `conversation`, `wordOrder` et `reading` restent sans Open Peeps pour eviter la surcharge visuelle ;
+- les exercices `wordOrder` peuvent contenir 2-3 mots pieges non presents dans `correctTokenIds`; la validation devient disponible quand le nombre de mots choisis atteint la longueur de la phrase attendue, pas quand toute la banque de mots est videe ;
+- les questions de lecture qui suivent le modele `Which word means <mot>` / `Quel mot veut dire <mot>` / `...表示<mot>` peuvent accentuer uniquement le mot cible en texte primaire, sans encadre ni fond ;
 - les feedbacks correct/incorrect sont des textes colores sans fond ;
 - les associations correctes en matching sont verrouillees une fois vertes, au clic comme au clavier ;
 - `Entree` est prioritaire pour valider une reponse complete ou continuer apres feedback, meme si le focus reste sur une option.
@@ -621,3 +629,5 @@ Statut : retenue apres feedback utilisateur du 2026-06-23.
 Le bonus `1.5x` de campagne est un boost quotidien global, pas un bonus par niveau. Il s'affiche sur la lecon courante quand il n'a pas encore ete consomme pour la date locale, puis disparait apres une lecon terminee et revient le lendemain.
 
 La map n'utilise plus trois petits points pour representer les paliers d'un niveau. Le niveau courant affiche un indicateur compact `x/3`, et un niveau termine passe en vert avec un check pour rendre l'etat immediatement lisible.
+
+Depuis le feedback suivant, la progression bleue de la route ne doit pas compter les portions cachees sous les pastilles de niveau. Le calcul utilise donc la longueur du chemin SVG, un rayon masque correspondant aux pastilles et une compensation du bout rond du trait, afin qu'un palier `1/3` ou `2/3` represente visuellement le bon tiers de la route visible entre deux niveaux. Un niveau a `0/3` ne doit pas faire avancer le segment bleu vers le centre ou la sortie de sa pastille.

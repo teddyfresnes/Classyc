@@ -1,6 +1,6 @@
 # Etat actuel
 
-Date : 2026-06-23
+Date : 2026-06-24
 
 ## Statut court
 
@@ -161,6 +161,8 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Les OpenMoji ne sont plus affiches dans le header avant la consigne ; ils restent utilises dans les exercices d'image et les options illustrees. Les Open Peeps monochromes sont limites aux exercices de traduction simple, places pres de la consigne, sans fond ni panneau decoratif.
 - Les exercices de traduction simple affichent une consigne plus discrete et le mot cible juste dessous en texte primaire/blanc sans gros encadre ; l'Open Peep monochrome est ancre a droite du meme bloc sans fond. Les associations de traduction sont titrees comme traductions, et les associations d'image affichent uniquement les illustrations cote image avec les memes cartes alignees que les associations texte.
 - Les messages de feedback correct/incorrect sont des textes colores sans fond.
+- Correction feedback exercices du 2026-06-24 : les exercices `imageChoice` illustrables affichent maintenant le mot en langue apprise comme stimulus et des OpenMoji comme reponses ; les associations `Match the translations` placent la langue utilisateur a gauche et la langue apprise a droite ; les conversations `How are you?` / `Ca va ?` ne proposent plus `oui`/`non` comme distracteurs valables et utilisent une bulle question a gauche plus une bulle reponses a droite.
+- Reprise feedback exercices du 2026-06-24 : les choix image affichent la consigne inline `Choisis la bonne reponse pour <mot>` sans grande carte mot ; les traductions simples peuvent aussi partir d'un mot en langue utilisateur avec des propositions en langue apprise ; les phrases a remettre dans l'ordre ont 2-3 mots pieges et ne montrent plus le placeholder `Build the sentence`; les questions de lecture de type `Quel mot veut dire <mot>` mettent seulement le mot cle en leger accent texte primaire.
 - La map affiche le palier courant sous forme `x/3`, les niveaux termines deviennent verts avec un check, et le bonus campagne `1.5x` est globalement quotidien : une fois consomme, il disparait jusqu'au lendemain.
 - Les exercices de type `conversation` sont marques dans le modele partage via `presentation: 'conversation'` et rendus avec une bulle de dialogue distincte, par exemple pour `How are you?` / `Ca va ?`.
 - La premiere lecon campagne est generee selon la langue apprise et la langue d'interface : consignes/boutons/messages dans la langue utilisateur, mots/phrases d'exercice dans la langue apprise.
@@ -371,6 +373,13 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification correction feedback exercices : `npm run lint`, `npm run typecheck`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
 - Verification Chrome headless via DevTools Protocol : niveau 1 ouvre `/exercises/en`, pas de sidebar ni navigation mobile en exercice, progression `1/8`, aucun label de type/XP, illustration OpenMoji presente, matching au second exercice, quete journaliere vers `/daily/daily-sounds-2026-06-22`, mobile 390x844 sans overflow horizontal.
 
+## Verification du 2026-06-24
+
+- Correction feedback exercices : choix image avec mot cible + reponses illustrees, traduction a relier native a gauche / cible a droite, conversation sans distracteur `oui`/`non` acceptable et bulles gauche/droite.
+- `npm run typecheck`, `npm run lint`, `npm run build` OK. Build avec l'avertissement Vite connu sur le bundle volumineux.
+- Verification Chrome headless/CDP sur `/exercises/en` avec profil francophone : desktop et mobile sans overflow horizontal, premier exercice avec stimulus `Hello` sans image de prompt et 3 options OpenMoji, matching `Bonjour/Merci/Au revoir` a gauche et `Hello/Thank you/Goodbye` a droite, conversation sans ancien thread panel et options `Goodbye`, `I am fine.`, `My name is Mia.`.
+- Reprise feedback exercices : `npm run typecheck`, `npm run lint`, `npm run build` OK. Verification Chrome headless/CDP : choix image `Choisis la bonne reponse pour Hello` sans panneau mot, traduction inline `Quel mot veut dire Thank you`, variante inverse `Quel mot veut dire Au revoir` avec options `Thank you/Hello/Goodbye`, ordre des mots avec mots pieges et validation apres la longueur correcte, bulles conversation meme fond/radius, lecture avec `merci` accentue et aucun overflow desktop/mobile.
+
 ## Verification du 2026-06-23
 
 - Correction profonde UX exercices : retrait du bouton `Recommencer`, validation transformee en `Continuer`/`Terminer`, feedback pres du bouton, reprise des erreurs en fin de file.
@@ -388,6 +397,7 @@ Note : l'utilisateur avait mentionne `assets/Flat assets/` et `assets/openmoji/`
 - Verification Chrome headless via DevTools Protocol sur `http://127.0.0.1:5176/` : OpenMoji absent du header, Open Peep absent du matching et de la conversation mais present sur traduction simple, feedback incorrect sans fond, association image sans texte visible cote image, bonus `1.5x` masque apres consommation quotidienne, niveau termine avec check vert, traduction mobile 390x844 sans overflow horizontal.
 - Reprise feedback design exercices : consignes reduites et grisees, mots cibles plus sobres et proches de la consigne, Open Peep de traduction ancre a droite du bloc question, cartes d'association image alignees comme les cartes texte, item actif de sidebar aligne sur le bleu du logo/ruban avec texte blanc, drapeau retire du ruban de section.
 - Verification Chrome headless via DevTools Protocol : traduction desktop/mobile sans overflow, Open Peep dans le bloc question sans fond, cartes image/texte a hauteur et structure coherentes, sidebar active `rgb(96, 165, 250)` comme le ruban avec texte blanc, aucun drapeau de section dans le ruban.
+- Correction feedback map : la progression bleue de la route campagne tient compte des portions masquees par les pastilles de niveaux et du bout rond du trait. Un niveau a `0/3` n'ajoute pas de segment bleu ; les paliers `1/3` et `2/3` avancent seulement sur le segment visible entre deux niveaux, sans donner une impression de segment presque termine.
 - `npm run typecheck` : OK.
 - `npm run lint` : OK.
 - `npm run build` : OK avec l'avertissement Vite connu sur le bundle volumineux.

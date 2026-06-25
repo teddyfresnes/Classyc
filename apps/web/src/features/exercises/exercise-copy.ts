@@ -23,6 +23,10 @@ export interface ExerciseDeckCopy {
 		thanksQuestion: string;
 		helloQuestion: string;
 	};
+	imageChoicePrompt: {
+		prefix: string;
+		suffix: string;
+	};
 	translation: {
 		choiceTitle: string;
 		matchTitle: string;
@@ -51,6 +55,10 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			helloQuestion: 'Quel mot salue ?',
 			nameQuestion: 'Comment elle s’appelle ?',
 			thanksQuestion: 'Quel mot veut dire merci ?'
+		},
+		imageChoicePrompt: {
+			prefix: 'Choisis la bonne réponse pour ',
+			suffix: '.'
 		},
 		translation: {
 			choiceTitle: 'Quel mot veut dire',
@@ -96,6 +104,10 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			nameQuestion: 'What is her name?',
 			thanksQuestion: 'Which word means thank you?'
 		},
+		imageChoicePrompt: {
+			prefix: 'Choose the right answer for ',
+			suffix: '.'
+		},
 		translation: {
 			choiceTitle: 'Which word means',
 			matchTitle: 'Match the translations.',
@@ -139,6 +151,10 @@ export const exerciseCopies: Record<SupportedLanguageCode, ExerciseDeckCopy> = {
 			helloQuestion: '哪个词表示问候？',
 			nameQuestion: '她叫什么名字？',
 			thanksQuestion: '哪个词表示谢谢？'
+		},
+		imageChoicePrompt: {
+			prefix: '\u4E3A',
+			suffix: '\u9009\u62E9\u6B63\u786E\u7B54\u6848\u3002'
 		},
 		translation: {
 			choiceTitle: '\u54ea\u4e2a\u8bcd\u8868\u793a',

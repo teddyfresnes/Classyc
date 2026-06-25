@@ -319,6 +319,6 @@ function isExerciseAnswerComplete(exercise: LearningExercise, answer: ExerciseAn
 		case 'imageChoice':
 			return Boolean(answer.optionId);
 		case 'wordOrder':
-			return exercise.type === 'wordOrder' && answer.tokenIds.length === exercise.tokens.length;
+			return exercise.type === 'wordOrder' && answer.tokenIds.length === exercise.correctTokenIds.length;
 	}
 }

@@ -47,7 +47,7 @@ export function ExercisePreview({ answer, copy, evaluation, exercise, onAnswerCh
 			{useInlineTranslationHeader ? null : (
 				<header className="exercise-preview__header">
 					<div className="exercise-preview__header-copy">
-						<h2 className="exercise-preview__prompt">{title}</h2>
+						<h2 className="exercise-preview__prompt">{renderExerciseTitle(exercise, copy, title)}</h2>
 						{instruction ? <p className="exercise-preview__instruction">{instruction}</p> : null}
 						{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
 					</div>
@@ -186,7 +186,7 @@ function OptionList({
 	}[];
 	readOnly: boolean;
 	shortcutStart?: number;
-	variant?: 'binary' | 'conversation' | 'translation';
+	variant?: 'binary' | 'conversation' | 'image' | 'translation';
 }) {
 	useEffect(() => {
 		if (readOnly) {
@@ -237,6 +237,7 @@ function OptionList({
 						type="button"
 					>
 						<OptionLabel
+							imageOnly={variant === 'image' && Boolean(option.openMojiHexcode)}
 							label={option.label}
 							openMojiHexcode={option.openMojiHexcode}
 							pronunciationHint={option.pronunciationHint}
@@ -327,10 +328,10 @@ function TranslationChoiceExerciseBody({
 		<div className="exercise-translation">
 			<div className="exercise-translation__question">
 				<div className="exercise-translation__copy">
-					<p className="exercise-translation__prompt">{copy.translation.choiceTitle}</p>
-					<div className="exercise-translation__word" aria-label={`${copy.translation.wordLabel}: ${exercise.prompt}`}>
-						<span>{exercise.prompt}</span>
-					</div>
+					<p className="exercise-translation__prompt">
+						<span>{copy.translation.choiceTitle} </span>
+						<strong className="exercise-inline-keyword">{exercise.prompt}</strong>
+					</p>
 					{exercise.pronunciationHint ? <PronunciationHint hint={exercise.pronunciationHint} /> : null}
 				</div>
 				<ExercisePeepIllustration exercise={exercise} variant="translation" />
@@ -364,19 +365,19 @@ function ConversationChoiceExerciseBody({
 
 	return (
 		<div className="exercise-conversation">
-			<div className="exercise-conversation__thread">
-				<div className="exercise-conversation__bubble">
-					<span>{exercise.prompt}</span>
-				</div>
+			<div className="exercise-conversation__bubble exercise-conversation__bubble--prompt">
+				<span>{exercise.prompt}</span>
 			</div>
-			<OptionList
-				answer={selectedOptionId}
-				onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
-				optionStates={getChoiceOptionStates(selectedOptionId, exercise.correctOptionId, evaluation)}
-				options={exercise.options}
-				readOnly={!onAnswerChange}
-				variant="conversation"
-			/>
+			<div className="exercise-conversation__answers">
+				<OptionList
+					answer={selectedOptionId}
+					onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'multipleChoice', optionId })}
+					optionStates={getChoiceOptionStates(selectedOptionId, exercise.correctOptionId, evaluation)}
+					options={exercise.options}
+					readOnly={!onAnswerChange}
+					variant="conversation"
+				/>
+			</div>
 		</div>
 	);
 }
@@ -392,11 +393,15 @@ function ImageChoiceExerciseBody({
 	exercise: ImageChoiceExercise;
 	onAnswerChange: ExercisePreviewProps['onAnswerChange'];
 }) {
+	const usesImageOptions = hasImageChoiceOptions(exercise);
+
 	return (
 		<div className="exercise-image-choice">
-			<figure className="exercise-image-choice__picture">
-				<OpenMojiPicture alt={exercise.imageAlt} hexcode={exercise.imageOpenMojiHexcode} />
-			</figure>
+			{usesImageOptions ? null : (
+				<figure className="exercise-image-choice__picture">
+					<OpenMojiPicture alt={exercise.imageAlt} hexcode={exercise.imageOpenMojiHexcode} />
+				</figure>
+			)}
 			<OptionList
 				answer={answer?.type === 'imageChoice' ? answer.optionId : undefined}
 				onAnswerChange={(optionId) => onAnswerChange?.({ exerciseId: exercise.id, type: 'imageChoice', optionId })}
@@ -407,6 +412,7 @@ function ImageChoiceExerciseBody({
 				)}
 				options={exercise.options}
 				readOnly={!onAnswerChange}
+				variant={usesImageOptions ? 'image' : undefined}
 			/>
 		</div>
 	);
@@ -671,9 +677,7 @@ function WordOrderExerciseBody({
 							<OptionLabel label={token.label} pronunciationHint={token.pronunciationHint} />
 						</button>
 					))
-				) : (
-					<span className="exercise-word-order__placeholder">{copy.wordOrderPlaceholder}</span>
-				)}
+				) : null}
 			</div>
 			<div className="exercise-word-order__bank">
 				{remainingTokens.map((token, index) => (
@@ -756,7 +760,7 @@ function ReadingQuestionCard({
 
 	return (
 		<section className="exercise-reading__question">
-			<p>{question.prompt}</p>
+			<p>{renderPromptWithHighlightedKeyword(question.prompt)}</p>
 			{question.pronunciationHint ? <PronunciationHint hint={question.pronunciationHint} /> : null}
 			<OptionList
 				answer={selectedOptionId}
@@ -868,6 +872,10 @@ function getExerciseTitle(exercise: LearningExercise, copy: ExerciseDeckCopy) {
 		return copy.imageMatchTitle;
 	}
 
+	if (exercise.type === 'imageChoice' && hasImageChoiceOptions(exercise)) {
+		return getImageChoicePromptText(exercise, copy);
+	}
+
 	if (exercise.type === 'fillBlank' || exercise.type === 'multipleChoice') {
 		return copy.typeInstructions[exercise.type];
 	}
@@ -875,8 +883,30 @@ function getExerciseTitle(exercise: LearningExercise, copy: ExerciseDeckCopy) {
 	return exercise.prompt || copy.typeInstructions[exercise.type];
 }
 
+function renderExerciseTitle(exercise: LearningExercise, copy: ExerciseDeckCopy, title: string) {
+	if (exercise.type === 'imageChoice' && hasImageChoiceOptions(exercise)) {
+		return (
+			<>
+				<span>{copy.imageChoicePrompt.prefix}</span>
+				<strong className="exercise-inline-keyword">{exercise.prompt}</strong>
+				<span>{copy.imageChoicePrompt.suffix}</span>
+			</>
+		);
+	}
+
+	return title;
+}
+
+function getImageChoicePromptText(exercise: ImageChoiceExercise, copy: ExerciseDeckCopy) {
+	return `${copy.imageChoicePrompt.prefix}${exercise.prompt}${copy.imageChoicePrompt.suffix}`;
+}
+
 function hasImageMatchItems(exercise: MatchingExercise) {
 	return exercise.pairs.some((pair) => Boolean(pair.left.openMojiHexcode || pair.right.openMojiHexcode));
+}
+
+function hasImageChoiceOptions(exercise: ImageChoiceExercise) {
+	return exercise.options.some((option) => Boolean(option.openMojiHexcode));
 }
 
 function getExerciseInstruction(exercise: LearningExercise) {
@@ -889,6 +919,44 @@ function getExerciseInstruction(exercise: LearningExercise) {
 	}
 
 	return undefined;
+}
+
+function renderPromptWithHighlightedKeyword(prompt: string) {
+	const parts = getPromptHighlightParts(prompt);
+
+	if (!parts) {
+		return prompt;
+	}
+
+	return (
+		<>
+			<span>{parts.before}</span>
+			<strong className="exercise-inline-keyword">{parts.keyword}</strong>
+			<span>{parts.after}</span>
+		</>
+	);
+}
+
+function getPromptHighlightParts(prompt: string) {
+	const patterns = [
+		/^(.*\bmeans\s+)(.+?)(\s*[?.!؟。！？])?$/i,
+		/^(.*\bveut dire\s+)(.+?)(\s*[?.!؟。！？])?$/i,
+		/^(.*表示)(.+?)(\s*[?.!؟。！？])?$/
+	];
+
+	for (const pattern of patterns) {
+		const match = prompt.match(pattern);
+
+		if (match?.[2]) {
+			return {
+				before: match[1],
+				keyword: match[2].trimEnd(),
+				after: match[3] ?? ''
+			};
+		}
+	}
+
+	return null;
 }
 
 function PronunciationHint({ hint }: { hint: ExercisePronunciationHint }) {

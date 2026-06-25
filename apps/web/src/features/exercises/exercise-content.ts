@@ -67,6 +67,7 @@ type StarterImageConceptId = Extract<StarterConceptId, 'hello' | 'hi' | 'no' | '
 type StarterReadingQuestionId = 'hello' | 'name' | 'thanks';
 type StarterWordOrderId = 'goodbye' | 'name';
 type ConversationChoiceId = 'goodbye' | 'namePhrase' | 'no' | 'yes';
+type SafeConversationChoiceId = Extract<ConversationChoiceId, 'goodbye' | 'namePhrase'>;
 
 interface CampaignIntroLessonSource {
 	conversationChoice: {
@@ -187,7 +188,7 @@ function createStarterExercises(
 	const secondaryWordOrderId = lesson.wordOrders[1] ?? (primaryWordOrderId === 'name' ? 'goodbye' : 'name');
 
 	return [
-		createImageChoiceExercise(targetLanguage, target, native, lesson, `${seed}:image-choice`),
+		createImageChoiceExercise(targetLanguage, uiLanguage, target, lesson, `${seed}:image-choice`),
 		createTranslationMatchExercise(targetLanguage, target, native, lesson, `${seed}:translation-match`),
 		createMeaningChoiceExercise(targetLanguage, uiLanguage, target, native, lesson, `${seed}:meaning-choice`),
 		createImageMatchingExercise(targetLanguage, target, native, lesson, `${seed}:image-match`),
@@ -208,16 +209,13 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 		{
 			id: `${targetLanguage}-hello-image`,
 			type: 'imageChoice',
-			prompt: '',
+			prompt: target('hello'),
 			potentialXp: 6,
 			openMojiHexcode: '1F44B',
 			imageOpenMojiHexcode: '1F44B',
-			imageAlt: native('hello'),
-			options: [
-				target.option('hello'),
-				target.option('thanks'),
-				target.option('no')
-			],
+			imageAlt: target('hello'),
+			pronunciationHint: getPronunciationHint('hello', targetLanguage, uiLanguage),
+			options: createIllustratedConceptOptions(target, 'hello', ['thanks', 'no'], `${targetLanguage}:legacy:image-choice`),
 			correctOptionId: 'hello'
 		},
 		{
@@ -230,18 +228,18 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 			pairs: [
 				{
 					id: 'hello',
-					left: target.matchItem('hello'),
-					right: native.matchItem('hello', 'hello-native')
+					left: native.matchItem('hello', 'hello-native'),
+					right: target.matchItem('hello')
 				},
 				{
 					id: 'thanks',
-					left: target.matchItem('thanks'),
-					right: native.matchItem('thanks', 'thanks-native')
+					left: native.matchItem('thanks', 'thanks-native'),
+					right: target.matchItem('thanks')
 				},
 				{
 					id: 'goodbye',
-					left: target.matchItem('goodbye'),
-					right: native.matchItem('goodbye', 'goodbye-native')
+					left: native.matchItem('goodbye', 'goodbye-native'),
+					right: target.matchItem('goodbye')
 				}
 			]
 		},
@@ -360,8 +358,8 @@ function createLegacyStarterExercises(targetLanguage: SupportedLanguageCode, uiL
 
 function createImageChoiceExercise(
 	targetLanguage: SupportedLanguageCode,
+	uiLanguage: SupportedLanguageCode,
 	target: ConceptLabeler,
-	native: ConceptLabeler,
 	lesson: CampaignIntroLessonSource,
 	seed: string
 ): LearningExercise {
@@ -370,12 +368,13 @@ function createImageChoiceExercise(
 	return {
 		id: `${targetLanguage}-${lesson.id}-image-${concept}`,
 		type: 'imageChoice',
-		prompt: '',
+		prompt: target(concept),
 		potentialXp: 6,
 		openMojiHexcode: getImageConceptOpenMojiHexcode(concept),
 		imageOpenMojiHexcode: getImageConceptOpenMojiHexcode(concept),
-		imageAlt: native(concept),
-		options: createConceptOptions(target, concept, lesson.imageChoice.distractors, seed),
+		imageAlt: target(concept),
+		pronunciationHint: getPronunciationHint(concept, targetLanguage, uiLanguage),
+		options: createIllustratedConceptOptions(target, concept, lesson.imageChoice.distractors, seed),
 		correctOptionId: concept
 	};
 }
@@ -396,8 +395,8 @@ function createTranslationMatchExercise(
 		openMojiHexcode: '1F4AC',
 		pairs: shuffleBySeed(uniqueItems(lesson.translationMatchConcepts), seed).map((concept) => ({
 			id: concept,
-			left: target.matchItem(concept),
-			right: native.matchItem(concept, `${concept}-native`)
+			left: native.matchItem(concept, `${concept}-native`),
+			right: target.matchItem(concept)
 		}))
 	};
 }
@@ -411,18 +410,26 @@ function createMeaningChoiceExercise(
 	seed: string
 ): LearningExercise {
 	const concept = lesson.meaningChoice.concept;
+	const useNativePrompt = shouldUseNativePromptForMeaningChoice(lesson);
+	const promptLabeler = useNativePrompt ? native : target;
+	const optionLabeler = useNativePrompt ? target : native;
+	const promptLanguage = useNativePrompt ? uiLanguage : targetLanguage;
 
 	return {
 		id: `${targetLanguage}-${lesson.id}-${concept}-meaning`,
 		type: 'multipleChoice',
-		prompt: target(concept),
+		prompt: promptLabeler(concept),
 		presentation: 'translation',
 		potentialXp: 6,
 		openMojiHexcode: '1F4AC',
-		pronunciationHint: getPronunciationHint(concept, targetLanguage, uiLanguage),
-		options: createConceptOptions(native, concept, lesson.meaningChoice.distractors, seed),
+		pronunciationHint: getPronunciationHint(concept, promptLanguage, uiLanguage),
+		options: createConceptOptions(optionLabeler, concept, lesson.meaningChoice.distractors, seed),
 		correctOptionId: concept
 	};
+}
+
+function shouldUseNativePromptForMeaningChoice(lesson: CampaignIntroLessonSource) {
+	return lesson.id === 'oui-non';
 }
 
 function createImageMatchingExercise(
@@ -475,7 +482,7 @@ function createConversationChoiceExercise(
 		options: shuffleBySeed(
 			[
 				getFineOption(targetLanguage, uiLanguage),
-				...lesson.conversationChoice.distractors.map((distractor) => (
+				...getSafeConversationDistractors(lesson.conversationChoice.distractors).map((distractor) => (
 					createConversationDistractorOption(target, targetLanguage, personName, distractor)
 				))
 			],
@@ -499,8 +506,67 @@ function createWordOrderExercise(
 	return {
 		...exercise,
 		id: `${language}-${lessonId}-${wordOrderId}-order`,
-		tokens: shuffleBySeed(exercise.tokens, seed)
+		tokens: shuffleBySeed(addWordOrderDistractors(exercise, language, wordOrderId), seed)
 	};
+}
+
+function addWordOrderDistractors(
+	exercise: Extract<LearningExercise, { type: 'wordOrder' }>,
+	language: SupportedLanguageCode,
+	wordOrderId: StarterWordOrderId
+) {
+	const distractors = getWordOrderDistractors(language, wordOrderId);
+	const existingTokenIds = new Set(exercise.tokens.map((token) => token.id));
+
+	return [
+		...exercise.tokens,
+		...distractors.filter((token) => !existingTokenIds.has(token.id))
+	];
+}
+
+function getWordOrderDistractors(
+	language: SupportedLanguageCode,
+	wordOrderId: StarterWordOrderId
+): Extract<LearningExercise, { type: 'wordOrder' }>['tokens'] {
+	if (language === 'en') {
+		return wordOrderId === 'name'
+			? [
+				{ id: 'hello-extra', label: 'Hello' },
+				{ id: 'thanks-extra', label: 'Thank you' },
+				{ id: 'no-extra', label: 'No' }
+			]
+			: [
+				{ id: 'my-extra', label: 'My' },
+				{ id: 'is-extra', label: 'is' },
+				{ id: 'thanks-extra', label: 'Thank you' }
+			];
+	}
+
+	if (language === 'zh') {
+		return wordOrderId === 'name'
+			? [
+				{ id: 'nihao-extra', label: '\u4F60\u597D', pronunciationHint: { pinyin: 'ni hao' } },
+				{ id: 'xiexie-extra', label: '\u8C22\u8C22', pronunciationHint: { pinyin: 'xie xie' } },
+				{ id: 'bushi-extra', label: '\u4E0D\u662F', pronunciationHint: { pinyin: 'bu shi' } }
+			]
+			: [
+				{ id: 'wo-extra', label: '\u6211', pronunciationHint: { pinyin: 'wo' } },
+				{ id: 'nihao-extra', label: '\u4F60\u597D', pronunciationHint: { pinyin: 'ni hao' } },
+				{ id: 'xiexie-extra', label: '\u8C22\u8C22', pronunciationHint: { pinyin: 'xie xie' } }
+			];
+	}
+
+	return wordOrderId === 'name'
+		? [
+			{ id: 'bonjour-extra', label: 'Bonjour' },
+			{ id: 'merci-extra', label: 'Merci' },
+			{ id: 'non-extra', label: 'Non' }
+		]
+		: [
+			{ id: 'je-extra', label: 'Je' },
+			{ id: 'merci-extra', label: 'Merci' },
+			{ id: 'bonjour-extra', label: 'Bonjour' }
+		];
 }
 
 function createReadingExercise(
@@ -584,6 +650,31 @@ function createConceptOptions(
 		.map((concept) => labeler.option(concept));
 }
 
+function createIllustratedConceptOptions(
+	labeler: ConceptLabeler,
+	correctConcept: StarterConceptId,
+	distractors: readonly StarterConceptId[],
+	seed: string
+) {
+	return createConceptOptions(labeler, correctConcept, distractors, seed)
+		.map((option) => ({
+			...option,
+			openMojiHexcode: getImageConceptOpenMojiHexcode(option.id as StarterConceptId)
+		}));
+}
+
+function getSafeConversationDistractors(distractors: readonly ConversationChoiceId[]): readonly SafeConversationChoiceId[] {
+	return uniqueItems<SafeConversationChoiceId>([
+		...distractors.filter(isSafeConversationDistractor),
+		'goodbye',
+		'namePhrase'
+	]).slice(0, 2);
+}
+
+function isSafeConversationDistractor(distractor: ConversationChoiceId): distractor is SafeConversationChoiceId {
+	return distractor === 'goodbye' || distractor === 'namePhrase';
+}
+
 function createConversationDistractorOption(
 	target: ConceptLabeler,
 	targetLanguage: SupportedLanguageCode,
@@ -617,11 +708,17 @@ function getCampaignIntroLessonIndex(lessonStep: number) {
 	return Math.max(0, Math.min(Math.floor(lessonStep), lastLessonIndex));
 }
 
-function getImageConceptOpenMojiHexcode(concept: StarterImageConceptId) {
-	const hexcodes: Record<StarterImageConceptId, string> = {
+function getImageConceptOpenMojiHexcode(concept: StarterConceptId) {
+	const hexcodes: Record<StarterConceptId, string> = {
+		bye: '1F44B',
+		fine: '1F642',
+		goodbye: '1F44B',
 		hello: '1F44B',
 		hi: '1F44B',
+		name: '1F464',
 		no: '274C',
+		not: '274C',
+		thanks: '1F64F',
 		yes: '2705'
 	};
 
